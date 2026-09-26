@@ -1,0 +1,471 @@
+{
+  "generated_by": "griller",
+  "gate": "spec",
+  "verdict": "pass",
+  "gaps": [
+    "Creating a circle also adds a membership, but the spec only says joining is refused at the 20-circle limit. It does not say what happens when a member with 20 circles creates one, or require that case in acceptance criteria (docs/specs/circles.md:23, docs/specs/circles.md:27, docs/specs/circles.md:118).",
+    "The security requirement that an invite code 'cannot practically be guessed' has no measurable strength or abuse limit. An implementer cannot tell what code length, randomness, or guessing protection passes this requirement (docs/specs/circles.md:31).",
+    "The 'invite' event is defined for copying or sharing, but the spec does not say whether a cancelled WhatsApp share, a failed copy, or repeated taps count. Those choices change the per-circle invite counter used to judge MVP spread (docs/specs/circles.md:37, docs/decisions/0008-first-party-usage-counters.md:17).",
+    "The invalid-link response covers reset links and deleted circles but leaves unknown or malformed codes unspecified. A distinct response could reveal whether a circle or former link exists (docs/specs/circles.md:52).",
+    "The spec does not explicitly require the direct join operation to validate the current invite code, completed account, removal block, and both capacity limits at the moment membership is added. Concurrent joins could exceed 100 members or 20 circles even if the preview and button enforce those checks (docs/specs/circles.md:46, docs/specs/circles.md:55, docs/specs/circles.md:57).",
+    "It is unclear whether 'allow them back' restores a removed person's membership immediately or merely clears the block so they must use an invite and press Join. The choice affects consent to rejoin, capacity checks, card visibility, and whether a new join event is recorded (docs/specs/circles.md:57, docs/specs/circles.md:77).",
+    "The spec says members see the member list but does not explicitly deny non-members that list through direct data requests. The preview criterion checks only what the screen shows, leaving a route to members' display names unless the data boundary is stated (docs/specs/circles.md:43, docs/specs/circles.md:62, docs/specs/circles.md:104).",
+    "The spec does not say whether a person who voluntarily leaves can use a still-valid invite to rejoin, or whether leaving creates the same block as removal. That changes the leave flow and the admin's removed-people list (docs/specs/circles.md:68, docs/specs/circles.md:74).",
+    "Renaming has no stated trim, length, or empty-name rule, although creation requires a 1 to 40 character name. A direct rename could leave a circle with a name creation would reject (docs/specs/circles.md:23, docs/specs/circles.md:78).",
+    "Deleting a circle ends memberships, but the spec does not say whether its historical per-circle usage counts remain visible to the owner and, if so, under what circle label. Deleting the circle record could make the required per-circle metrics unintelligible or erase them (docs/specs/circles.md:80, docs/decisions/0008-first-party-usage-counters.md:17).",
+    "Automatic succession uses the member who 'joined earliest' without a tie rule or a stated result for concurrent leave, deletion, or handover. Those operations must still preserve exactly one admin (docs/specs/circles.md:25, docs/specs/circles.md:79, docs/specs/circles.md:85).",
+    "A removal block needs to survive link resets, but the spec does not say what happens to it when that person deletes their account and later signs up again. Retaining an identity link may conflict with account erasure; discarding it lets the same person bypass the block (docs/specs/circles.md:57, docs/specs/accounts.md:117, docs/specs/accounts.md:126).",
+    "The acceptance criteria do not cover the specified confirmation steps for leaving, removing a member, and deleting a circle, nor the circle's deletion and link invalidation when its sole member deletes their account. Those user flows could be omitted while the listed criteria still pass (docs/specs/circles.md:68, docs/specs/circles.md:74, docs/specs/circles.md:80, docs/specs/circles.md:122, docs/specs/accounts.md:110)."
+  ],
+  "contradictions": [
+    "The draft says only the admin can see, copy, or share the invite link, including in criterion 2, yet invitees must receive and open that same URL and can copy or forward it outside the app. The restriction needs a scope such as retrieving the active link and using in-app controls (docs/specs/circles.md:33, docs/specs/circles.md:43, docs/specs/circles.md:101).",
+    "The invite preview exposes the admin's display name to a person who has not joined, while the confirmed Accounts contract permits a member's display name to be returned only to people who currently share a circle with them. A removed person with a valid link also regains circle metadata despite the stated immediate loss of access (docs/specs/circles.md:43, docs/specs/circles.md:74, docs/specs/accounts.md:93).",
+    "An existing member is sent straight to the circle when opening an invite link, while a reset link must always show the no-longer-valid message and reveal nothing. The draft gives no precedence when an existing member opens an old link (docs/specs/circles.md:51, docs/specs/circles.md:52, docs/specs/circles.md:110).",
+    "The admin can see a list of removed people and allow them back, but removed people no longer share that circle. Showing their display names conflicts with the confirmed rule that names are returned only to members who currently share a circle; retaining those names after account deletion also conflicts with erasure (docs/specs/circles.md:77, docs/specs/accounts.md:93, docs/specs/accounts.md:117).",
+    "Criterion 6 says a departing or removed member and the circle's members stop seeing each other's data without qualifying that they may share another circle. The behavior text limits the loss to visibility 'through that circle', and the confirmed Accounts and Cards specs require visibility to continue while any shared circle remains (docs/specs/circles.md:68, docs/specs/circles.md:113, docs/specs/accounts.md:93, docs/specs/cards.md:82)."
+  ],
+  "resolutions": [
+    "Creating a circle counts toward the 20-circle limit and is refused at 20.",
+    "Invite code requires at least 128 bits of randomness.",
+    "Each Copy or Share-on-WhatsApp tap records one invite event; the app cannot observe whether WhatsApp sent it.",
+    "Unknown, malformed, reset and deleted-circle links all show the same no-longer-valid message and reveal nothing.",
+    "Join re-checks link, completed account, removal block and both limits at the moment of joining; simultaneous joins never exceed limits.",
+    "Clear all removals only lifts blocks; unblocked people rejoin via a valid link and Join, with normal checks and a join event.",
+    "Non-members never receive the member list or member names, including via direct data requests.",
+    "Voluntary leaving creates no block; the person can rejoin through a valid link.",
+    "Rename follows the 1 to 40 character rule.",
+    "Deleted circles keep past usage events, shown under the last name marked '(deleted)'.",
+    "Succession uses earliest join time with a consistent tie pick; leave, removal, handover and deletion apply one at a time so exactly one admin remains.",
+    "A removal block is erased with account deletion per the confirmed Accounts erasure rule; a re-signup is a new person; the admin can reset the link.",
+    "Added criteria for confirmation steps and sole-member account deletion deleting the circle.",
+    "Scoped the restriction to in-app retrieval of the active link; forwarding outside the app is expected and reset is the remedy.",
+    "Removed the admin's name from the join preview; removed people see only \"You can't join this circle.\"",
+    "Link validity is checked first for everyone, members included, so an old link always shows the invalid message.",
+    "No removed-people list or names; blocks are lifted all at once by the admin, and erased on account deletion.",
+    "AC6 and Leave now limit loss of visibility to that circle; visibility through other shared circles continues.",
+    "Applied: 'Clear all removals' replaces the named removed-people list."
+  ],
+  "finding_dispositions": [
+    {
+      "finding": "Creating a circle also adds a membership, but the spec only says joining is refused at the 20-circle limit. It does not say what happens when a member with 20 circles creates one, or require that case in acceptance criteria (docs/specs/circles.md:23, docs/specs/circles.md:27, docs/specs/circles.md:118).",
+      "resolution": "Creating a circle counts toward the 20-circle limit and is refused at 20.",
+      "source": "docs/specs/circles.md Create; AC1"
+    },
+    {
+      "finding": "The security requirement that an invite code 'cannot practically be guessed' has no measurable strength or abuse limit. An implementer cannot tell what code length, randomness, or guessing protection passes this requirement (docs/specs/circles.md:31).",
+      "resolution": "Invite code requires at least 128 bits of randomness.",
+      "source": "docs/specs/circles.md Invite link"
+    },
+    {
+      "finding": "The 'invite' event is defined for copying or sharing, but the spec does not say whether a cancelled WhatsApp share, a failed copy, or repeated taps count. Those choices change the per-circle invite counter used to judge MVP spread (docs/specs/circles.md:37, docs/decisions/0008-first-party-usage-counters.md:17).",
+      "resolution": "Each Copy or Share-on-WhatsApp tap records one invite event; the app cannot observe whether WhatsApp sent it.",
+      "source": "docs/specs/circles.md Invite link; AC2; docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "finding": "The invalid-link response covers reset links and deleted circles but leaves unknown or malformed codes unspecified. A distinct response could reveal whether a circle or former link exists (docs/specs/circles.md:52).",
+      "resolution": "Unknown, malformed, reset and deleted-circle links all show the same no-longer-valid message and reveal nothing.",
+      "source": "docs/specs/circles.md Join step 1; AC5"
+    },
+    {
+      "finding": "The spec does not explicitly require the direct join operation to validate the current invite code, completed account, removal block, and both capacity limits at the moment membership is added. Concurrent joins could exceed 100 members or 20 circles even if the preview and button enforce those checks (docs/specs/circles.md:46, docs/specs/circles.md:55, docs/specs/circles.md:57).",
+      "resolution": "Join re-checks link, completed account, removal block and both limits at the moment of joining; simultaneous joins never exceed limits.",
+      "source": "docs/specs/circles.md Join; AC9"
+    },
+    {
+      "finding": "It is unclear whether 'allow them back' restores a removed person's membership immediately or merely clears the block so they must use an invite and press Join. The choice affects consent to rejoin, capacity checks, card visibility, and whether a new join event is recorded (docs/specs/circles.md:57, docs/specs/circles.md:77).",
+      "resolution": "Clear all removals only lifts blocks; unblocked people rejoin via a valid link and Join, with normal checks and a join event.",
+      "source": "Owner decision: admins lift removal blocks with a single 'Clear all removals' action; no list or names of removed people are shown (Arihant, 2026-09-26)"
+    },
+    {
+      "finding": "The spec says members see the member list but does not explicitly deny non-members that list through direct data requests. The preview criterion checks only what the screen shows, leaving a route to members' display names unless the data boundary is stated (docs/specs/circles.md:43, docs/specs/circles.md:62, docs/specs/circles.md:104).",
+      "resolution": "Non-members never receive the member list or member names, including via direct data requests.",
+      "source": "docs/specs/circles.md Inside a circle; AC15; docs/specs/accounts.md Enforcement"
+    },
+    {
+      "finding": "The spec does not say whether a person who voluntarily leaves can use a still-valid invite to rejoin, or whether leaving creates the same block as removal. That changes the leave flow and the admin's removed-people list (docs/specs/circles.md:68, docs/specs/circles.md:74).",
+      "resolution": "Voluntary leaving creates no block; the person can rejoin through a valid link.",
+      "source": "docs/specs/circles.md Leave; AC8"
+    },
+    {
+      "finding": "Renaming has no stated trim, length, or empty-name rule, although creation requires a 1 to 40 character name. A direct rename could leave a circle with a name creation would reject (docs/specs/circles.md:23, docs/specs/circles.md:78).",
+      "resolution": "Rename follows the 1 to 40 character rule.",
+      "source": "docs/specs/circles.md Admin powers; AC10"
+    },
+    {
+      "finding": "Deleting a circle ends memberships, but the spec does not say whether its historical per-circle usage counts remain visible to the owner and, if so, under what circle label. Deleting the circle record could make the required per-circle metrics unintelligible or erase them (docs/specs/circles.md:80, docs/decisions/0008-first-party-usage-counters.md:17).",
+      "resolution": "Deleted circles keep past usage events, shown under the last name marked '(deleted)'.",
+      "source": "docs/specs/circles.md Deleted circles and usage history; AC13; docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "finding": "Automatic succession uses the member who 'joined earliest' without a tie rule or a stated result for concurrent leave, deletion, or handover. Those operations must still preserve exactly one admin (docs/specs/circles.md:25, docs/specs/circles.md:79, docs/specs/circles.md:85).",
+      "resolution": "Succession uses earliest join time with a consistent tie pick; leave, removal, handover and deletion apply one at a time so exactly one admin remains.",
+      "source": "docs/specs/circles.md When the admin leaves; AC12"
+    },
+    {
+      "finding": "A removal block needs to survive link resets, but the spec does not say what happens to it when that person deletes their account and later signs up again. Retaining an identity link may conflict with account erasure; discarding it lets the same person bypass the block (docs/specs/circles.md:57, docs/specs/accounts.md:117, docs/specs/accounts.md:126).",
+      "resolution": "A removal block is erased with account deletion per the confirmed Accounts erasure rule; a re-signup is a new person; the admin can reset the link.",
+      "source": "docs/specs/circles.md Remove; AC16; docs/specs/accounts.md Delete account"
+    },
+    {
+      "finding": "The acceptance criteria do not cover the specified confirmation steps for leaving, removing a member, and deleting a circle, nor the circle's deletion and link invalidation when its sole member deletes their account. Those user flows could be omitted while the listed criteria still pass (docs/specs/circles.md:68, docs/specs/circles.md:74, docs/specs/circles.md:80, docs/specs/circles.md:122, docs/specs/accounts.md:110).",
+      "resolution": "Added criteria for confirmation steps and sole-member account deletion deleting the circle.",
+      "source": "docs/specs/circles.md AC11, AC12"
+    },
+    {
+      "finding": "The draft says only the admin can see, copy, or share the invite link, including in criterion 2, yet invitees must receive and open that same URL and can copy or forward it outside the app. The restriction needs a scope such as retrieving the active link and using in-app controls (docs/specs/circles.md:33, docs/specs/circles.md:43, docs/specs/circles.md:101).",
+      "resolution": "Scoped the restriction to in-app retrieval of the active link; forwarding outside the app is expected and reset is the remedy.",
+      "source": "docs/specs/circles.md Invite link; AC2"
+    },
+    {
+      "finding": "The invite preview exposes the admin's display name to a person who has not joined, while the confirmed Accounts contract permits a member's display name to be returned only to people who currently share a circle with them. A removed person with a valid link also regains circle metadata despite the stated immediate loss of access (docs/specs/circles.md:43, docs/specs/circles.md:74, docs/specs/accounts.md:93).",
+      "resolution": "Removed the admin's name from the join preview; removed people see only \"You can't join this circle.\"",
+      "source": "docs/specs/circles.md Join; AC3, AC7; docs/specs/accounts.md Enforcement"
+    },
+    {
+      "finding": "An existing member is sent straight to the circle when opening an invite link, while a reset link must always show the no-longer-valid message and reveal nothing. The draft gives no precedence when an existing member opens an old link (docs/specs/circles.md:51, docs/specs/circles.md:52, docs/specs/circles.md:110).",
+      "resolution": "Link validity is checked first for everyone, members included, so an old link always shows the invalid message.",
+      "source": "docs/specs/circles.md Join step 1; AC5"
+    },
+    {
+      "finding": "The admin can see a list of removed people and allow them back, but removed people no longer share that circle. Showing their display names conflicts with the confirmed rule that names are returned only to members who currently share a circle; retaining those names after account deletion also conflicts with erasure (docs/specs/circles.md:77, docs/specs/accounts.md:93, docs/specs/accounts.md:117).",
+      "resolution": "No removed-people list or names; blocks are lifted all at once by the admin, and erased on account deletion.",
+      "source": "Owner decision: admins lift removal blocks with a single 'Clear all removals' action; no list or names of removed people are shown (Arihant, 2026-09-26)"
+    },
+    {
+      "finding": "Criterion 6 says a departing or removed member and the circle's members stop seeing each other's data without qualifying that they may share another circle. The behavior text limits the loss to visibility 'through that circle', and the confirmed Accounts and Cards specs require visibility to continue while any shared circle remains (docs/specs/circles.md:68, docs/specs/circles.md:113, docs/specs/accounts.md:93, docs/specs/cards.md:82).",
+      "resolution": "AC6 and Leave now limit loss of visibility to that circle; visibility through other shared circles continues.",
+      "source": "docs/specs/circles.md Leave; AC6; docs/specs/accounts.md Enforcement; docs/specs/cards.md Visibility"
+    },
+    {
+      "finding": "Owner decision: admins lift removal blocks with a single 'Clear all removals' action; no list or names of removed people are shown (Arihant, 2026-09-26)",
+      "resolution": "Applied: 'Clear all removals' replaces the named removed-people list.",
+      "source": "Owner decision: admins lift removal blocks with a single 'Clear all removals' action; no list or names of removed people are shown (Arihant, 2026-09-26)"
+    }
+  ],
+  "amendments": [
+    {
+      "delta_index": 0,
+      "findings": [
+        "Creating a circle also adds a membership, but the spec only says joining is refused at the 20-circle limit. It does not say what happens when a member with 20 circles creates one, or require that case in acceptance criteria (docs/specs/circles.md:23, docs/specs/circles.md:27, docs/specs/circles.md:118)."
+      ],
+      "change": "Creating a circle counts toward the 20 and is refused at 20.",
+      "reason": "Create-at-limit was unspecified.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 1,
+      "findings": [
+        "The security requirement that an invite code 'cannot practically be guessed' has no measurable strength or abuse limit. An implementer cannot tell what code length, randomness, or guessing protection passes this requirement (docs/specs/circles.md:31).",
+        "The 'invite' event is defined for copying or sharing, but the spec does not say whether a cancelled WhatsApp share, a failed copy, or repeated taps count. Those choices change the per-circle invite counter used to judge MVP spread (docs/specs/circles.md:37, docs/decisions/0008-first-party-usage-counters.md:17).",
+        "The draft says only the admin can see, copy, or share the invite link, including in criterion 2, yet invitees must receive and open that same URL and can copy or forward it outside the app. The restriction needs a scope such as retrieving the active link and using in-app controls (docs/specs/circles.md:33, docs/specs/circles.md:43, docs/specs/circles.md:101)."
+      ],
+      "change": "Invite code >=128 bits; in-app retrieval limited to admin, forwarding acknowledged with reset as remedy; each Copy/Share tap is one invite event.",
+      "reason": "Code strength, event counting and link-visibility scope were undefined or contradictory.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 2,
+      "findings": [
+        "The invalid-link response covers reset links and deleted circles but leaves unknown or malformed codes unspecified. A distinct response could reveal whether a circle or former link exists (docs/specs/circles.md:52).",
+        "The invite preview exposes the admin's display name to a person who has not joined, while the confirmed Accounts contract permits a member's display name to be returned only to people who currently share a circle with them. A removed person with a valid link also regains circle metadata despite the stated immediate loss of access (docs/specs/circles.md:43, docs/specs/circles.md:74, docs/specs/accounts.md:93).",
+        "An existing member is sent straight to the circle when opening an invite link, while a reset link must always show the no-longer-valid message and reveal nothing. The draft gives no precedence when an existing member opens an old link (docs/specs/circles.md:51, docs/specs/circles.md:52, docs/specs/circles.md:110)."
+      ],
+      "change": "Join became an ordered procedure: invalid links first for everyone, then sign-in, members straight in, removed people refused without detail, others see name and count only.",
+      "reason": "Unknown codes, preview data exposure and old-link precedence.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 3,
+      "findings": [
+        "The spec does not explicitly require the direct join operation to validate the current invite code, completed account, removal block, and both capacity limits at the moment membership is added. Concurrent joins could exceed 100 members or 20 circles even if the preview and button enforce those checks (docs/specs/circles.md:46, docs/specs/circles.md:55, docs/specs/circles.md:57)."
+      ],
+      "change": "Added server-side re-check at Join time with atomic limits and reasoned refusal messages.",
+      "reason": "Join validation at the moment of joining was unstated.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 4,
+      "findings": [
+        "The invalid-link response covers reset links and deleted circles but leaves unknown or malformed codes unspecified. A distinct response could reveal whether a circle or former link exists (docs/specs/circles.md:52).",
+        "The spec does not explicitly require the direct join operation to validate the current invite code, completed account, removal block, and both capacity limits at the moment membership is added. Concurrent joins could exceed 100 members or 20 circles even if the preview and button enforce those checks (docs/specs/circles.md:46, docs/specs/circles.md:55, docs/specs/circles.md:57).",
+        "An existing member is sent straight to the circle when opening an invite link, while a reset link must always show the no-longer-valid message and reveal nothing. The draft gives no precedence when an existing member opens an old link (docs/specs/circles.md:51, docs/specs/circles.md:52, docs/specs/circles.md:110)."
+      ],
+      "change": "Removed the old unordered join bullets now covered by the ordered procedure and Join re-check.",
+      "reason": "Superseded by the ordered join rules.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 5,
+      "findings": [
+        "The spec says members see the member list but does not explicitly deny non-members that list through direct data requests. The preview criterion checks only what the screen shows, leaving a route to members' display names unless the data boundary is stated (docs/specs/circles.md:43, docs/specs/circles.md:62, docs/specs/circles.md:104)."
+      ],
+      "change": "Non-members never receive member list or names, including via direct requests.",
+      "reason": "Data boundary for member list was unstated.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 6,
+      "findings": [
+        "Criterion 6 says a departing or removed member and the circle's members stop seeing each other's data without qualifying that they may share another circle. The behavior text limits the loss to visibility 'through that circle', and the confirmed Accounts and Cards specs require visibility to continue while any shared circle remains (docs/specs/circles.md:68, docs/specs/circles.md:113, docs/specs/accounts.md:93, docs/specs/cards.md:82)."
+      ],
+      "change": "Leave sentence punctuation adjusted to add the other-circles qualification.",
+      "reason": "Visibility loss is per circle.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 7,
+      "findings": [
+        "Criterion 6 says a departing or removed member and the circle's members stop seeing each other's data without qualifying that they may share another circle. The behavior text limits the loss to visibility 'through that circle', and the confirmed Accounts and Cards specs require visibility to continue while any shared circle remains (docs/specs/circles.md:68, docs/specs/circles.md:113, docs/specs/accounts.md:93, docs/specs/cards.md:82).",
+        "The spec does not say whether a person who voluntarily leaves can use a still-valid invite to rejoin, or whether leaving creates the same block as removal. That changes the leave flow and the admin's removed-people list (docs/specs/circles.md:68, docs/specs/circles.md:74).",
+        "It is unclear whether 'allow them back' restores a removed person's membership immediately or merely clears the block so they must use an invite and press Join. The choice affects consent to rejoin, capacity checks, card visibility, and whether a new join event is recorded (docs/specs/circles.md:57, docs/specs/circles.md:77).",
+        "A removal block needs to survive link resets, but the spec does not say what happens to it when that person deletes their account and later signs up again. Retaining an identity link may conflict with account erasure; discarding it lets the same person bypass the block (docs/specs/circles.md:57, docs/specs/accounts.md:117, docs/specs/accounts.md:126).",
+        "The admin can see a list of removed people and allow them back, but removed people no longer share that circle. Showing their display names conflicts with the confirmed rule that names are returned only to members who currently share a circle; retaining those names after account deletion also conflicts with erasure (docs/specs/circles.md:77, docs/specs/accounts.md:93, docs/specs/accounts.md:117)."
+      ],
+      "change": "Leave: visibility continues through other shared circles; leaving does not block. New Remove section: confirmation, persistent block, Clear all removals without names, unblocked people must rejoin, block erased on account deletion.",
+      "reason": "Leave/remove semantics, allow-back meaning and erasure interplay.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 8,
+      "findings": [
+        "It is unclear whether 'allow them back' restores a removed person's membership immediately or merely clears the block so they must use an invite and press Join. The choice affects consent to rejoin, capacity checks, card visibility, and whether a new join event is recorded (docs/specs/circles.md:57, docs/specs/circles.md:77).",
+        "Renaming has no stated trim, length, or empty-name rule, although creation requires a 1 to 40 character name. A direct rename could leave a circle with a name creation would reject (docs/specs/circles.md:23, docs/specs/circles.md:78).",
+        "The admin can see a list of removed people and allow them back, but removed people no longer share that circle. Showing their display names conflicts with the confirmed rule that names are returned only to members who currently share a circle; retaining those names after account deletion also conflicts with erasure (docs/specs/circles.md:77, docs/specs/accounts.md:93, docs/specs/accounts.md:117)."
+      ],
+      "change": "Admin powers: remove and clear all removals; retrieve, share, reset link; rename under the 1 to 40 rule; removed the named removed-people list.",
+      "reason": "Admin powers aligned with removal model and rename rule.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 9,
+      "findings": [
+        "The acceptance criteria do not cover the specified confirmation steps for leaving, removing a member, and deleting a circle, nor the circle's deletion and link invalidation when its sole member deletes their account. Those user flows could be omitted while the listed criteria still pass (docs/specs/circles.md:68, docs/specs/circles.md:74, docs/specs/circles.md:80, docs/specs/circles.md:122, docs/specs/accounts.md:110)."
+      ],
+      "change": "Delete-circle bullet reworded; confirmation remains explicit.",
+      "reason": "Consistency with the confirmation criterion.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 10,
+      "findings": [
+        "Automatic succession uses the member who 'joined earliest' without a tie rule or a stated result for concurrent leave, deletion, or handover. Those operations must still preserve exactly one admin (docs/specs/circles.md:25, docs/specs/circles.md:79, docs/specs/circles.md:85)."
+      ],
+      "change": "Succession uses earliest join time with a consistent tie pick.",
+      "reason": "Tie rule was missing.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 11,
+      "findings": [
+        "Automatic succession uses the member who 'joined earliest' without a tie rule or a stated result for concurrent leave, deletion, or handover. Those operations must still preserve exactly one admin (docs/specs/circles.md:25, docs/specs/circles.md:79, docs/specs/circles.md:85).",
+        "Deleting a circle ends memberships, but the spec does not say whether its historical per-circle usage counts remain visible to the owner and, if so, under what circle label. Deleting the circle record could make the required per-circle metrics unintelligible or erase them (docs/specs/circles.md:80, docs/decisions/0008-first-party-usage-counters.md:17)."
+      ],
+      "change": "Operations apply one at a time preserving exactly one admin; added Deleted circles and usage history section.",
+      "reason": "Concurrency and deleted-circle metrics were unspecified.",
+      "source": "docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "delta_index": 12,
+      "findings": [
+        "Owner decision: admins lift removal blocks with a single 'Clear all removals' action; no list or names of removed people are shown (Arihant, 2026-09-26)",
+        "The admin can see a list of removed people and allow them back, but removed people no longer share that circle. Showing their display names conflicts with the confirmed rule that names are returned only to members who currently share a circle; retaining those names after account deletion also conflicts with erasure (docs/specs/circles.md:77, docs/specs/accounts.md:93, docs/specs/accounts.md:117)."
+      ],
+      "change": "Out of scope: a list of removed people, or unblocking one person at a time.",
+      "reason": "Owner chose Clear all removals.",
+      "source": "Owner decision: admins lift removal blocks with a single 'Clear all removals' action; no list or names of removed people are shown (Arihant, 2026-09-26)"
+    },
+    {
+      "delta_index": 13,
+      "findings": [
+        "Creating a circle also adds a membership, but the spec only says joining is refused at the 20-circle limit. It does not say what happens when a member with 20 circles creates one, or require that case in acceptance criteria (docs/specs/circles.md:23, docs/specs/circles.md:27, docs/specs/circles.md:118).",
+        "The 'invite' event is defined for copying or sharing, but the spec does not say whether a cancelled WhatsApp share, a failed copy, or repeated taps count. Those choices change the per-circle invite counter used to judge MVP spread (docs/specs/circles.md:37, docs/decisions/0008-first-party-usage-counters.md:17).",
+        "The draft says only the admin can see, copy, or share the invite link, including in criterion 2, yet invitees must receive and open that same URL and can copy or forward it outside the app. The restriction needs a scope such as retrieving the active link and using in-app controls (docs/specs/circles.md:33, docs/specs/circles.md:43, docs/specs/circles.md:101).",
+        "The invite preview exposes the admin's display name to a person who has not joined, while the confirmed Accounts contract permits a member's display name to be returned only to people who currently share a circle with them. A removed person with a valid link also regains circle metadata despite the stated immediate loss of access (docs/specs/circles.md:43, docs/specs/circles.md:74, docs/specs/accounts.md:93)."
+      ],
+      "change": "AC1 adds create-at-20 refusal; AC2 scopes in-app retrieval and per-tap events; AC3 drops admin name from preview.",
+      "reason": "Criteria match amended behaviour.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 14,
+      "findings": [
+        "The invalid-link response covers reset links and deleted circles but leaves unknown or malformed codes unspecified. A distinct response could reveal whether a circle or former link exists (docs/specs/circles.md:52).",
+        "The spec does not explicitly require the direct join operation to validate the current invite code, completed account, removal block, and both capacity limits at the moment membership is added. Concurrent joins could exceed 100 members or 20 circles even if the preview and button enforce those checks (docs/specs/circles.md:46, docs/specs/circles.md:55, docs/specs/circles.md:57).",
+        "It is unclear whether 'allow them back' restores a removed person's membership immediately or merely clears the block so they must use an invite and press Join. The choice affects consent to rejoin, capacity checks, card visibility, and whether a new join event is recorded (docs/specs/circles.md:57, docs/specs/circles.md:77).",
+        "The spec does not say whether a person who voluntarily leaves can use a still-valid invite to rejoin, or whether leaving creates the same block as removal. That changes the leave flow and the admin's removed-people list (docs/specs/circles.md:68, docs/specs/circles.md:74).",
+        "Renaming has no stated trim, length, or empty-name rule, although creation requires a 1 to 40 character name. A direct rename could leave a circle with a name creation would reject (docs/specs/circles.md:23, docs/specs/circles.md:78).",
+        "Automatic succession uses the member who 'joined earliest' without a tie rule or a stated result for concurrent leave, deletion, or handover. Those operations must still preserve exactly one admin (docs/specs/circles.md:25, docs/specs/circles.md:79, docs/specs/circles.md:85).",
+        "The acceptance criteria do not cover the specified confirmation steps for leaving, removing a member, and deleting a circle, nor the circle's deletion and link invalidation when its sole member deletes their account. Those user flows could be omitted while the listed criteria still pass (docs/specs/circles.md:68, docs/specs/circles.md:74, docs/specs/circles.md:80, docs/specs/circles.md:122, docs/specs/accounts.md:110).",
+        "An existing member is sent straight to the circle when opening an invite link, while a reset link must always show the no-longer-valid message and reveal nothing. The draft gives no precedence when an existing member opens an old link (docs/specs/circles.md:51, docs/specs/circles.md:52, docs/specs/circles.md:110).",
+        "Criterion 6 says a departing or removed member and the circle's members stop seeing each other's data without qualifying that they may share another circle. The behavior text limits the loss to visibility 'through that circle', and the confirmed Accounts and Cards specs require visibility to continue while any shared circle remains (docs/specs/circles.md:68, docs/specs/circles.md:113, docs/specs/accounts.md:93, docs/specs/cards.md:82)."
+      ],
+      "change": "AC5-AC12 rewritten: uniform invalid-link message, per-circle visibility loss, removal block and clear-all, voluntary rejoin, atomic limits, rename rule, confirmations, succession and sole-member deletion.",
+      "reason": "Criteria match amended behaviour.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 15,
+      "findings": [
+        "Deleting a circle ends memberships, but the spec does not say whether its historical per-circle usage counts remain visible to the owner and, if so, under what circle label. Deleting the circle record could make the required per-circle metrics unintelligible or erase them (docs/specs/circles.md:80, docs/decisions/0008-first-party-usage-counters.md:17).",
+        "The acceptance criteria do not cover the specified confirmation steps for leaving, removing a member, and deleting a circle, nor the circle's deletion and link invalidation when its sole member deletes their account. Those user flows could be omitted while the listed criteria still pass (docs/specs/circles.md:68, docs/specs/circles.md:74, docs/specs/circles.md:80, docs/specs/circles.md:122, docs/specs/accounts.md:110)."
+      ],
+      "change": "Added AC13 (deleted circle keeps usage under '(deleted)'); renumbered handover criterion to 14.",
+      "reason": "Deleted-circle metrics criterion.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 16,
+      "findings": [
+        "The spec says members see the member list but does not explicitly deny non-members that list through direct data requests. The preview criterion checks only what the screen shows, leaving a route to members' display names unless the data boundary is stated (docs/specs/circles.md:43, docs/specs/circles.md:62, docs/specs/circles.md:104).",
+        "A removal block needs to survive link resets, but the spec does not say what happens to it when that person deletes their account and later signs up again. Retaining an identity link may conflict with account erasure; discarding it lets the same person bypass the block (docs/specs/circles.md:57, docs/specs/accounts.md:117, docs/specs/accounts.md:126)."
+      ],
+      "change": "Added AC15 (non-members never get member names) and AC16 (re-signup after deletion not blocked).",
+      "reason": "Criteria for data boundary and erasure interplay.",
+      "source": "docs/specs/circles.md"
+    }
+  ],
+  "artifact_delta": [
+    {
+      "cold_start": 27,
+      "cold_end": 28,
+      "cold": "  100 members.\n",
+      "final_start": 27,
+      "final_end": 29,
+      "final": "  100 members. Creating a circle counts toward the member's 20 and is refused,\n  with a clear message, when they already belong to 20.\n"
+    },
+    {
+      "cold_start": 31,
+      "cold_end": 38,
+      "cold": "  code that cannot practically be guessed.\n- Only the admin can see the link, copy it, or share it through a \"Share on\n  WhatsApp\" button that opens WhatsApp with the circle name and link\n  prefilled. Other members who want to bring someone in ask the admin, or\n  create a circle of their own.\n- Copying or sharing the link records an \"invite\" usage event carrying the\n  admin and the circle (decision 0008).\n",
+      "final_start": 32,
+      "final_end": 43,
+      "final": "  code with at least 128 bits of randomness, so it cannot practically be\n  guessed.\n- In the app, only the admin can retrieve the active link: see it, copy it, or\n  share it through a \"Share on WhatsApp\" button that opens WhatsApp with the\n  circle name and link prefilled. Once shared, anyone holding the link can\n  forward it; the admin's remedy for a leaked link is to reset it. Other\n  members who want to bring someone in ask the admin, or create a circle of\n  their own.\n- Every tap on \"Copy\" or \"Share on WhatsApp\" records one \"invite\" usage event\n  carrying the admin and the circle (decision 0008). The app cannot see whether\n  the WhatsApp message was actually sent, so the tap is what counts.\n"
+    },
+    {
+      "cold_start": 42,
+      "cold_end": 45,
+      "cold": "- Opening a valid invite link shows the circle name, the admin's display name\n  and the number of members, but not the member list. Sign-in and onboarding\n  come first when needed (Accounts capability).\n",
+      "final_start": 47,
+      "final_end": 58,
+      "final": "- Opening a link is handled in this order:\n  1. A link that is unknown, malformed, reset, or whose circle was deleted\n     shows \"This invite link is no longer valid. Ask the person who shared it\n     for a new one.\" to everyone, members included. Nothing about any circle is\n     revealed.\n  2. Sign-in and onboarding come first when needed (Accounts capability).\n  3. A person who is already a member is taken straight to the circle.\n  4. A person blocked by a removal sees \"You can't join this circle.\" and\n     nothing else about it.\n  5. Anyone else sees the circle name and the number of members, but no\n     member names, and can press \"Join\".\n"
+    },
+    {
+      "cold_start": 47,
+      "cold_end": 47,
+      "cold": "",
+      "final_start": 60,
+      "final_end": 67,
+      "final": "- When \"Join\" is pressed, the system checks everything again at that moment,\n  whatever the screen showed: the link is still the active one, the person has\n  a completed account, they are not blocked by a removal, the circle has fewer\n  than 100 members and they belong to fewer than 20 circles. Simultaneous joins\n  can never push a circle past 100 members or a person past 20 circles.\n- A refused join shows a clear message naming the reason (circle full, or too\n  many circles).\n"
+    },
+    {
+      "cold_start": 50,
+      "cold_end": 59,
+      "cold": "- A person who is already a member is taken straight to the circle.\n- A link that has been reset, or whose circle was deleted, shows \"This invite\n  link is no longer valid. Ask the person who shared it for a new one.\" Nothing\n  about the circle is revealed.\n- Joining is refused, with a clear message, when the circle already has 100\n  members or the person already belongs to 20 circles.\n- A person removed from a circle cannot rejoin it through any of its invite\n  links until the admin allows them back from the circle's list of removed\n  people.\n",
+      "final_start": 70,
+      "final_end": 70,
+      "final": ""
+    },
+    {
+      "cold_start": 62,
+      "cold_end": 64,
+      "cold": "  member is the admin. Viewing members' cards and contacting them belong to\n  the Find & contact capability.\n",
+      "final_start": 73,
+      "final_end": 76,
+      "final": "  member is the admin. Non-members never receive the member list or member\n  names, including through direct data requests. Viewing members' cards and\n  contacting them belong to the Find & contact capability.\n"
+    },
+    {
+      "cold_start": 67,
+      "cold_end": 68,
+      "cold": "- Any member can leave a circle after a confirmation step. From that moment\n",
+      "final_start": 79,
+      "final_end": 80,
+      "final": "- Any member can leave a circle after a confirmation step. From that moment,\n"
+    },
+    {
+      "cold_start": 69,
+      "cold_end": 70,
+      "cold": "  that circle.\n",
+      "final_start": 81,
+      "final_end": 98,
+      "final": "  that circle; they still see each other through any other circle they share.\n- Leaving does not block the person. They can rejoin later through a valid\n  invite link, like anyone else.\n\n**Remove**\n- The admin can remove a member after a confirmation step. The removed person\n  immediately loses access to the circle, with the same visibility effect as\n  leaving.\n- A removed person is blocked from rejoining that circle through any of its\n  links, including links created after later resets.\n- The admin can lift the blocks with \"Clear all removals\", which unblocks every\n  removed person of that circle at once. No list or names of removed people\n  are shown to anyone. An unblocked person is not added back; they rejoin only\n  by opening a valid link and pressing \"Join\".\n- A block is erased when the blocked person deletes their account, as part of\n  account deletion (Accounts capability). If they sign up again, they are a new\n  person and are not blocked; the admin can reset the link if needed.\n"
+    },
+    {
+      "cold_start": 73,
+      "cold_end": 78,
+      "cold": "  - remove a member (after confirmation); the removed member immediately loses\n    access to the circle and its members' data, as if they had left;\n  - see, copy, share and reset the invite link;\n  - see the list of removed people and allow any of them back;\n  - rename the circle;\n",
+      "final_start": 101,
+      "final_end": 104,
+      "final": "  - remove a member and clear all removals;\n  - retrieve, share and reset the invite link;\n  - rename the circle, under the same 1 to 40 character rule as creating it;\n"
+    },
+    {
+      "cold_start": 79,
+      "cold_end": 80,
+      "cold": "  - delete the circle (after a confirmation that says it is permanent); every\n",
+      "final_start": 105,
+      "final_end": 106,
+      "final": "  - delete the circle, after a confirmation that says it is permanent. Every\n"
+    },
+    {
+      "cold_start": 85,
+      "cold_end": 86,
+      "cold": "  passes automatically to the remaining member who joined earliest.\n",
+      "final_start": 111,
+      "final_end": 113,
+      "final": "  passes automatically to the remaining member with the earliest join time.\n  If two join times are identical, the system picks one of them consistently.\n"
+    },
+    {
+      "cold_start": 88,
+      "cold_end": 88,
+      "cold": "",
+      "final_start": 115,
+      "final_end": 122,
+      "final": "- Leaving, removal, handover and deletion are applied one at a time, so a\n  circle that still has members always has exactly one admin.\n\n**Deleted circles and usage history**\n- When a circle is deleted, its past usage events stay in the owner's usage\n  counts, shown under the circle's last name marked \"(deleted)\" (decision\n  0008).\n"
+    },
+    {
+      "cold_start": 94,
+      "cold_end": 94,
+      "cold": "",
+      "final_start": 128,
+      "final_end": 129,
+      "final": "- A list of removed people, or unblocking one person at a time.\n"
+    },
+    {
+      "cold_start": 99,
+      "cold_end": 106,
+      "cold": "   member and its admin; an empty or longer name is rejected.\n2. Only the admin can see, copy and share the circle's invite link, including\n   through direct data requests, and doing so records an \"invite\" usage event\n   with the admin and circle.\n3. Opening a valid link without being a member shows the circle name, admin\n   name and member count but no member list, and does not join the person\n   until they press \"Join\".\n",
+      "final_start": 134,
+      "final_end": 143,
+      "final": "   member and its admin; an empty or longer name is rejected, and a member who\n   already belongs to 20 circles cannot create another.\n2. Only the admin can retrieve, copy or share the circle's active invite link\n   in the app, including through direct data requests, and each \"Copy\" or\n   \"Share on WhatsApp\" tap records one \"invite\" usage event with the admin and\n   circle.\n3. Opening a valid link without being a member shows the circle name and\n   member count but no member names, and does not join the person until they\n   press \"Join\".\n"
+    },
+    {
+      "cold_start": 109,
+      "cold_end": 125,
+      "cold": "5. After the admin resets the link, the old link shows the no-longer-valid\n   message and reveals nothing about the circle, while the new link works and\n   existing members are unaffected.\n6. A member who leaves, or is removed, immediately stops seeing the circle and\n   its members' data, and the circle's members immediately stop seeing theirs,\n   including through direct data requests.\n7. A removed person cannot rejoin through the current or any new invite link\n   until the admin allows them back.\n8. Joining is refused at 100 members per circle and at 20 circles per member.\n9. Only the admin can remove members, allow removed people back, see or reset\n   the link, rename, hand over the admin role or delete the circle, including\n   through direct data requests.\n10. When the admin leaves or deletes their account, the remaining member who\n    joined earliest becomes admin; when the last member leaves, the circle is\n    deleted.\n11. Deleting a circle ends every membership and makes its invite link show the\n",
+      "final_start": 146,
+      "final_end": 168,
+      "final": "5. An unknown, malformed, reset or deleted-circle link shows the same\n   no-longer-valid message to everyone, including members, and reveals nothing\n   about any circle; after a reset, the new link works and existing members are\n   unaffected.\n6. A member who leaves, or is removed, immediately stops seeing that circle and\n   the data of members they share no other circle with, and those members stop\n   seeing theirs, including through direct data requests; visibility through\n   any other shared circle continues.\n7. A removed person cannot rejoin through the current or any later invite link,\n   and sees only \"You can't join this circle.\"; after \"Clear all removals\" they\n   can rejoin only by opening a valid link and pressing \"Join\".\n8. A person who left voluntarily can rejoin through a valid link.\n9. Joining is refused with a reason at 100 members per circle and at 20\n   circles per member, and simultaneous joins never exceed either limit.\n10. Only the admin can remove members, clear removals, retrieve or reset the\n    link, rename, hand over the admin role or delete the circle, including\n    through direct data requests; a rename follows the 1 to 40 character rule.\n11. Leaving, removing a member and deleting a circle each require a\n    confirmation step.\n12. When the admin leaves or deletes their account, the remaining member with\n    the earliest join time becomes admin; when the last member leaves or\n    deletes their account, the circle is deleted and its link shows the\n"
+    },
+    {
+      "cold_start": 126,
+      "cold_end": 127,
+      "cold": "12. The admin can hand the admin role to another member, after which only the\n",
+      "final_start": 169,
+      "final_end": 173,
+      "final": "13. Deleting a circle ends every membership, makes its invite link show the\n    no-longer-valid message, and keeps its past usage events under its last\n    name marked \"(deleted)\".\n14. The admin can hand the admin role to another member, after which only the\n"
+    },
+    {
+      "cold_start": 128,
+      "cold_end": 128,
+      "cold": "",
+      "final_start": 174,
+      "final_end": 178,
+      "final": "15. Non-members never receive a circle's member list or member names,\n    including through direct data requests.\n16. A removed person who deletes their account and signs up again is not\n    blocked from that circle.\n"
+    }
+  ],
+  "input_sha256": "de9e5b34c9abf88507e85a298f6e22f1b02912cb91e9cac362a257624aceceff",
+  "recorded_at": "2026-09-26T18:21:57+00:00",
+  "commit": "a2534b0902bb92debf96a29c67620171b65547ae",
+  "launch_id": "launch-fafe41784a974f458706fb9f5dbc1d62",
+  "cold_input_sha256": "99cbd501f40fd5809557d326298afe721236023765ccfd8ff6ab48b64f88c16c",
+  "final_artifact_sha256": "de9e5b34c9abf88507e85a298f6e22f1b02912cb91e9cac362a257624aceceff"
+}
