@@ -1,0 +1,299 @@
+{
+  "generated_by": "griller",
+  "gate": "spec",
+  "verdict": "pass",
+  "gaps": [
+    "A whitespace-only variant query has no defined behavior: it may count as a variant search and create two groups, or become an empty query and match every card. Specify whether the query is trimmed before deciding that a variant was entered (docs/specs/find-and-contact.md:24, docs/specs/find-and-contact.md:28-35).",
+    "Results have no stated ordering when the member leaves variant blank; alphabetical order is specified only within the two groups used for a variant search (docs/specs/find-and-contact.md:31-38).",
+    "The spec does not say how to handle a holder with both a matching stated variant and a card with no variant. That holder qualifies for both groups, while each person must appear once; the group assignment and which cards appear on that person's result are undefined (docs/specs/find-and-contact.md:31-38, docs/specs/find-and-contact.md:85-87).",
+    "A search is a snapshot, but the spec does not say what happens to an already displayed result or its contact button when the card is edited or removed, the holder leaves a shared circle, or the searcher is removed. Adjacent contracts require those changes to end visibility immediately, including through direct requests (docs/specs/find-and-contact.md:39-40, docs/specs/find-and-contact.md:52-60, docs/specs/cards.md:75-87, docs/specs/circles.md:79-89).",
+    "The browse flow does not explicitly require its member-card data request and contact action to check current shared membership. Search has a direct-request protection criterion, but browse has none, leaving a path to a former circle member's cards or number after access ends (docs/specs/find-and-contact.md:47-49, docs/specs/find-and-contact.md:88-99, docs/specs/accounts.md:88-96).",
+    "The search event's people-found value is undefined for the owner\u2019s per-circle counts when one holder shares several circles with the searcher. It also does not say how a search by a member in no circles is counted. The accepted decision requires counts per circle (docs/specs/find-and-contact.md:43-45, docs/decisions/0008-first-party-usage-counters.md:16-19).",
+    "The spec does not define whether a WhatsApp tap is recorded before navigation, or what the member sees if event recording fails. That leaves an implementation choice between losing a counted tap and blocking the core contact flow (docs/specs/find-and-contact.md:52-61, docs/decisions/0008-first-party-usage-counters.md:21-24).",
+    "A member's WhatsApp number is self-entered and unverified. The spec does not define the contact experience when the number has no WhatsApp account or WhatsApp cannot open, although the acceptance criterion promises an opened chat (docs/specs/find-and-contact.md:52-58, docs/specs/find-and-contact.md:91-93, docs/decisions/0007-google-signin-whatsapp-number.md:15-22)."
+  ],
+  "contradictions": [
+    "The label \"Exact variant\" describes a full match, while the required matching rule is a case-insensitive substring match. A card named \"Regalia Gold\" would be labelled exact for a query of \"Regalia\" (docs/specs/find-and-contact.md:28-35, docs/specs/find-and-contact.md:81-84).",
+    "Acceptance criterion 1 says a search returns exactly every holder with the chosen bank and type, but criterion 3 excludes holders whose stated variant differs when a variant is entered. Criterion 1 needs the variant condition to avoid opposing expected results (docs/specs/find-and-contact.md:76-84).",
+    "The contact event identifies its actor as \"the searcher\", but the member-list browse flow offers the same contact button without any search. The required event actor is therefore undefined for a supported route to contact (docs/specs/find-and-contact.md:47-49, docs/specs/find-and-contact.md:59-60, docs/specs/find-and-contact.md:94-99)."
+  ],
+  "resolutions": [
+    "The variant entry is trimmed first; empty after trimming means no variant.",
+    "Without a variant, results are one list alphabetical by display name.",
+    "A person appears once: under Matching variant if any card matches, otherwise Variant not stated; all qualifying cards are shown.",
+    "Contact re-checks card existence and shared membership at press time and shows 'This card is no longer available.' otherwise; new searches show current state.",
+    "Added Enforcement: search, browse and contact check shared membership per request; browse covered by AC6.",
+    "People found counts distinct people once regardless of circles or cards; a searcher with no circles is recorded with no circle.",
+    "Recording never delays or blocks opening WhatsApp; a failed record leaves the tap uncounted (taps are a proxy per decision 0008).",
+    "The button opens WhatsApp's chat link; the app cannot tell whether the number is on WhatsApp, and WhatsApp's own screen explains failures.",
+    "Renamed the group to 'Matching variant' to fit the contains rule.",
+    "AC1 now states both the no-variant and variant conditions.",
+    "The tap event's actor is the member who pressed, from search or browse."
+  ],
+  "finding_dispositions": [
+    {
+      "finding": "A whitespace-only variant query has no defined behavior: it may count as a variant search and create two groups, or become an empty query and match every card. Specify whether the query is trimmed before deciding that a variant was entered (docs/specs/find-and-contact.md:24, docs/specs/find-and-contact.md:28-35).",
+      "resolution": "The variant entry is trimmed first; empty after trimming means no variant.",
+      "source": "docs/specs/find-and-contact.md Search; AC4"
+    },
+    {
+      "finding": "Results have no stated ordering when the member leaves variant blank; alphabetical order is specified only within the two groups used for a variant search (docs/specs/find-and-contact.md:31-38).",
+      "resolution": "Without a variant, results are one list alphabetical by display name.",
+      "source": "docs/specs/find-and-contact.md Search; AC5"
+    },
+    {
+      "finding": "The spec does not say how to handle a holder with both a matching stated variant and a card with no variant. That holder qualifies for both groups, while each person must appear once; the group assignment and which cards appear on that person's result are undefined (docs/specs/find-and-contact.md:31-38, docs/specs/find-and-contact.md:85-87).",
+      "resolution": "A person appears once: under Matching variant if any card matches, otherwise Variant not stated; all qualifying cards are shown.",
+      "source": "docs/specs/find-and-contact.md Search; AC3, AC5"
+    },
+    {
+      "finding": "A search is a snapshot, but the spec does not say what happens to an already displayed result or its contact button when the card is edited or removed, the holder leaves a shared circle, or the searcher is removed. Adjacent contracts require those changes to end visibility immediately, including through direct requests (docs/specs/find-and-contact.md:39-40, docs/specs/find-and-contact.md:52-60, docs/specs/cards.md:75-87, docs/specs/circles.md:79-89).",
+      "resolution": "Contact re-checks card existence and shared membership at press time and shows 'This card is no longer available.' otherwise; new searches show current state.",
+      "source": "docs/specs/find-and-contact.md Contact; AC10; docs/specs/cards.md; docs/specs/circles.md"
+    },
+    {
+      "finding": "The browse flow does not explicitly require its member-card data request and contact action to check current shared membership. Search has a direct-request protection criterion, but browse has none, leaving a path to a former circle member's cards or number after access ends (docs/specs/find-and-contact.md:47-49, docs/specs/find-and-contact.md:88-99, docs/specs/accounts.md:88-96).",
+      "resolution": "Added Enforcement: search, browse and contact check shared membership per request; browse covered by AC6.",
+      "source": "docs/specs/find-and-contact.md Enforcement; AC6; docs/specs/accounts.md Enforcement"
+    },
+    {
+      "finding": "The search event's people-found value is undefined for the owner\u2019s per-circle counts when one holder shares several circles with the searcher. It also does not say how a search by a member in no circles is counted. The accepted decision requires counts per circle (docs/specs/find-and-contact.md:43-45, docs/decisions/0008-first-party-usage-counters.md:16-19).",
+      "resolution": "People found counts distinct people once regardless of circles or cards; a searcher with no circles is recorded with no circle.",
+      "source": "docs/specs/find-and-contact.md Search; AC8; docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "finding": "The spec does not define whether a WhatsApp tap is recorded before navigation, or what the member sees if event recording fails. That leaves an implementation choice between losing a counted tap and blocking the core contact flow (docs/specs/find-and-contact.md:52-61, docs/decisions/0008-first-party-usage-counters.md:21-24).",
+      "resolution": "Recording never delays or blocks opening WhatsApp; a failed record leaves the tap uncounted (taps are a proxy per decision 0008).",
+      "source": "docs/specs/find-and-contact.md Contact; AC11; docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "finding": "A member's WhatsApp number is self-entered and unverified. The spec does not define the contact experience when the number has no WhatsApp account or WhatsApp cannot open, although the acceptance criterion promises an opened chat (docs/specs/find-and-contact.md:52-58, docs/specs/find-and-contact.md:91-93, docs/decisions/0007-google-signin-whatsapp-number.md:15-22).",
+      "resolution": "The button opens WhatsApp's chat link; the app cannot tell whether the number is on WhatsApp, and WhatsApp's own screen explains failures.",
+      "source": "docs/specs/find-and-contact.md Contact, Out of scope; AC9; docs/decisions/0007-google-signin-whatsapp-number.md"
+    },
+    {
+      "finding": "The label \"Exact variant\" describes a full match, while the required matching rule is a case-insensitive substring match. A card named \"Regalia Gold\" would be labelled exact for a query of \"Regalia\" (docs/specs/find-and-contact.md:28-35, docs/specs/find-and-contact.md:81-84).",
+      "resolution": "Renamed the group to 'Matching variant' to fit the contains rule.",
+      "source": "docs/specs/find-and-contact.md Search; AC3"
+    },
+    {
+      "finding": "Acceptance criterion 1 says a search returns exactly every holder with the chosen bank and type, but criterion 3 excludes holders whose stated variant differs when a variant is entered. Criterion 1 needs the variant condition to avoid opposing expected results (docs/specs/find-and-contact.md:76-84).",
+      "resolution": "AC1 now states both the no-variant and variant conditions.",
+      "source": "docs/specs/find-and-contact.md AC1"
+    },
+    {
+      "finding": "The contact event identifies its actor as \"the searcher\", but the member-list browse flow offers the same contact button without any search. The required event actor is therefore undefined for a supported route to contact (docs/specs/find-and-contact.md:47-49, docs/specs/find-and-contact.md:59-60, docs/specs/find-and-contact.md:94-99).",
+      "resolution": "The tap event's actor is the member who pressed, from search or browse.",
+      "source": "docs/specs/find-and-contact.md Contact; AC11; docs/decisions/0008-first-party-usage-counters.md"
+    }
+  ],
+  "amendments": [
+    {
+      "delta_index": 0,
+      "findings": [
+        "A whitespace-only variant query has no defined behavior: it may count as a variant search and create two groups, or become an empty query and match every card. Specify whether the query is trimmed before deciding that a variant was entered (docs/specs/find-and-contact.md:24, docs/specs/find-and-contact.md:28-35)."
+      ],
+      "change": "Variant entry trimmed; empty means no variant.",
+      "reason": "Whitespace-only query was undefined.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 1,
+      "findings": [
+        "Acceptance criterion 1 says a search returns exactly every holder with the chosen bank and type, but criterion 3 excludes holders whose stated variant differs when a variant is entered. Criterion 1 needs the variant condition to avoid opposing expected results (docs/specs/find-and-contact.md:76-84)."
+      ],
+      "change": "'matching card' became 'qualifying card'.",
+      "reason": "Align wording with the variant rules.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 2,
+      "findings": [
+        "Results have no stated ordering when the member leaves variant blank; alphabetical order is specified only within the two groups used for a variant search (docs/specs/find-and-contact.md:31-38).",
+        "The spec does not say how to handle a holder with both a matching stated variant and a card with no variant. That holder qualifies for both groups, while each person must appear once; the group assignment and which cards appear on that person's result are undefined (docs/specs/find-and-contact.md:31-38, docs/specs/find-and-contact.md:85-87).",
+        "The label \"Exact variant\" describes a full match, while the required matching rule is a case-insensitive substring match. A card named \"Regalia Gold\" would be labelled exact for a query of \"Regalia\" (docs/specs/find-and-contact.md:28-35, docs/specs/find-and-contact.md:81-84)."
+      ],
+      "change": "Split qualification rules for no-variant and variant searches; single alphabetical list without variant; groups renamed Matching variant and Variant not stated with person-level assignment; one entry per person with all qualifying cards; new searches show current state.",
+      "reason": "Ordering, dual-group holders and label accuracy.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 3,
+      "findings": [
+        "The search event's people-found value is undefined for the owner\u2019s per-circle counts when one holder shares several circles with the searcher. It also does not say how a search by a member in no circles is counted. The accepted decision requires counts per circle (docs/specs/find-and-contact.md:43-45, docs/decisions/0008-first-party-usage-counters.md:16-19)."
+      ],
+      "change": "Search event: none if no circles; distinct people counted once.",
+      "reason": "People-found definition was ambiguous.",
+      "source": "docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "delta_index": 4,
+      "findings": [
+        "A search is a snapshot, but the spec does not say what happens to an already displayed result or its contact button when the card is edited or removed, the holder leaves a shared circle, or the searcher is removed. Adjacent contracts require those changes to end visibility immediately, including through direct requests (docs/specs/find-and-contact.md:39-40, docs/specs/find-and-contact.md:52-60, docs/specs/cards.md:75-87, docs/specs/circles.md:79-89).",
+        "The contact event identifies its actor as \"the searcher\", but the member-list browse flow offers the same contact button without any search. The required event actor is therefore undefined for a supported route to contact (docs/specs/find-and-contact.md:47-49, docs/specs/find-and-contact.md:59-60, docs/specs/find-and-contact.md:94-99)."
+      ],
+      "change": "Contact button on search and browse lists; press-time check with 'no longer available' message; opens WhatsApp's chat link.",
+      "reason": "Stale results and browse contact were unhandled.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 5,
+      "findings": [
+        "The spec does not define whether a WhatsApp tap is recorded before navigation, or what the member sees if event recording fails. That leaves an implementation choice between losing a counted tap and blocking the core contact flow (docs/specs/find-and-contact.md:52-61, docs/decisions/0008-first-party-usage-counters.md:21-24).",
+        "A member's WhatsApp number is self-entered and unverified. The spec does not define the contact experience when the number has no WhatsApp account or WhatsApp cannot open, although the acceptance criterion promises an opened chat (docs/specs/find-and-contact.md:52-58, docs/specs/find-and-contact.md:91-93, docs/decisions/0007-google-signin-whatsapp-number.md:15-22).",
+        "The contact event identifies its actor as \"the searcher\", but the member-list browse flow offers the same contact button without any search. The required event actor is therefore undefined for a supported route to contact (docs/specs/find-and-contact.md:47-49, docs/specs/find-and-contact.md:59-60, docs/specs/find-and-contact.md:94-99)."
+      ],
+      "change": "WhatsApp availability handled by WhatsApp; tap event actor is the member who pressed, from either route; recording never blocks opening.",
+      "reason": "Event actor, recording failure and non-WhatsApp numbers.",
+      "source": "docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "delta_index": 6,
+      "findings": [
+        "The browse flow does not explicitly require its member-card data request and contact action to check current shared membership. Search has a direct-request protection criterion, but browse has none, leaving a path to a former circle member's cards or number after access ends (docs/specs/find-and-contact.md:47-49, docs/specs/find-and-contact.md:88-99, docs/specs/accounts.md:88-96)."
+      ],
+      "change": "Added Enforcement section for per-request membership checks.",
+      "reason": "Browse lacked a data-boundary rule.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 7,
+      "findings": [
+        "A member's WhatsApp number is self-entered and unverified. The spec does not define the contact experience when the number has no WhatsApp account or WhatsApp cannot open, although the acceptance criterion promises an opened chat (docs/specs/find-and-contact.md:52-58, docs/specs/find-and-contact.md:91-93, docs/decisions/0007-google-signin-whatsapp-number.md:15-22)."
+      ],
+      "change": "Out of scope: checking whether a number is registered on WhatsApp.",
+      "reason": "Make the limitation explicit.",
+      "source": "docs/decisions/0007-google-signin-whatsapp-number.md"
+    },
+    {
+      "delta_index": 8,
+      "findings": [
+        "Acceptance criterion 1 says a search returns exactly every holder with the chosen bank and type, but criterion 3 excludes holders whose stated variant differs when a variant is entered. Criterion 1 needs the variant condition to avoid opposing expected results (docs/specs/find-and-contact.md:76-84)."
+      ],
+      "change": "AC1 covers both no-variant and variant conditions.",
+      "reason": "Criteria 1 and 3 conflicted.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 9,
+      "findings": [
+        "The label \"Exact variant\" describes a full match, while the required matching rule is a case-insensitive substring match. A card named \"Regalia Gold\" would be labelled exact for a query of \"Regalia\" (docs/specs/find-and-contact.md:28-35, docs/specs/find-and-contact.md:81-84).",
+        "A whitespace-only variant query has no defined behavior: it may count as a variant search and create two groups, or become an empty query and match every card. Specify whether the query is trimmed before deciding that a variant was entered (docs/specs/find-and-contact.md:24, docs/specs/find-and-contact.md:28-35).",
+        "Results have no stated ordering when the member leaves variant blank; alphabetical order is specified only within the two groups used for a variant search (docs/specs/find-and-contact.md:31-38).",
+        "The spec does not say how to handle a holder with both a matching stated variant and a card with no variant. That holder qualifies for both groups, while each person must appear once; the group assignment and which cards appear on that person's result are undefined (docs/specs/find-and-contact.md:31-38, docs/specs/find-and-contact.md:85-87).",
+        "The browse flow does not explicitly require its member-card data request and contact action to check current shared membership. Search has a direct-request protection criterion, but browse has none, leaving a path to a former circle member's cards or number after access ends (docs/specs/find-and-contact.md:47-49, docs/specs/find-and-contact.md:88-99, docs/specs/accounts.md:88-96)."
+      ],
+      "change": "AC3 uses Matching variant with person-level grouping; added AC4 (spaces-only variant); AC5 ordering for list or groups; AC6 extends to browsed lists; renumbered.",
+      "reason": "Criteria match amended behaviour.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 10,
+      "findings": [
+        "A search is a snapshot, but the spec does not say what happens to an already displayed result or its contact button when the card is edited or removed, the holder leaves a shared circle, or the searcher is removed. Adjacent contracts require those changes to end visibility immediately, including through direct requests (docs/specs/find-and-contact.md:39-40, docs/specs/find-and-contact.md:52-60, docs/specs/cards.md:75-87, docs/specs/circles.md:79-89).",
+        "The search event's people-found value is undefined for the owner\u2019s per-circle counts when one holder shares several circles with the searcher. It also does not say how a search by a member in no circles is counted. The accepted decision requires counts per circle (docs/specs/find-and-contact.md:43-45, docs/decisions/0008-first-party-usage-counters.md:16-19).",
+        "The spec does not define whether a WhatsApp tap is recorded before navigation, or what the member sees if event recording fails. That leaves an implementation choice between losing a counted tap and blocking the core contact flow (docs/specs/find-and-contact.md:52-61, docs/decisions/0008-first-party-usage-counters.md:21-24).",
+        "The contact event identifies its actor as \"the searcher\", but the member-list browse flow offers the same contact button without any search. The required event actor is therefore undefined for a supported route to contact (docs/specs/find-and-contact.md:47-49, docs/specs/find-and-contact.md:59-60, docs/specs/find-and-contact.md:94-99)."
+      ],
+      "change": "AC8 people-found and no-circle case; added AC9-AC11 for opening, stale press and tap events from either route; renumbered browse and reminder criteria.",
+      "reason": "Criteria match amended behaviour.",
+      "source": "docs/specs/find-and-contact.md"
+    }
+  ],
+  "artifact_delta": [
+    {
+      "cold_start": 23,
+      "cold_end": 24,
+      "cold": "  - variant, free text (optional).\n",
+      "final_start": 23,
+      "final_end": 25,
+      "final": "  - variant, free text (optional). The entry is trimmed first; an entry that\n    is empty after trimming counts as no variant.\n"
+    },
+    {
+      "cold_start": 25,
+      "cold_end": 26,
+      "cold": "  searcher and hold a matching card. The searcher never appears in their own\n",
+      "final_start": 26,
+      "final_end": 27,
+      "final": "  searcher and hold a qualifying card. The searcher never appears in their own\n"
+    },
+    {
+      "cold_start": 27,
+      "cold_end": 40,
+      "cold": "- A card matches when its bank is the chosen bank, its type fits the chosen\n  type, and, if a variant was entered, its variant contains the entered text,\n  ignoring case and surrounding spaces.\n- When a variant was entered, results come in two labelled groups:\n  1. \"Exact variant\": cards whose variant matches;\n  2. \"Variant not stated\": cards of that bank and type with no variant\n     recorded, because the holder may still have the right card.\n  Cards with a different, stated variant are not shown.\n- Each result is one person, showing their display name, their matching cards\n  (bank, type, variant) and the names of the circles the searcher shares with\n  them. Within each group, people are listed alphabetically by display name.\n- Results reflect cards and memberships as they are at the moment of the\n  search.\n",
+      "final_start": 28,
+      "final_end": 45,
+      "final": "- Without a variant, a card qualifies when its bank is the chosen bank and its\n  type fits the chosen type. Results are one list, alphabetical by display\n  name.\n- With a variant, a card of the chosen bank and type qualifies when either:\n  - its variant contains the entered text, ignoring case (a \"matching\n    variant\"); or\n  - it has no variant recorded, because the holder may still have the right\n    card.\n  Cards with a different, stated variant do not qualify. Results come in two\n  labelled groups, each alphabetical by display name:\n  1. \"Matching variant\": people with at least one matching-variant card;\n  2. \"Variant not stated\": people whose only qualifying cards have no variant.\n- Each result is one person, shown once, with their display name, all their\n  qualifying cards (bank, type, variant) and the names of the circles the\n  searcher shares with them.\n- Results reflect cards and memberships at the moment of the search. A new\n  search always shows the current state.\n"
+    },
+    {
+      "cold_start": 43,
+      "cold_end": 45,
+      "cold": "  circles they belong to at that moment and the number of people found\n  (decision 0008), so the owner can see how often searches come up empty.\n",
+      "final_start": 48,
+      "final_end": 52,
+      "final": "  circles they belong to at that moment (none if they belong to none) and the\n  number of distinct people found (decision 0008), so the owner can see how\n  often searches come up empty. A person counts once however many circles or\n  cards they share with the searcher.\n"
+    },
+    {
+      "cold_start": 51,
+      "cold_end": 54,
+      "cold": "- Next to each matching card is a \"Message on WhatsApp\" button. Pressing it\n  opens a WhatsApp chat with the card holder's WhatsApp number, with this\n  message prefilled and editable before sending:\n",
+      "final_start": 58,
+      "final_end": 65,
+      "final": "- Next to each qualifying card, and each card in a browsed member's list, is a\n  \"Message on WhatsApp\" button.\n- Pressing it first checks, at that moment, that the card still exists and that\n  the pressing member still shares a circle with its holder. If not, the app\n  shows \"This card is no longer available.\" and nothing is opened.\n- Otherwise it opens WhatsApp's chat link for the holder's current WhatsApp\n  number, with this message prefilled and editable before sending:\n"
+    },
+    {
+      "cold_start": 57,
+      "cold_end": 61,
+      "cold": "  message in WhatsApp.\n- Each press records one \"WhatsApp tap\" usage event carrying the searcher, the\n  card holder and the circles they share at that moment (decision 0008). The\n  app cannot see whether the message was sent.\n",
+      "final_start": 68,
+      "final_end": 76,
+      "final": "  message in WhatsApp. The app cannot tell whether the number is on WhatsApp;\n  if it is not, or WhatsApp cannot open, WhatsApp's own screen explains it.\n- Each successful press records one \"WhatsApp tap\" usage event carrying the\n  member who pressed, the card holder and the circles they share at that\n  moment (decision 0008), whether the press came from a search or a browsed\n  member's list. Recording never delays or blocks opening WhatsApp; if it\n  fails, the tap goes uncounted. The app cannot see whether the message was\n  sent.\n"
+    },
+    {
+      "cold_start": 64,
+      "cold_end": 64,
+      "cold": "",
+      "final_start": 79,
+      "final_end": 85,
+      "final": "\n**Enforcement**\n- Search results, a browsed member's cards and the contact action each check\n  shared membership at the time of the request. Data about a person the\n  requester no longer shares a circle with is never returned, including\n  through direct data requests.\n"
+    },
+    {
+      "cold_start": 72,
+      "cold_end": 72,
+      "cold": "",
+      "final_start": 93,
+      "final_end": 94,
+      "final": "- Checking whether a number is registered on WhatsApp.\n"
+    },
+    {
+      "cold_start": 75,
+      "cold_end": 78,
+      "cold": "1. A search returns exactly the other members who share a circle with the\n   searcher and hold a card of the chosen bank and type; the searcher is never\n   included.\n",
+      "final_start": 97,
+      "final_end": 101,
+      "final": "1. Without a variant, a search returns exactly the other members who share a\n   circle with the searcher and hold a card of the chosen bank and type; with a\n   variant, it returns exactly those whose card of that bank and type has a\n   matching variant or no variant. The searcher is never included.\n"
+    },
+    {
+      "cold_start": 80,
+      "cold_end": 93,
+      "cold": "3. With a variant entered, cards whose variant contains the text (ignoring case\n   and surrounding spaces) appear under \"Exact variant\", cards with no variant\n   appear under \"Variant not stated\", and cards with a different variant do\n   not appear.\n4. Each result shows the person once, with their display name, all their\n   matching cards and the names of the circles shared with the searcher,\n   sorted alphabetically within each group.\n5. Members who share no circle with the searcher never appear in results,\n   including through direct data requests.\n6. A search with no matches shows only the no-one-yet message.\n7. Pressing \"Message on WhatsApp\" opens a WhatsApp chat with the holder's\n   current number and the prefilled card-only message, which the member can\n   edit before sending.\n",
+      "final_start": 103,
+      "final_end": 114,
+      "final": "3. With a variant entered, people with a card whose variant contains the text\n   (ignoring case) appear under \"Matching variant\"; people whose only\n   qualifying cards have no variant appear under \"Variant not stated\"; cards\n   with a different stated variant never appear.\n4. A variant entry of only spaces behaves exactly like no variant.\n5. Each result shows the person once, with their display name, all their\n   qualifying cards and the names of the circles shared with the searcher,\n   sorted alphabetically within the single list or within each group.\n6. Members who share no circle with the searcher never appear in results or in\n   browsed member lists, including through direct data requests.\n7. A search with no matches shows only the no-one-yet message.\n"
+    },
+    {
+      "cold_start": 94,
+      "cold_end": 100,
+      "cold": "   circles and the number of people found, and each contact press records one\n   \"WhatsApp tap\" usage event with the searcher, the holder and their shared\n   circles.\n9. From a circle's member list, a member can see another member's cards and\n   contact them the same way.\n10. The never-share-card-details reminder is shown next to the contact button.\n",
+      "final_start": 115,
+      "final_end": 129,
+      "final": "   circles (or none) and the number of distinct people found.\n9. Pressing \"Message on WhatsApp\" for a card still visible opens WhatsApp's chat\n   link for the holder's current number with the prefilled card-only message,\n   which the member can edit before sending.\n10. Pressing \"Message on WhatsApp\" after the card was removed, or after the two\n    members stopped sharing any circle, shows \"This card is no longer\n    available.\" and opens nothing.\n11. Each successful contact press, from search or from a browsed member's list,\n    records one \"WhatsApp tap\" usage event with the member who pressed, the\n    holder and their shared circles; a failure to record does not stop\n    WhatsApp from opening.\n12. From a circle's member list, a member can see another member's cards and\n    contact them the same way.\n13. The never-share-card-details reminder is shown next to the contact button.\n"
+    }
+  ],
+  "input_sha256": "e0be76da58a19f058ae44e1f31a4ba3cba2b2340d563a53004baf6aa14feb671",
+  "recorded_at": "2026-09-26T18:42:37+00:00",
+  "commit": "49b39d411fde9e554bd58678e0819a81f49b6321",
+  "launch_id": "launch-335146b79d1e492fafe504dfaf7be65b",
+  "cold_input_sha256": "d348f94a97ab7d864aae54edef9ec921ccb656603536763dea715324f7247563",
+  "final_artifact_sha256": "e0be76da58a19f058ae44e1f31a4ba3cba2b2340d563a53004baf6aa14feb671"
+}
