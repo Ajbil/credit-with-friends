@@ -1,0 +1,348 @@
+{
+  "generated_by": "griller",
+  "gate": "spec",
+  "verdict": "pass",
+  "gaps": [
+    "The fixed list has no specified initial entries or authoritative source, so implementers cannot determine which banks must be selectable or prove that an unlisted bank is rejected (docs/specs/cards.md:23-24; docs/specs/cards.md:76-78).",
+    "Owner maintenance of the bank list has no defined procedure or effect on existing cards. Removing or renaming an entry could strand saved cards or change search results without a stated rule (docs/specs/cards.md:23-24; docs/specs/cards.md:52-54).",
+    "A member with a missing bank is told to use the contact address in the privacy notice, but the Accounts spec only requires showing that notice during onboarding. No route from card entry back to the address is specified (docs/specs/cards.md:28-29; docs/specs/accounts.md:57-78).",
+    "A card-listed event is linked to the member, while the accepted decision requires counts per circle. Attribution is unresolved when a member belongs to multiple circles, lists a card before joining one, or later leaves one (docs/specs/cards.md:46-48; docs/decisions/0008-first-party-usage-counters.md:16-19).",
+    "The draft requires removal to clear search results, but does not require a newly added card to become searchable or an edited card to leave old searches and enter matching new ones. That leaves the Brief\u2019s find-a-holder flow unproved (docs/specs/cards.md:76-88; docs/product/BRIEF.md:28-30).",
+    "The invitation to add cards immediately after onboarding has no stated priority relative to returning a member to the invite link they opened. The two specs leave that handoff for implementers to guess (docs/specs/cards.md:63-67; docs/specs/accounts.md:41-45)."
+  ],
+  "contradictions": [
+    "The draft allows a bank or card issuer, expanding the accepted card model and Brief, which specify a fixed list of Indian banks (docs/specs/cards.md:21-24; docs/decisions/0005-card-entry-model.md:15-21; docs/product/BRIEF.md:37-39).",
+    "The draft says CVVs and OTPs are never recorded, but its stated free-text validation rejects only variants containing four or more digits. A value such as a three-digit CVV can be saved under those rules (docs/specs/cards.md:15-17; docs/specs/cards.md:33-40; docs/decisions/0002-friend-places-order.md:16-19).",
+    "The draft lets a newly onboarded member add and view their own cards before joining a circle, while Accounts says cards are returned only to members who share a circle with the holder and states no owner exception. A member with no circle cannot satisfy both rules (docs/specs/cards.md:50-51; docs/specs/cards.md:63-67; docs/specs/accounts.md:88-94)."
+  ],
+  "resolutions": [
+    "The spec now names the initial bank list explicitly, alphabetised, so selectability and rejection are testable.",
+    "List changes are owner releases only; banks can be added or have names corrected but are never removed, so saved cards and searches keep working.",
+    "The add-card screen shows the missing-bank hint with the owner's contact address directly.",
+    "A card-listed event carries the member and their circles at that moment (or none); later membership changes do not rewrite past events.",
+    "Added criteria requiring new cards to appear in matching searches and edited cards to move between searches.",
+    "Invite return comes first, then the add-cards invitation.",
+    "Removed 'card issuer'; the list is banks that issue cards in India, matching decision 0005 (American Express operates as a bank in India).",
+    "Why now says the app never asks for card details and blocks number-like entries; the variant rule rejects three or more consecutive digits (ignoring spaces, dashes, slashes), covering card numbers, CVVs, expiry dates and OTPs.",
+    "The card holder always sees their own cards; the Accounts enforcement rule governs what other members see."
+  ],
+  "finding_dispositions": [
+    {
+      "finding": "The fixed list has no specified initial entries or authoritative source, so implementers cannot determine which banks must be selectable or prove that an unlisted bank is rejected (docs/specs/cards.md:23-24; docs/specs/cards.md:76-78).",
+      "resolution": "The spec now names the initial bank list explicitly, alphabetised, so selectability and rejection are testable.",
+      "source": "docs/specs/cards.md Bank list; AC1, AC2; docs/decisions/0005-card-entry-model.md"
+    },
+    {
+      "finding": "Owner maintenance of the bank list has no defined procedure or effect on existing cards. Removing or renaming an entry could strand saved cards or change search results without a stated rule (docs/specs/cards.md:23-24; docs/specs/cards.md:52-54).",
+      "resolution": "List changes are owner releases only; banks can be added or have names corrected but are never removed, so saved cards and searches keep working.",
+      "source": "docs/specs/cards.md Bank list, Out of scope; AC14"
+    },
+    {
+      "finding": "A member with a missing bank is told to use the contact address in the privacy notice, but the Accounts spec only requires showing that notice during onboarding. No route from card entry back to the address is specified (docs/specs/cards.md:28-29; docs/specs/accounts.md:57-78).",
+      "resolution": "The add-card screen shows the missing-bank hint with the owner's contact address directly.",
+      "source": "docs/specs/cards.md Bank list; AC13; docs/specs/accounts.md Onboarding"
+    },
+    {
+      "finding": "A card-listed event is linked to the member, while the accepted decision requires counts per circle. Attribution is unresolved when a member belongs to multiple circles, lists a card before joining one, or later leaves one (docs/specs/cards.md:46-48; docs/decisions/0008-first-party-usage-counters.md:16-19).",
+      "resolution": "A card-listed event carries the member and their circles at that moment (or none); later membership changes do not rewrite past events.",
+      "source": "docs/specs/cards.md Add a card; AC12; docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "finding": "The draft requires removal to clear search results, but does not require a newly added card to become searchable or an edited card to leave old searches and enter matching new ones. That leaves the Brief\u2019s find-a-holder flow unproved (docs/specs/cards.md:76-88; docs/product/BRIEF.md:28-30).",
+      "resolution": "Added criteria requiring new cards to appear in matching searches and edited cards to move between searches.",
+      "source": "docs/specs/cards.md Visibility; AC6, AC7"
+    },
+    {
+      "finding": "The invitation to add cards immediately after onboarding has no stated priority relative to returning a member to the invite link they opened. The two specs leave that handoff for implementers to guess (docs/specs/cards.md:63-67; docs/specs/accounts.md:41-45).",
+      "resolution": "Invite return comes first, then the add-cards invitation.",
+      "source": "docs/specs/cards.md Zero cards; AC11; docs/specs/accounts.md Sign in"
+    },
+    {
+      "finding": "The draft allows a bank or card issuer, expanding the accepted card model and Brief, which specify a fixed list of Indian banks (docs/specs/cards.md:21-24; docs/decisions/0005-card-entry-model.md:15-21; docs/product/BRIEF.md:37-39).",
+      "resolution": "Removed 'card issuer'; the list is banks that issue cards in India, matching decision 0005 (American Express operates as a bank in India).",
+      "source": "docs/decisions/0005-card-entry-model.md"
+    },
+    {
+      "finding": "The draft says CVVs and OTPs are never recorded, but its stated free-text validation rejects only variants containing four or more digits. A value such as a three-digit CVV can be saved under those rules (docs/specs/cards.md:15-17; docs/specs/cards.md:33-40; docs/decisions/0002-friend-places-order.md:16-19).",
+      "resolution": "Why now says the app never asks for card details and blocks number-like entries; the variant rule rejects three or more consecutive digits (ignoring spaces, dashes, slashes), covering card numbers, CVVs, expiry dates and OTPs.",
+      "source": "docs/decisions/0002-friend-places-order.md"
+    },
+    {
+      "finding": "The draft lets a newly onboarded member add and view their own cards before joining a circle, while Accounts says cards are returned only to members who share a circle with the holder and states no owner exception. A member with no circle cannot satisfy both rules (docs/specs/cards.md:50-51; docs/specs/cards.md:63-67; docs/specs/accounts.md:88-94).",
+      "resolution": "The card holder always sees their own cards; the Accounts enforcement rule governs what other members see.",
+      "source": "docs/specs/cards.md View, Visibility; AC1; docs/specs/accounts.md Enforcement"
+    }
+  ],
+  "amendments": [
+    {
+      "delta_index": 0,
+      "findings": [
+        "The draft says CVVs and OTPs are never recorded, but its stated free-text validation rejects only variants containing four or more digits. A value such as a three-digit CVV can be saved under those rules (docs/specs/cards.md:15-17; docs/specs/cards.md:33-40; docs/decisions/0002-friend-places-order.md:16-19)."
+      ],
+      "change": "Why: 'never recorded' replaced by never asked for, blocked when number-like, and members told never to enter them.",
+      "reason": "Free text cannot guarantee non-recording; state the enforceable rule.",
+      "source": "docs/decisions/0002-friend-places-order.md"
+    },
+    {
+      "delta_index": 1,
+      "findings": [
+        "The draft allows a bank or card issuer, expanding the accepted card model and Brief, which specify a fixed list of Indian banks (docs/specs/cards.md:21-24; docs/decisions/0005-card-entry-model.md:15-21; docs/product/BRIEF.md:37-39)."
+      ],
+      "change": "Card definition: bank chosen from the fixed list of banks that issue cards in India; 'issuer' removed.",
+      "reason": "Align with decision 0005.",
+      "source": "docs/decisions/0005-card-entry-model.md"
+    },
+    {
+      "delta_index": 2,
+      "findings": [
+        "A member with a missing bank is told to use the contact address in the privacy notice, but the Accounts spec only requires showing that notice during onboarding. No route from card entry back to the address is specified (docs/specs/cards.md:28-29; docs/specs/accounts.md:57-78)."
+      ],
+      "change": "Removed the privacy-notice contact line from the card definition (moved to Bank list with the address shown on screen).",
+      "reason": "The notice was not reachable from card entry.",
+      "source": "docs/specs/cards.md"
+    },
+    {
+      "delta_index": 3,
+      "findings": [
+        "The fixed list has no specified initial entries or authoritative source, so implementers cannot determine which banks must be selectable or prove that an unlisted bank is rejected (docs/specs/cards.md:23-24; docs/specs/cards.md:76-78).",
+        "Owner maintenance of the bank list has no defined procedure or effect on existing cards. Removing or renaming an entry could strand saved cards or change search results without a stated rule (docs/specs/cards.md:23-24; docs/specs/cards.md:52-54).",
+        "A member with a missing bank is told to use the contact address in the privacy notice, but the Accounts spec only requires showing that notice during onboarding. No route from card entry back to the address is specified (docs/specs/cards.md:28-29; docs/specs/accounts.md:57-78)."
+      ],
+      "change": "Added a Bank list section: initial list, owner-release-only changes, never removing banks, missing-bank hint with contact address.",
+      "reason": "Initial list, maintenance and contact route were undefined.",
+      "source": "docs/specs/cards.md"
+    },
+    {
+      "delta_index": 4,
+      "findings": [
+        "The draft says CVVs and OTPs are never recorded, but its stated free-text validation rejects only variants containing four or more digits. A value such as a three-digit CVV can be saved under those rules (docs/specs/cards.md:15-17; docs/specs/cards.md:33-40; docs/decisions/0002-friend-places-order.md:16-19)."
+      ],
+      "change": "Variant rule tightened to three or more consecutive digits ignoring spaces, dashes and slashes; message covers card numbers, CVVs, expiry dates, OTPs.",
+      "reason": "Four-digit rule allowed CVVs and expiry fragments.",
+      "source": "docs/decisions/0002-friend-places-order.md"
+    },
+    {
+      "delta_index": 5,
+      "findings": [
+        "A card-listed event is linked to the member, while the accepted decision requires counts per circle. Attribution is unresolved when a member belongs to multiple circles, lists a card before joining one, or later leaves one (docs/specs/cards.md:46-48; docs/decisions/0008-first-party-usage-counters.md:16-19)."
+      ],
+      "change": "Card-listed event carries member plus circles at that moment, or none; later membership changes do not alter past events.",
+      "reason": "Per-circle attribution was unresolved.",
+      "source": "docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "delta_index": 6,
+      "findings": [
+        "The draft lets a newly onboarded member add and view their own cards before joining a circle, while Accounts says cards are returned only to members who share a circle with the holder and states no owner exception. A member with no circle cannot satisfy both rules (docs/specs/cards.md:50-51; docs/specs/cards.md:63-67; docs/specs/accounts.md:88-94)."
+      ],
+      "change": "Own card list is always visible, with or without circles.",
+      "reason": "Resolve conflict with Accounts enforcement.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 7,
+      "findings": [
+        "The draft lets a newly onboarded member add and view their own cards before joining a circle, while Accounts says cards are returned only to members who share a circle with the holder and states no owner exception. A member with no circle cannot satisfy both rules (docs/specs/cards.md:50-51; docs/specs/cards.md:63-67; docs/specs/accounts.md:88-94).",
+        "The draft requires removal to clear search results, but does not require a newly added card to become searchable or an edited card to leave old searches and enter matching new ones. That leaves the Brief\u2019s find-a-holder flow unproved (docs/specs/cards.md:76-88; docs/product/BRIEF.md:28-30)."
+      ],
+      "change": "Visibility split: other members only via shared circle; holder always sees own cards; changes reflected at once including search results.",
+      "reason": "Own-card view and search reflection were unclear.",
+      "source": "docs/specs/cards.md"
+    },
+    {
+      "delta_index": 8,
+      "findings": [
+        "The invitation to add cards immediately after onboarding has no stated priority relative to returning a member to the invite link they opened. The two specs leave that handoff for implementers to guess (docs/specs/cards.md:63-67; docs/specs/accounts.md:41-45)."
+      ],
+      "change": "Post-onboarding add-cards invitation comes after returning to an invite link.",
+      "reason": "Handoff order was unspecified.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 9,
+      "findings": [
+        "Owner maintenance of the bank list has no defined procedure or effect on existing cards. Removing or renaming an entry could strand saved cards or change search results without a stated rule (docs/specs/cards.md:23-24; docs/specs/cards.md:52-54)."
+      ],
+      "change": "Out of scope: removing banks from the list.",
+      "reason": "Bank list maintenance rule.",
+      "source": "docs/specs/cards.md"
+    },
+    {
+      "delta_index": 10,
+      "findings": [
+        "The fixed list has no specified initial entries or authoritative source, so implementers cannot determine which banks must be selectable or prove that an unlisted bank is rejected (docs/specs/cards.md:23-24; docs/specs/cards.md:76-78).",
+        "The draft lets a newly onboarded member add and view their own cards before joining a circle, while Accounts says cards are returned only to members who share a circle with the holder and states no owner exception. A member with no circle cannot satisfy both rules (docs/specs/cards.md:50-51; docs/specs/cards.md:63-67; docs/specs/accounts.md:88-94)."
+      ],
+      "change": "AC1 requires every initial bank selectable and own list visible without circles; AC2 adds direct data requests.",
+      "reason": "Testability of list and own-card view.",
+      "source": "docs/specs/cards.md"
+    },
+    {
+      "delta_index": 11,
+      "findings": [
+        "The draft says CVVs and OTPs are never recorded, but its stated free-text validation rejects only variants containing four or more digits. A value such as a three-digit CVV can be saved under those rules (docs/specs/cards.md:15-17; docs/specs/cards.md:33-40; docs/decisions/0002-friend-places-order.md:16-19)."
+      ],
+      "change": "AC3 updated to the three-consecutive-digit rule.",
+      "reason": "Match the tightened variant rule.",
+      "source": "docs/decisions/0002-friend-places-order.md"
+    },
+    {
+      "delta_index": 12,
+      "findings": [
+        "The draft requires removal to clear search results, but does not require a newly added card to become searchable or an edited card to leave old searches and enter matching new ones. That leaves the Brief\u2019s find-a-holder flow unproved (docs/specs/cards.md:76-88; docs/product/BRIEF.md:28-30)."
+      ],
+      "change": "Added AC6 (new card searchable) and extended AC7 (edited card moves between searches); renumbered removal criterion.",
+      "reason": "Search reflection was unproved.",
+      "source": "docs/specs/cards.md"
+    },
+    {
+      "delta_index": 13,
+      "findings": [
+        "The draft requires removal to clear search results, but does not require a newly added card to become searchable or an edited card to leave old searches and enter matching new ones. That leaves the Brief\u2019s find-a-holder flow unproved (docs/specs/cards.md:76-88; docs/product/BRIEF.md:28-30)."
+      ],
+      "change": "Renumbered the ownership criterion from 8 to 9 after inserting AC6.",
+      "reason": "Numbering follows the inserted criterion.",
+      "source": "docs/specs/cards.md"
+    },
+    {
+      "delta_index": 14,
+      "findings": [
+        "Owner maintenance of the bank list has no defined procedure or effect on existing cards. Removing or renaming an entry could strand saved cards or change search results without a stated rule (docs/specs/cards.md:23-24; docs/specs/cards.md:52-54).",
+        "A member with a missing bank is told to use the contact address in the privacy notice, but the Accounts spec only requires showing that notice during onboarding. No route from card entry back to the address is specified (docs/specs/cards.md:28-29; docs/specs/accounts.md:57-78).",
+        "A card-listed event is linked to the member, while the accepted decision requires counts per circle. Attribution is unresolved when a member belongs to multiple circles, lists a card before joining one, or later leaves one (docs/specs/cards.md:46-48; docs/decisions/0008-first-party-usage-counters.md:16-19).",
+        "The invitation to add cards immediately after onboarding has no stated priority relative to returning a member to the invite link they opened. The two specs leave that handoff for implementers to guess (docs/specs/cards.md:63-67; docs/specs/accounts.md:41-45)."
+      ],
+      "change": "Added AC11 (invite first), AC12 (event with circles), AC13 (contact address on add screen), AC14 (bank name correction); renumbered.",
+      "reason": "Criteria for the new behaviours.",
+      "source": "docs/specs/cards.md"
+    }
+  ],
+  "artifact_delta": [
+    {
+      "cold_start": 15,
+      "cold_end": 17,
+      "cold": "needs (bank, credit or debit, and optionally the variant) and nothing that\ncould be misused: never a card number, CVV, expiry or OTP (decision 0002).\n",
+      "final_start": 15,
+      "final_end": 18,
+      "final": "needs (bank, credit or debit, and optionally the variant). The app never asks\nfor a card number, CVV, expiry or OTP, blocks entries that look like one, and\ntells members never to enter them (decision 0002).\n"
+    },
+    {
+      "cold_start": 22,
+      "cold_end": 24,
+      "cold": "  - a bank or card issuer, chosen from a fixed list of Indian banks and\n    issuers maintained by the owner;\n",
+      "final_start": 23,
+      "final_end": 25,
+      "final": "  - a bank, chosen from the fixed list of banks that issue cards in India\n    (see \"Bank list\" below);\n"
+    },
+    {
+      "cold_start": 27,
+      "cold_end": 29,
+      "cold": "- A member whose bank is missing from the list can ask the owner to add it\n  through the contact address in the privacy notice.\n",
+      "final_start": 28,
+      "final_end": 28,
+      "final": ""
+    },
+    {
+      "cold_start": 31,
+      "cold_end": 31,
+      "cold": "",
+      "final_start": 30,
+      "final_end": 51,
+      "final": "\n**Bank list**\n- The list starts with these banks, shown in alphabetical order: Airtel\n  Payments Bank, American Express, AU Small Finance Bank, Axis Bank, Bandhan\n  Bank, Bank of Baroda, Bank of India, Bank of Maharashtra, Canara Bank,\n  Central Bank of India, City Union Bank, CSB Bank, DBS Bank, DCB Bank,\n  Dhanlaxmi Bank, Equitas Small Finance Bank, Federal Bank, Fino Payments\n  Bank, HDFC Bank, HSBC, ICICI Bank, IDBI Bank, IDFC FIRST Bank, India Post\n  Payments Bank, Indian Bank, Indian Overseas Bank, IndusInd Bank, Jammu &\n  Kashmir Bank, Jana Small Finance Bank, Jio Payments Bank, Karnataka Bank,\n  Karur Vysya Bank, Kotak Mahindra Bank, Punjab & Sind Bank, Punjab National\n  Bank, RBL Bank, South Indian Bank, Standard Chartered, State Bank of India\n  (SBI), Suryoday Small Finance Bank, Tamilnad Mercantile Bank, UCO Bank,\n  Ujjivan Small Finance Bank, Union Bank of India, Utkarsh Small Finance Bank,\n  YES Bank.\n- Only the owner changes the list, by releasing a new version of the app;\n  there is no in-app editing. Banks can be added and a bank's display name can\n  be corrected, but a bank is never removed, so saved cards and searches keep\n  working. A corrected name shows everywhere that bank appears.\n- The add-card screen tells a member whose bank is missing to ask the owner to\n  add it, and shows the owner's contact address right there.\n"
+    },
+    {
+      "cold_start": 35,
+      "cold_end": 38,
+      "cold": "- The variant is trimmed and may be at most 40 characters. A variant that\n  contains four or more digits is rejected with a message saying never to\n  enter card numbers.\n",
+      "final_start": 55,
+      "final_end": 59,
+      "final": "- The variant is trimmed and may be at most 40 characters. A variant with three\n  or more digits in a row, ignoring spaces, dashes and slashes between them, is\n  rejected with a message saying never to enter card numbers, CVVs, expiry\n  dates or OTPs.\n"
+    },
+    {
+      "cold_start": 45,
+      "cold_end": 48,
+      "cold": "- Adding a card records a \"card listed\" usage event linked to that member\n  (decision 0008); how it is counted per circle belongs to the Usage metrics\n  capability.\n",
+      "final_start": 66,
+      "final_end": 70,
+      "final": "- Adding a card records one \"card listed\" usage event carrying the member and\n  the circles they belong to at that moment, or no circle if they belong to\n  none (decision 0008). Later joining or leaving a circle does not change past\n  events.\n"
+    },
+    {
+      "cold_start": 50,
+      "cold_end": 51,
+      "cold": "- A member sees a list of their own cards.\n",
+      "final_start": 72,
+      "final_end": 74,
+      "final": "- A member always sees a list of their own cards, whether or not they belong\n  to any circle.\n"
+    },
+    {
+      "cold_start": 58,
+      "cold_end": 61,
+      "cold": "- A member's cards are visible only to members who share at least one circle\n  with them, as defined by the Accounts capability's enforcement rules and\n  decision 0006. Added, edited and removed cards are reflected there at once.\n",
+      "final_start": 81,
+      "final_end": 87,
+      "final": "- Other members see a member's cards only when they share at least one circle\n  with that member, as defined by the Accounts capability's enforcement rules\n  and decision 0006. The card holder always sees their own cards.\n- Added, edited and removed cards are reflected at once wherever other members\n  see them, including search results; how search matches cards belongs to the\n  Find & contact capability.\n"
+    },
+    {
+      "cold_start": 65,
+      "cold_end": 67,
+      "cold": "- Right after onboarding, the member is invited to add their cards and can\n  skip this step.\n",
+      "final_start": 91,
+      "final_end": 94,
+      "final": "- After onboarding, the member is invited to add their cards and can skip\n  this step. A member who arrived through an invite link is returned to that\n  invite first (Accounts capability) and is invited to add cards right after.\n"
+    },
+    {
+      "cold_start": 72,
+      "cold_end": 72,
+      "cold": "",
+      "final_start": 99,
+      "final_end": 100,
+      "final": "- Removing banks from the list.\n"
+    },
+    {
+      "cold_start": 75,
+      "cold_end": 78,
+      "cold": "1. A member can add a card with a bank from the fixed list, a type of credit\n   or debit, and no variant; it then appears in their own card list.\n2. A bank that is not on the fixed list cannot be saved.\n",
+      "final_start": 103,
+      "final_end": 108,
+      "final": "1. Every bank in the initial list can be selected, and a member can add a card\n   with a listed bank, a type of credit or debit, and no variant; it then\n   appears in their own card list, even if they belong to no circle.\n2. A bank that is not on the list cannot be saved, including through direct\n   data requests.\n"
+    },
+    {
+      "cold_start": 79,
+      "cold_end": 81,
+      "cold": "   variant containing four or more digits is rejected with the never-enter-\n   card-numbers message.\n",
+      "final_start": 109,
+      "final_end": 112,
+      "final": "   variant with three or more digits in a row (ignoring spaces, dashes and\n   slashes between them) is rejected with the never-enter-card-details\n   message.\n"
+    },
+    {
+      "cold_start": 84,
+      "cold_end": 87,
+      "cold": "6. Editing a card applies the same rules as adding one, and after saving,\n   members who share a circle see the updated card.\n7. After a card is removed, it no longer appears in the owner's list, in any\n",
+      "final_start": 115,
+      "final_end": 122,
+      "final": "6. Once added, a card appears in matching search results for members who share\n   a circle with its holder.\n7. Editing a card applies the same rules as adding one; after saving, members\n   who share a circle see the updated card, it appears in searches that match\n   its new values and it no longer appears in searches that matched only its\n   old values.\n8. After a card is removed, it no longer appears in its holder's list, in any\n"
+    },
+    {
+      "cold_start": 88,
+      "cold_end": 89,
+      "cold": "8. No member can edit or remove another member's card, including through\n",
+      "final_start": 123,
+      "final_end": 124,
+      "final": "9. No member can edit or remove another member's card, including through\n"
+    },
+    {
+      "cold_start": 90,
+      "cold_end": 94,
+      "cold": "9. A member with no cards can finish onboarding, skip adding cards and still\n   search for card holders.\n10. Adding a card records a \"card listed\" usage event linked to the member.\n11. The add and edit screens show the never-enter-card-numbers reminder.\n",
+      "final_start": 125,
+      "final_end": 135,
+      "final": "10. A member with no cards can finish onboarding, skip adding cards and still\n    search for card holders.\n11. A member who arrived through an invite link sees that invite before being\n    invited to add cards.\n12. Adding a card records one \"card listed\" usage event carrying the member and\n    the circles they belong to at that moment, or no circle.\n13. The add and edit screens show the never-enter-card-details reminder, and\n    the add screen shows the owner's contact address for a missing bank.\n14. Correcting a bank's display name changes it on every existing card of that\n    bank without affecting search matches.\n"
+    }
+  ],
+  "input_sha256": "0ee2566b48bc3e62e7731386167fe60ea284c4d99335c968cca300a2b488a3fe",
+  "recorded_at": "2026-09-26T16:46:35+00:00",
+  "commit": "221f7f34411bfb6b06dacaa8674722a95f339fbf",
+  "launch_id": "launch-dd35aa753ece46fba2d74b425e77017b",
+  "cold_input_sha256": "3ebe88332a39b0b91a214bfd4d44d6a10abdd56858e4f6b172d0efb23ae32159",
+  "final_artifact_sha256": "0ee2566b48bc3e62e7731386167fe60ea284c4d99335c968cca300a2b488a3fe"
+}
