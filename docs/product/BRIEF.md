@@ -24,7 +24,7 @@ one in under a minute, without broadcasting to everyone they know.
 
 ## Key Flows
 
-1. **Join** — User opens a circle invite link, signs in with Google, enters their WhatsApp number, accepts the privacy consent, and becomes a circle member.
+1. **Join** — User opens a circle invite link, signs in with Google, enters their WhatsApp number, accepts the privacy consent, is returned to the invite, and becomes a circle member by pressing Join.
 2. **List cards** — Member adds cards as bank (from a fixed list) + credit/debit + optional variant name; can edit or remove them. Never a card number.
 3. **Create and share a circle** — Member creates a circle, becomes its admin, and shares its invite link on WhatsApp; admin can remove members or reset the link; any member can leave.
 4. **Find a card holder** — Member searches by bank + credit/debit (+ variant if needed) and sees matching card holders across all their circles.
@@ -34,7 +34,7 @@ one in under a minute, without broadcasting to everyone they know.
 
 ## Domain Concepts
 
-- **Member** — a signed-in person with a WhatsApp number. Related to: Card, Circle.
+- **Member** — a person who has completed onboarding (Google sign-in, WhatsApp number, 18+ confirmation, consent); someone merely signed in is not yet a member. Related to: Card, Circle.
 - **Card** — a bank + credit/debit + optional variant held by one member. Related to: Member, Bank.
 - **Bank** — an entry in a fixed list of Indian banks. Related to: Card.
 - **Circle** — a named group joined by invite link; has one admin. Related to: Member, Invite link.
@@ -50,6 +50,8 @@ one in under a minute, without broadcasting to everyone they know.
 - Google sign-in; the WhatsApp number is self-entered and unverified.
 - Usage counters are first-party only; no third-party trackers.
 - Runs on free hosting tiers only.
+- Real members are invited only once every roadmap story has shipped, so every privacy-notice promise, including self-service account deletion, holds from the first sign-up; the owner may test earlier builds alone.
+- The owner's Google account ID and contact address are deployment configuration, set before the first circle is created.
 - Mobile-first: usable on a phone browser opened from a WhatsApp link.
 
 ## Out of Scope

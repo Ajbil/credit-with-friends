@@ -118,7 +118,8 @@ number.
   - the profile, WhatsApp number, email, Google account ID and consent record;
   - every listed card and every circle membership;
   - the link between the member and their usage events; the events remain
-    only as anonymous counts with no member identifier.
+    without any member identifier and are used only to produce counts (Usage
+    metrics capability).
 - Every session on every device ends. A request that still carries an old
   session is refused and cannot recreate any data.
 - Removed data disappears from the live app immediately; copies in the hosting

@@ -64,8 +64,8 @@ members' personal data.
   count distinct active members and distinct card holders contacted. When a
   member deletes their account, their identity is removed from every event
   they appear in; the events stay with their time, circles and search bank and
-  type but no member identifier, and are used only to produce counts. This is
-  how the Accounts rule that events "remain only as anonymous counts" is met.
+  type but no member identifier, and are used only to produce counts, as the
+  Accounts deletion rule states.
   Counts for a very small circle may still let someone guess who acted, which
   is why the view is owner-only and shows counts alone.
 - Distinct active-member and card-holder counts only count identities still on

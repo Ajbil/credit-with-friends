@@ -62,4 +62,6 @@ Each becomes docs/decisions/NNNN-<slug>.md via: ./forge decision new <slug>
 
 ## Prototype notes (phase 0b)
 
-None yet.
+No prototype was built; phase 0b is optional. Sign-off rests on the five
+confirmed capability specs and the derived roadmap. `prototype/README.md` is
+the harness template and holds no artifact.
