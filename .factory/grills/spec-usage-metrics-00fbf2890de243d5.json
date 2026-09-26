@@ -1,0 +1,357 @@
+{
+  "generated_by": "griller",
+  "gate": "spec",
+  "verdict": "pass",
+  "gaps": [
+    "The stated success bar is members bringing others in unprompted, but only admins can copy or share invite links, and an invite event records a tap rather than a sent invitation or who brought in a joiner. The proposed counts cannot establish that success signal (docs/specs/usage-metrics.md:12; docs/decisions/0001-mvp-small-group-india.md:18; docs/specs/circles.md:35).",
+    "The deployment configuration does not say whether it identifies the owner by Google account ID or email, or what happens to owner access after account deletion and signup again. Accounts identifies people by stable Google account ID and permits email changes, so an email-based configuration could assign or lose access incorrectly (docs/specs/usage-metrics.md:23; docs/specs/accounts.md:23; docs/specs/accounts.md:126).",
+    "Events linked to members are retained for the app's lifetime, although the stated need is owner-visible counts. The spec gives no limit or justification for retaining identifiable action history after it has been counted, against the Brief's instruction to store only what is needed (docs/specs/usage-metrics.md:32; docs/specs/usage-metrics.md:45; docs/product/BRIEF.md:46).",
+    "The spec does not define whether 'last 7 days' and 'last 30 days' mean rolling durations or Indian Standard Time calendar dates, or the inclusive and exclusive boundaries. Both interpretations satisfy the wording but produce different counts (docs/specs/usage-metrics.md:48; docs/specs/usage-metrics.md:88).",
+    "New-member counts must survive deletion to remain historical, but onboarding is not one of the five retained events and account deletion removes the account and consent record. The spec does not define what durable, anonymous record supplies past-period new-member counts (docs/specs/usage-metrics.md:29; docs/specs/usage-metrics.md:51; docs/specs/accounts.md:117).",
+    "New-circle counts must include circles later deleted if they are historical period counts, but the spec requires preserving only their past usage events and last names. It does not require preserving their creation times, leaving past-period new-circle counts undefined after deletion (docs/specs/usage-metrics.md:43; docs/specs/usage-metrics.md:52; docs/specs/circles.md:119).",
+    "Per-circle search attribution is easy to misread: a search carries every circle the searcher belongs to, while its found-person count is across all circles. The spec does not state that a circle row's searches and found-nobody counts describe its members' searches and global zero-result searches, rather than matches or missing cards in that particular circle (docs/specs/usage-metrics.md:37; docs/specs/usage-metrics.md:56; docs/specs/find-and-contact.md:26; docs/specs/find-and-contact.md:48).",
+    "The counts-only and no-member-drill-down restrictions are stated for the view, but the access criterion does not explicitly prohibit returning raw member-linked event records through direct data requests, including to the owner. That leaves the data-response boundary unclear despite the stored actor and card-holder fields (docs/specs/usage-metrics.md:32; docs/specs/usage-metrics.md:66; docs/specs/usage-metrics.md:70; docs/specs/usage-metrics.md:102)."
+  ],
+  "contradictions": [
+    "The spec requires every WhatsApp tap event to be recorded, while the confirmed Find and contact spec requires WhatsApp to open even when event recording fails and says that tap goes uncounted. Both acceptance contracts cannot hold for that failure case (docs/specs/usage-metrics.md:86; docs/specs/find-and-contact.md:71).",
+    "The spec promises that, after deletion, no event can be traced back to the member, yet it retains event times and circle attribution and shows period counts for each circle. In a circle with one member or one admin, a join or invite count can identify that person's action even after member identifiers are removed; the absolute anonymity criterion is therefore not achievable as written (docs/specs/usage-metrics.md:40; docs/specs/usage-metrics.md:56; docs/specs/usage-metrics.md:99; docs/specs/circles.md:25)."
+  ],
+  "resolutions": [
+    "Why now states the counts are proxies; spread is measured by joins and circles created by someone other than the owner; who-brought-whom is out of scope.",
+    "Owner is identified by Google account ID in configuration; a recreated owner account has no access until the configuration is updated.",
+    "Member and card-holder links are justified by distinct active-member and distinct-holder counts, and removed on account deletion.",
+    "Periods are defined from 00:00 IST six or 29 days before today up to the moment the view opens; all time has no start.",
+    "New members counts current accounts only; deleted accounts are not counted, so no durable onboarding record is needed.",
+    "Deleted circles keep last name, creation time and deletion, so new-circle counts include them.",
+    "Per-circle search counts are those made by the circle's members; found-nobody is across all the searcher's circles.",
+    "No request returns individual event records or member identifiers to anyone, the owner included.",
+    "A WhatsApp tap whose recording fails goes uncounted, matching Find and contact; AC2 carries the exception.",
+    "Replaced absolute untraceability with removal of member identifiers, acknowledging small-circle inference and relying on owner-only, counts-only access."
+  ],
+  "finding_dispositions": [
+    {
+      "finding": "The stated success bar is members bringing others in unprompted, but only admins can copy or share invite links, and an invite event records a tap rather than a sent invitation or who brought in a joiner. The proposed counts cannot establish that success signal (docs/specs/usage-metrics.md:12; docs/decisions/0001-mvp-small-group-india.md:18; docs/specs/circles.md:35).",
+      "resolution": "Why now states the counts are proxies; spread is measured by joins and circles created by someone other than the owner; who-brought-whom is out of scope.",
+      "source": "docs/specs/usage-metrics.md Why, Usage view, Out of scope; AC4; docs/specs/circles.md Invite link"
+    },
+    {
+      "finding": "The deployment configuration does not say whether it identifies the owner by Google account ID or email, or what happens to owner access after account deletion and signup again. Accounts identifies people by stable Google account ID and permits email changes, so an email-based configuration could assign or lose access incorrectly (docs/specs/usage-metrics.md:23; docs/specs/accounts.md:23; docs/specs/accounts.md:126).",
+      "resolution": "Owner is identified by Google account ID in configuration; a recreated owner account has no access until the configuration is updated.",
+      "source": "docs/specs/usage-metrics.md The owner; AC1, AC10; docs/specs/accounts.md Identity"
+    },
+    {
+      "finding": "Events linked to members are retained for the app's lifetime, although the stated need is owner-visible counts. The spec gives no limit or justification for retaining identifiable action history after it has been counted, against the Brief's instruction to store only what is needed (docs/specs/usage-metrics.md:32; docs/specs/usage-metrics.md:45; docs/product/BRIEF.md:46).",
+      "resolution": "Member and card-holder links are justified by distinct active-member and distinct-holder counts, and removed on account deletion.",
+      "source": "docs/specs/usage-metrics.md Usage events, Usage view; docs/specs/accounts.md Delete account; docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "finding": "The spec does not define whether 'last 7 days' and 'last 30 days' mean rolling durations or Indian Standard Time calendar dates, or the inclusive and exclusive boundaries. Both interpretations satisfy the wording but produce different counts (docs/specs/usage-metrics.md:48; docs/specs/usage-metrics.md:88).",
+      "resolution": "Periods are defined from 00:00 IST six or 29 days before today up to the moment the view opens; all time has no start.",
+      "source": "docs/specs/usage-metrics.md Usage view; AC3"
+    },
+    {
+      "finding": "New-member counts must survive deletion to remain historical, but onboarding is not one of the five retained events and account deletion removes the account and consent record. The spec does not define what durable, anonymous record supplies past-period new-member counts (docs/specs/usage-metrics.md:29; docs/specs/usage-metrics.md:51; docs/specs/accounts.md:117).",
+      "resolution": "New members counts current accounts only; deleted accounts are not counted, so no durable onboarding record is needed.",
+      "source": "docs/specs/usage-metrics.md Usage view; AC4, AC7"
+    },
+    {
+      "finding": "New-circle counts must include circles later deleted if they are historical period counts, but the spec requires preserving only their past usage events and last names. It does not require preserving their creation times, leaving past-period new-circle counts undefined after deletion (docs/specs/usage-metrics.md:43; docs/specs/usage-metrics.md:52; docs/specs/circles.md:119).",
+      "resolution": "Deleted circles keep last name, creation time and deletion, so new-circle counts include them.",
+      "source": "docs/specs/usage-metrics.md Usage events; AC4; docs/specs/circles.md Deleted circles"
+    },
+    {
+      "finding": "Per-circle search attribution is easy to misread: a search carries every circle the searcher belongs to, while its found-person count is across all circles. The spec does not state that a circle row's searches and found-nobody counts describe its members' searches and global zero-result searches, rather than matches or missing cards in that particular circle (docs/specs/usage-metrics.md:37; docs/specs/usage-metrics.md:56; docs/specs/find-and-contact.md:26; docs/specs/find-and-contact.md:48).",
+      "resolution": "Per-circle search counts are those made by the circle's members; found-nobody is across all the searcher's circles.",
+      "source": "docs/specs/usage-metrics.md Usage view; docs/specs/find-and-contact.md Search"
+    },
+    {
+      "finding": "The counts-only and no-member-drill-down restrictions are stated for the view, but the access criterion does not explicitly prohibit returning raw member-linked event records through direct data requests, including to the owner. That leaves the data-response boundary unclear despite the stored actor and card-holder fields (docs/specs/usage-metrics.md:32; docs/specs/usage-metrics.md:66; docs/specs/usage-metrics.md:70; docs/specs/usage-metrics.md:102).",
+      "resolution": "No request returns individual event records or member identifiers to anyone, the owner included.",
+      "source": "docs/specs/usage-metrics.md Access; AC8"
+    },
+    {
+      "finding": "The spec requires every WhatsApp tap event to be recorded, while the confirmed Find and contact spec requires WhatsApp to open even when event recording fails and says that tap goes uncounted. Both acceptance contracts cannot hold for that failure case (docs/specs/usage-metrics.md:86; docs/specs/find-and-contact.md:71).",
+      "resolution": "A WhatsApp tap whose recording fails goes uncounted, matching Find and contact; AC2 carries the exception.",
+      "source": "docs/specs/usage-metrics.md Usage events; AC2; docs/specs/find-and-contact.md Contact"
+    },
+    {
+      "finding": "The spec promises that, after deletion, no event can be traced back to the member, yet it retains event times and circle attribution and shows period counts for each circle. In a circle with one member or one admin, a join or invite count can identify that person's action even after member identifiers are removed; the absolute anonymity criterion is therefore not achievable as written (docs/specs/usage-metrics.md:40; docs/specs/usage-metrics.md:56; docs/specs/usage-metrics.md:99; docs/specs/circles.md:25).",
+      "resolution": "Replaced absolute untraceability with removal of member identifiers, acknowledging small-circle inference and relying on owner-only, counts-only access.",
+      "source": "docs/specs/usage-metrics.md Usage events; AC7; docs/specs/accounts.md Delete account"
+    }
+  ],
+  "amendments": [
+    {
+      "delta_index": 0,
+      "findings": [
+        "The stated success bar is members bringing others in unprompted, but only admins can copy or share invite links, and an invite event records a tap rather than a sent invitation or who brought in a joiner. The proposed counts cannot establish that success signal (docs/specs/usage-metrics.md:12; docs/decisions/0001-mvp-small-group-india.md:18; docs/specs/circles.md:35)."
+      ],
+      "change": "Why: counts are proxies; spread via joins and circles created by others; who-brought-whom not measured.",
+      "reason": "Success signal was not measurable as claimed.",
+      "source": "docs/decisions/0001-mvp-small-group-india.md"
+    },
+    {
+      "delta_index": 1,
+      "findings": [
+        "The deployment configuration does not say whether it identifies the owner by Google account ID or email, or what happens to owner access after account deletion and signup again. Accounts identifies people by stable Google account ID and permits email changes, so an email-based configuration could assign or lose access incorrectly (docs/specs/usage-metrics.md:23; docs/specs/accounts.md:23; docs/specs/accounts.md:126)."
+      ],
+      "change": "Owner identified by Google account ID; recreated account loses owner access until configuration update.",
+      "reason": "Owner identity basis was undefined.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 2,
+      "findings": [
+        "The spec requires every WhatsApp tap event to be recorded, while the confirmed Find and contact spec requires WhatsApp to open even when event recording fails and says that tap goes uncounted. Both acceptance contracts cannot hold for that failure case (docs/specs/usage-metrics.md:86; docs/specs/find-and-contact.md:71).",
+        "Events linked to members are retained for the app's lifetime, although the stated need is owner-visible counts. The spec gives no limit or justification for retaining identifiable action history after it has been counted, against the Brief's instruction to store only what is needed (docs/specs/usage-metrics.md:32; docs/specs/usage-metrics.md:45; docs/product/BRIEF.md:46).",
+        "The spec promises that, after deletion, no event can be traced back to the member, yet it retains event times and circle attribution and shows period counts for each circle. In a circle with one member or one admin, a join or invite count can identify that person's action even after member identifiers are removed; the absolute anonymity criterion is therefore not achievable as written (docs/specs/usage-metrics.md:40; docs/specs/usage-metrics.md:56; docs/specs/usage-metrics.md:99; docs/specs/circles.md:25).",
+        "New-circle counts must include circles later deleted if they are historical period counts, but the spec requires preserving only their past usage events and last names. It does not require preserving their creation times, leaving past-period new-circle counts undefined after deletion (docs/specs/usage-metrics.md:43; docs/specs/usage-metrics.md:52; docs/specs/circles.md:119)."
+      ],
+      "change": "Failed WhatsApp tap exception; justification for member and holder links; identifiers removed on deletion with small-circle inference acknowledged; deleted circles keep name, creation time and deletion.",
+      "reason": "Recording contradiction, retention justification, anonymity claim and deleted-circle counts.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 3,
+      "findings": [
+        "The spec does not define whether 'last 7 days' and 'last 30 days' mean rolling durations or Indian Standard Time calendar dates, or the inclusive and exclusive boundaries. Both interpretations satisfy the wording but produce different counts (docs/specs/usage-metrics.md:48; docs/specs/usage-metrics.md:88)."
+      ],
+      "change": "Defined 7- and 30-day periods from 00:00 IST to the moment the view opens.",
+      "reason": "Period boundaries were ambiguous.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 4,
+      "findings": [
+        "New-member counts must survive deletion to remain historical, but onboarding is not one of the five retained events and account deletion removes the account and consent record. The spec does not define what durable, anonymous record supplies past-period new-member counts (docs/specs/usage-metrics.md:29; docs/specs/usage-metrics.md:51; docs/specs/accounts.md:117).",
+        "New-circle counts must include circles later deleted if they are historical period counts, but the spec requires preserving only their past usage events and last names. It does not require preserving their creation times, leaving past-period new-circle counts undefined after deletion (docs/specs/usage-metrics.md:43; docs/specs/usage-metrics.md:52; docs/specs/circles.md:119).",
+        "The stated success bar is members bringing others in unprompted, but only admins can copy or share invite links, and an invite event records a tap rather than a sent invitation or who brought in a joiner. The proposed counts cannot establish that success signal (docs/specs/usage-metrics.md:12; docs/decisions/0001-mvp-small-group-india.md:18; docs/specs/circles.md:35).",
+        "Events linked to members are retained for the app's lifetime, although the stated need is owner-visible counts. The spec gives no limit or justification for retaining identifiable action history after it has been counted, against the Brief's instruction to store only what is needed (docs/specs/usage-metrics.md:32; docs/specs/usage-metrics.md:45; docs/product/BRIEF.md:46)."
+      ],
+      "change": "Overall numbers: new members from current accounts, active members, new circles and those by others incl. deleted, distinct card holders contacted.",
+      "reason": "Historical counts, spread proxy and justified identity links.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 5,
+      "findings": [
+        "Per-circle search attribution is easy to misread: a search carries every circle the searcher belongs to, while its found-person count is across all circles. The spec does not state that a circle row's searches and found-nobody counts describe its members' searches and global zero-result searches, rather than matches or missing cards in that particular circle (docs/specs/usage-metrics.md:37; docs/specs/usage-metrics.md:56; docs/specs/find-and-contact.md:26; docs/specs/find-and-contact.md:48)."
+      ],
+      "change": "Per-circle table labels deleted circles; clarified per-circle search and found-nobody semantics.",
+      "reason": "Per-circle search attribution was ambiguous.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 6,
+      "findings": [
+        "The counts-only and no-member-drill-down restrictions are stated for the view, but the access criterion does not explicitly prohibit returning raw member-linked event records through direct data requests, including to the owner. That leaves the data-response boundary unclear despite the stored actor and card-holder fields (docs/specs/usage-metrics.md:32; docs/specs/usage-metrics.md:66; docs/specs/usage-metrics.md:70; docs/specs/usage-metrics.md:102)."
+      ],
+      "change": "Access: aggregate counts only; no individual event records or identifiers to anyone.",
+      "reason": "Data-response boundary was unclear.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 7,
+      "findings": [
+        "The stated success bar is members bringing others in unprompted, but only admins can copy or share invite links, and an invite event records a tap rather than a sent invitation or who brought in a joiner. The proposed counts cannot establish that success signal (docs/specs/usage-metrics.md:12; docs/decisions/0001-mvp-small-group-india.md:18; docs/specs/circles.md:35)."
+      ],
+      "change": "Out of scope: measuring who brought in whom.",
+      "reason": "Make the proxy limitation explicit.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 8,
+      "findings": [
+        "The spec does not define whether 'last 7 days' and 'last 30 days' mean rolling durations or Indian Standard Time calendar dates, or the inclusive and exclusive boundaries. Both interpretations satisfy the wording but produce different counts (docs/specs/usage-metrics.md:48; docs/specs/usage-metrics.md:88)."
+      ],
+      "change": "Out of scope: a custom date range.",
+      "reason": "Owner chose preset periods; record the exclusion.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 9,
+      "findings": [
+        "The deployment configuration does not say whether it identifies the owner by Google account ID or email, or what happens to owner access after account deletion and signup again. Accounts identifies people by stable Google account ID and permits email changes, so an email-based configuration could assign or lose access incorrectly (docs/specs/usage-metrics.md:23; docs/specs/accounts.md:23; docs/specs/accounts.md:126)."
+      ],
+      "change": "AC1 names the Google account ID.",
+      "reason": "Owner identity basis.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 10,
+      "findings": [
+        "The spec requires every WhatsApp tap event to be recorded, while the confirmed Find and contact spec requires WhatsApp to open even when event recording fails and says that tap goes uncounted. Both acceptance contracts cannot hold for that failure case (docs/specs/usage-metrics.md:86; docs/specs/find-and-contact.md:71)."
+      ],
+      "change": "AC2 exempts a failed WhatsApp tap recording.",
+      "reason": "Align with Find and contact.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 11,
+      "findings": [
+        "The stated success bar is members bringing others in unprompted, but only admins can copy or share invite links, and an invite event records a tap rather than a sent invitation or who brought in a joiner. The proposed counts cannot establish that success signal (docs/specs/usage-metrics.md:12; docs/decisions/0001-mvp-small-group-india.md:18; docs/specs/circles.md:35).",
+        "New-member counts must survive deletion to remain historical, but onboarding is not one of the five retained events and account deletion removes the account and consent record. The spec does not define what durable, anonymous record supplies past-period new-member counts (docs/specs/usage-metrics.md:29; docs/specs/usage-metrics.md:51; docs/specs/accounts.md:117).",
+        "New-circle counts must include circles later deleted if they are historical period counts, but the spec requires preserving only their past usage events and last names. It does not require preserving their creation times, leaving past-period new-circle counts undefined after deletion (docs/specs/usage-metrics.md:43; docs/specs/usage-metrics.md:52; docs/specs/circles.md:119).",
+        "The spec does not define whether 'last 7 days' and 'last 30 days' mean rolling durations or Indian Standard Time calendar dates, or the inclusive and exclusive boundaries. Both interpretations satisfy the wording but produce different counts (docs/specs/usage-metrics.md:48; docs/specs/usage-metrics.md:88)."
+      ],
+      "change": "AC3 defines period boundaries; AC4 lists new metrics and counting rules.",
+      "reason": "Criteria match amended behaviour.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 12,
+      "findings": [
+        "The spec promises that, after deletion, no event can be traced back to the member, yet it retains event times and circle attribution and shows period counts for each circle. In a circle with one member or one admin, a join or invite count can identify that person's action even after member identifiers are removed; the absolute anonymity criterion is therefore not achievable as written (docs/specs/usage-metrics.md:40; docs/specs/usage-metrics.md:56; docs/specs/usage-metrics.md:99; docs/specs/circles.md:25)."
+      ],
+      "change": "AC7 says no event carries their identifier instead of untraceable.",
+      "reason": "Achievable anonymity wording.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 13,
+      "findings": [
+        "The counts-only and no-member-drill-down restrictions are stated for the view, but the access criterion does not explicitly prohibit returning raw member-linked event records through direct data requests, including to the owner. That leaves the data-response boundary unclear despite the stored actor and card-holder fields (docs/specs/usage-metrics.md:32; docs/specs/usage-metrics.md:66; docs/specs/usage-metrics.md:70; docs/specs/usage-metrics.md:102)."
+      ],
+      "change": "AC8 forbids returning individual events or identifiers, including to the owner.",
+      "reason": "Data-response boundary criterion.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 14,
+      "findings": [
+        "The deployment configuration does not say whether it identifies the owner by Google account ID or email, or what happens to owner access after account deletion and signup again. Accounts identifies people by stable Google account ID and permits email changes, so an email-based configuration could assign or lose access incorrectly (docs/specs/usage-metrics.md:23; docs/specs/accounts.md:23; docs/specs/accounts.md:126)."
+      ],
+      "change": "Added AC10 for recreated owner account access.",
+      "reason": "Owner identity criterion.",
+      "source": "docs/specs/usage-metrics.md"
+    }
+  ],
+  "artifact_delta": [
+    {
+      "cold_start": 15,
+      "cold_end": 18,
+      "cold": "0003), so first-party counts of joins, invites, cards listed, searches and\nWhatsApp taps, per circle, are the evidence (decision 0008). Only the owner\nneeds them, and they must not expose members' personal data.\n",
+      "final_start": 15,
+      "final_end": 20,
+      "final": "0003), so first-party counts are the evidence (decision 0008). They are\nproxies: spread shows up as joins and as circles created by people other than\nthe owner, and use shows up as searches and WhatsApp taps. Who brought in whom\nis not measured. Only the owner needs these counts, and they must not expose\nmembers' personal data.\n"
+    },
+    {
+      "cold_start": 22,
+      "cold_end": 25,
+      "cold": "- The owner is the single person whose Google account is named in the app's\n  deployment configuration. There is no in-app way to become, add or change\n  the owner.\n",
+      "final_start": 24,
+      "final_end": 30,
+      "final": "- The owner is the single person whose Google account ID (the stable\n  identifier the Accounts capability uses, not an email address) is named in\n  the app's deployment configuration. There is no in-app way to become, add or\n  change the owner.\n- If the owner deletes their account and signs up again, the new account has a\n  new ID and has no owner access until the configuration is updated.\n"
+    },
+    {
+      "cold_start": 40,
+      "cold_end": 44,
+      "cold": "- When a member deletes their account, their identity is removed from every\n  event they appear in; the events stay only as anonymous counts (Accounts).\n- When a circle is deleted, its events stay and are shown under the circle's\n  last name marked \"(deleted)\" (Circles).\n",
+      "final_start": 45,
+      "final_end": 55,
+      "final": "- A WhatsApp tap whose recording fails goes uncounted, as Find and contact\n  requires; every other event is always recorded.\n- The member and card-holder links on events are kept only so the view can\n  count distinct active members and distinct card holders contacted. When a\n  member deletes their account, their identity is removed from every event\n  they appear in (Accounts); the events stay, carrying no member identifier.\n  Counts for a very small circle may still let someone guess who acted, which\n  is why the view is owner-only and shows counts alone.\n- When a circle is deleted, its events stay, and its last name, creation time\n  and deletion are kept so the view can show and count it (Circles).\n"
+    },
+    {
+      "cold_start": 47,
+      "cold_end": 49,
+      "cold": "- The owner picks a period: last 7 days, last 30 days, or all time. Periods\n  use Indian Standard Time.\n",
+      "final_start": 58,
+      "final_end": 62,
+      "final": "- The owner picks a period: last 7 days, last 30 days, or all time. \"Last 7\n  days\" runs from 00:00 Indian Standard Time on the day six days before today\n  up to the moment the view is opened; \"last 30 days\" does the same from 29\n  days before today. \"All time\" has no start.\n"
+    },
+    {
+      "cold_start": 50,
+      "cold_end": 54,
+      "cold": "  - new members (accounts that completed onboarding in the period);\n  - new circles (circles created in the period);\n  - joins, invites, cards listed, searches, searches that found nobody, and\n    WhatsApp taps.\n",
+      "final_start": 63,
+      "final_end": 70,
+      "final": "  - new members: current accounts that completed onboarding in the period\n    (deleted accounts are not counted);\n  - active members: distinct members with at least one event in the period;\n  - new circles, and of those, circles created by someone other than the\n    owner, both including circles later deleted;\n  - joins, invites, cards listed, searches, searches that found nobody,\n    WhatsApp taps, and distinct card holders contacted.\n"
+    },
+    {
+      "cold_start": 55,
+      "cold_end": 59,
+      "cold": "- A per-circle table with one row per circle, including deleted ones, showing\n  for the period: joins, invites, cards listed, searches, searches that found\n  nobody, and WhatsApp taps, plus the circle's current member count (blank for\n  deleted circles). A row \"No circle\" shows events that carried no circle.\n",
+      "final_start": 71,
+      "final_end": 80,
+      "final": "- A per-circle table with one row per circle, including deleted ones labelled\n  with their last name and \"(deleted)\", showing for the period: joins, invites,\n  cards listed, searches, searches that found nobody, and WhatsApp taps, plus\n  the circle's current member count (blank for deleted circles). A row \"No\n  circle\" shows events that carried no circle.\n- In a circle's row, searches and cards listed count those made by that\n  circle's members while they belonged to it; \"searches that found nobody\"\n  counts those searches that found nobody across all of the searcher's\n  circles, not only in that circle.\n"
+    },
+    {
+      "cold_start": 72,
+      "cold_end": 72,
+      "cold": "",
+      "final_start": 93,
+      "final_end": 96,
+      "final": "- The view's data contains aggregate counts only. No request returns\n  individual event records or member identifiers to anyone, the owner\n  included.\n"
+    },
+    {
+      "cold_start": 76,
+      "cold_end": 76,
+      "cold": "",
+      "final_start": 100,
+      "final_end": 101,
+      "final": "- Measuring who brought in whom.\n"
+    },
+    {
+      "cold_start": 79,
+      "cold_end": 79,
+      "cold": "",
+      "final_start": 104,
+      "final_end": 105,
+      "final": "- A custom date range.\n"
+    },
+    {
+      "cold_start": 82,
+      "cold_end": 85,
+      "cold": "1. Only the account named as owner in the deployment configuration can open\n   the usage view or receive its data, including through direct data\n   requests; every other member is refused.\n",
+      "final_start": 108,
+      "final_end": 111,
+      "final": "1. Only the account whose Google account ID is named as owner in the deployment\n   configuration can open the usage view or receive its data, including\n   through direct data requests; every other member is refused.\n"
+    },
+    {
+      "cold_start": 86,
+      "cold_end": 89,
+      "cold": "   the table.\n3. The owner can switch between last 7 days, last 30 days and all time, with\n   periods measured in Indian Standard Time, and every period-based number\n",
+      "final_start": 112,
+      "final_end": 116,
+      "final": "   the table, except that a WhatsApp tap whose recording fails goes uncounted.\n3. The owner can switch between last 7 days, last 30 days and all time; the\n   7- and 30-day periods start at 00:00 Indian Standard Time six and 29 days\n   before today and end when the view is opened, and every period-based number\n"
+    },
+    {
+      "cold_start": 90,
+      "cold_end": 93,
+      "cold": "4. The overall numbers show new members, new circles, joins, invites, cards\n   listed, searches, searches that found nobody and WhatsApp taps for the\n   period, plus current totals of members, circles and cards.\n",
+      "final_start": 117,
+      "final_end": 122,
+      "final": "4. The overall numbers show new members (current accounts only), active\n   members, new circles and those created by someone other than the owner\n   (including later-deleted circles), joins, invites, cards listed, searches,\n   searches that found nobody, WhatsApp taps and distinct card holders\n   contacted for the period, plus current totals of members, circles and cards.\n"
+    },
+    {
+      "cold_start": 99,
+      "cold_end": 101,
+      "cold": "   cards listed, searches and WhatsApp taps) are unchanged and no event can be\n   traced back to them; member totals drop by one.\n",
+      "final_start": 128,
+      "final_end": 130,
+      "final": "   cards listed, searches and WhatsApp taps) are unchanged, no event carries\n   their identifier, and member totals drop by one.\n"
+    },
+    {
+      "cold_start": 102,
+      "cold_end": 103,
+      "cold": "   cards.\n",
+      "final_start": 131,
+      "final_end": 133,
+      "final": "   cards, and no request returns individual event records or member\n   identifiers, including to the owner.\n"
+    },
+    {
+      "cold_start": 106,
+      "cold_end": 106,
+      "cold": "",
+      "final_start": 136,
+      "final_end": 138,
+      "final": "10. A deleted-then-recreated owner account has no owner access until the\n    configuration names its new Google account ID.\n"
+    }
+  ],
+  "input_sha256": "29f318427bc36ea44baf52231a4c704c07a5a139adda3ce7c976806a435f1691",
+  "recorded_at": "2026-09-26T18:59:59+00:00",
+  "commit": "933e4e559d92d92fd28f700eb6e25406cd43ee15",
+  "launch_id": "launch-7dd2f6b5fac742ccbce2ae13bfbff760",
+  "cold_input_sha256": "ccd26d4f61992bc4be24a2ea38778e26c8985bd9ce5c8bf4f3855b864e6bf5ae",
+  "final_artifact_sha256": "29f318427bc36ea44baf52231a4c704c07a5a139adda3ce7c976806a435f1691"
+}
