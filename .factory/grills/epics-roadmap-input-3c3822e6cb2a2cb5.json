@@ -1,0 +1,488 @@
+{
+  "generated_by": "griller",
+  "gate": "epics",
+  "verdict": "pass",
+  "gaps": [
+    "No story makes the accepted mobile-first, installable web app and free-tier hosting constraints testable. All six stories are marked fullstack, but none has an acceptance criterion for phone-browser use from a WhatsApp link, installability, or free-tier operation (plans/roadmap-input.json:31; docs/decisions/0004-mobile-web-free-tier.md:15).",
+    "CWF-1 requires consent and version storage but does not require the notice to disclose the data uses, recipients, deletion route, contact address, or backup retention specified for informed consent (plans/roadmap-input.json:39; docs/specs/accounts.md:59).",
+    "CWF-1 protects email and Google ID but omits the rule that another member may receive a person's name, WhatsApp number, and cards only while they share a circle, including through direct data requests. Later criteria cover particular circle and search flows without stating this account-wide data boundary (plans/roadmap-input.json:44; docs/specs/accounts.md:89).",
+    "CWF-1 has no criterion for viewing one's own profile, including the Google email, or for rejecting an invalid profile edit with a message while preserving the previous value (plans/roadmap-input.json:43; docs/specs/accounts.md:98).",
+    "CWF-2 requires an active invite link but omits the minimum 128 bits of randomness needed to prevent guessing (plans/roadmap-input.json:59; docs/specs/circles.md:31).",
+    "CWF-2 does not require Share on WhatsApp to prefill the circle name and link, leaving its central sharing action underspecified (plans/roadmap-input.json:59; docs/specs/circles.md:35).",
+    "CWF-2 has no criterion that a member can list their circles, see each circle's members and admin, or go straight into a circle when opening its valid link as an existing member (plans/roadmap-input.json:60; docs/specs/circles.md:53; docs/specs/circles.md:72).",
+    "CWF-2 records a join event but does not require the new member and existing members to see each other's previously listed cards after joining. CWF-3 covers added and edited cards, leaving the join-time visibility handover unproved (plans/roadmap-input.json:62; plans/roadmap-input.json:90; docs/specs/circles.md:144).",
+    "CWF-2 grants removal power without stating that an admin cannot remove themselves, and it omits the rule that no list or names of removed people are shown. Both affect the admin handover and removal privacy behavior (plans/roadmap-input.json:68; docs/specs/circles.md:92; docs/specs/circles.md:108).",
+    "CWF-3 says added and edited cards become visible but does not require edits to apply every add rule, reject duplicates or unsafe variants, update matching searches, and disappear from searches matching only the old values (plans/roadmap-input.json:87; plans/roadmap-input.json:90; docs/specs/cards.md:118).",
+    "CWF-3 tests corrected bank names on existing cards but omits preservation of search matches and the rule that banks are never removed from the fixed list, leaving saved cards and searches vulnerable to a later list update (plans/roadmap-input.json:95; docs/specs/cards.md:46; docs/specs/cards.md:134).",
+    "CWF-4 calls for a prefilled card-only message but does not specify the confirmed message text, and its contact reminder omits that the card holder places the order themselves (plans/roadmap-input.json:115; plans/roadmap-input.json:119; docs/specs/find-and-contact.md:64; docs/specs/find-and-contact.md:77).",
+    "CWF-6 requires per-circle rows but never states their measures or the current member-count column, including that this count is blank for deleted circles. A table containing only circle names would satisfy the roadmap wording (plans/roadmap-input.json:152; docs/specs/usage-metrics.md:72).",
+    "CWF-6 needs creation time, deletion state, last name, and whether the creator was the owner for later-deleted circles. CWF-2 only preserves past events under the last name, and CWF-5 erases account identity; neither story commits to retaining the non-identifying historical facts needed to calculate CWF-6's new-circle measures after deletion (plans/roadmap-input.json:71; plans/roadmap-input.json:132; plans/roadmap-input.json:151; docs/specs/usage-metrics.md:54)."
+  ],
+  "contradictions": [
+    "The accounts epic promises that members can erase themselves completely, while the confirmed account contract retains anonymous usage events and permits deleted data to remain in provider backups until expiry. The objective overstates the promised erasure (plans/roadmap-input.json:7; docs/specs/accounts.md:120; docs/specs/accounts.md:124).",
+    "The accounts epic contains both prerequisite CWF-1 and downstream CWF-5. CWF-2 depends on accounts through CWF-1, while CWF-5 depends on circles and find/contact; the board derives epic-level blockers from every story edge and therefore reports accounts and circles/find-contact as blocking each other even though the story graph can advance (plans/roadmap-input.json:49; plans/roadmap-input.json:76; plans/roadmap-input.json:139; factory/scripts/forge_cli/board.py:555).",
+    "CWF-6 says a deleted-then-recreated owner loses access until configuration names a new Google account ID, but CWF-1 and its source spec identify the same Google account by its stable account ID across sign-ins. Signing up again with that Google account supplies the configured ID again, so this acceptance criterion cannot pass as written (plans/roadmap-input.json:37; plans/roadmap-input.json:157; docs/specs/accounts.md:24; docs/specs/usage-metrics.md:25)."
+  ],
+  "resolutions": [
+    "CWF-1 gains a criterion for phone-browser use from a WhatsApp link, home-screen installability and free-tier hosting.",
+    "CWF-1 gains the privacy-notice content criterion.",
+    "Account-wide boundary added: CWF-2 for name and number, CWF-3 for cards, including direct data requests.",
+    "CWF-1 profile criterion covers viewing, invalid-edit rejection and keeping the previous value.",
+    "CWF-2 gains the 128-bit invite code criterion.",
+    "CWF-2 share criterion requires the circle name and link prefilled.",
+    "CWF-2 gains circle list, member list and admin display, and existing members go straight to the circle.",
+    "CWF-3 requires join-time mutual visibility of previously listed cards (cards exist only from CWF-3).",
+    "CWF-2 states the admin cannot remove themselves and no removed-people list or names are shown.",
+    "CWF-3 edits apply all add rules; CWF-4 covers search reflection of adds, edits and removals.",
+    "CWF-3 states banks are never removed; CWF-4 states bank-name corrections do not change matches.",
+    "CWF-4 criteria carry the exact message text and the holder-places-the-order reminder.",
+    "CWF-6 per-circle criterion lists its measures and the member-count column, blank for deleted circles.",
+    "CWF-2 requires deleted circles to keep last name, creation time, deletion and whether the owner created it.",
+    "Accounts epic objective no longer promises complete erasure; the new deletion epic describes removal from the live app and of event identity.",
+    "CWF-5 moved to a new account-deletion epic so epic gating derived from story edges has no cycle.",
+    "The Usage metrics spec was wrong: a same-Google-account re-signup keeps the configured ID. Spec amended (re-saved as draft, fresh spec grill) and CWF-6 criterion changed to match."
+  ],
+  "finding_dispositions": [
+    {
+      "finding": "No story makes the accepted mobile-first, installable web app and free-tier hosting constraints testable. All six stories are marked fullstack, but none has an acceptance criterion for phone-browser use from a WhatsApp link, installability, or free-tier operation (plans/roadmap-input.json:31; docs/decisions/0004-mobile-web-free-tier.md:15).",
+      "resolution": "CWF-1 gains a criterion for phone-browser use from a WhatsApp link, home-screen installability and free-tier hosting.",
+      "source": "docs/decisions/0004-mobile-web-free-tier.md; docs/product/BRIEF.md Constraints"
+    },
+    {
+      "finding": "CWF-1 requires consent and version storage but does not require the notice to disclose the data uses, recipients, deletion route, contact address, or backup retention specified for informed consent (plans/roadmap-input.json:39; docs/specs/accounts.md:59).",
+      "resolution": "CWF-1 gains the privacy-notice content criterion.",
+      "source": "docs/specs/accounts.md Onboarding"
+    },
+    {
+      "finding": "CWF-1 protects email and Google ID but omits the rule that another member may receive a person's name, WhatsApp number, and cards only while they share a circle, including through direct data requests. Later criteria cover particular circle and search flows without stating this account-wide data boundary (plans/roadmap-input.json:44; docs/specs/accounts.md:89).",
+      "resolution": "Account-wide boundary added: CWF-2 for name and number, CWF-3 for cards, including direct data requests.",
+      "source": "docs/specs/accounts.md Enforcement, AC9"
+    },
+    {
+      "finding": "CWF-1 has no criterion for viewing one's own profile, including the Google email, or for rejecting an invalid profile edit with a message while preserving the previous value (plans/roadmap-input.json:43; docs/specs/accounts.md:98).",
+      "resolution": "CWF-1 profile criterion covers viewing, invalid-edit rejection and keeping the previous value.",
+      "source": "docs/specs/accounts.md Profile"
+    },
+    {
+      "finding": "CWF-2 requires an active invite link but omits the minimum 128 bits of randomness needed to prevent guessing (plans/roadmap-input.json:59; docs/specs/circles.md:31).",
+      "resolution": "CWF-2 gains the 128-bit invite code criterion.",
+      "source": "docs/specs/circles.md Invite link"
+    },
+    {
+      "finding": "CWF-2 does not require Share on WhatsApp to prefill the circle name and link, leaving its central sharing action underspecified (plans/roadmap-input.json:59; docs/specs/circles.md:35).",
+      "resolution": "CWF-2 share criterion requires the circle name and link prefilled.",
+      "source": "docs/specs/circles.md Invite link"
+    },
+    {
+      "finding": "CWF-2 has no criterion that a member can list their circles, see each circle's members and admin, or go straight into a circle when opening its valid link as an existing member (plans/roadmap-input.json:60; docs/specs/circles.md:53; docs/specs/circles.md:72).",
+      "resolution": "CWF-2 gains circle list, member list and admin display, and existing members go straight to the circle.",
+      "source": "docs/specs/circles.md Join, Inside a circle"
+    },
+    {
+      "finding": "CWF-2 records a join event but does not require the new member and existing members to see each other's previously listed cards after joining. CWF-3 covers added and edited cards, leaving the join-time visibility handover unproved (plans/roadmap-input.json:62; plans/roadmap-input.json:90; docs/specs/circles.md:144).",
+      "resolution": "CWF-3 requires join-time mutual visibility of previously listed cards (cards exist only from CWF-3).",
+      "source": "docs/specs/circles.md AC4; docs/specs/cards.md Visibility"
+    },
+    {
+      "finding": "CWF-2 grants removal power without stating that an admin cannot remove themselves, and it omits the rule that no list or names of removed people are shown. Both affect the admin handover and removal privacy behavior (plans/roadmap-input.json:68; docs/specs/circles.md:92; docs/specs/circles.md:108).",
+      "resolution": "CWF-2 states the admin cannot remove themselves and no removed-people list or names are shown.",
+      "source": "docs/specs/circles.md Remove, Admin powers"
+    },
+    {
+      "finding": "CWF-3 says added and edited cards become visible but does not require edits to apply every add rule, reject duplicates or unsafe variants, update matching searches, and disappear from searches matching only the old values (plans/roadmap-input.json:87; plans/roadmap-input.json:90; docs/specs/cards.md:118).",
+      "resolution": "CWF-3 edits apply all add rules; CWF-4 covers search reflection of adds, edits and removals.",
+      "source": "docs/specs/cards.md AC6, AC7; docs/specs/find-and-contact.md Search"
+    },
+    {
+      "finding": "CWF-3 tests corrected bank names on existing cards but omits preservation of search matches and the rule that banks are never removed from the fixed list, leaving saved cards and searches vulnerable to a later list update (plans/roadmap-input.json:95; docs/specs/cards.md:46; docs/specs/cards.md:134).",
+      "resolution": "CWF-3 states banks are never removed; CWF-4 states bank-name corrections do not change matches.",
+      "source": "docs/specs/cards.md Bank list, AC14"
+    },
+    {
+      "finding": "CWF-4 calls for a prefilled card-only message but does not specify the confirmed message text, and its contact reminder omits that the card holder places the order themselves (plans/roadmap-input.json:115; plans/roadmap-input.json:119; docs/specs/find-and-contact.md:64; docs/specs/find-and-contact.md:77).",
+      "resolution": "CWF-4 criteria carry the exact message text and the holder-places-the-order reminder.",
+      "source": "docs/specs/find-and-contact.md Contact"
+    },
+    {
+      "finding": "CWF-6 requires per-circle rows but never states their measures or the current member-count column, including that this count is blank for deleted circles. A table containing only circle names would satisfy the roadmap wording (plans/roadmap-input.json:152; docs/specs/usage-metrics.md:72).",
+      "resolution": "CWF-6 per-circle criterion lists its measures and the member-count column, blank for deleted circles.",
+      "source": "docs/specs/usage-metrics.md Usage view"
+    },
+    {
+      "finding": "CWF-6 needs creation time, deletion state, last name, and whether the creator was the owner for later-deleted circles. CWF-2 only preserves past events under the last name, and CWF-5 erases account identity; neither story commits to retaining the non-identifying historical facts needed to calculate CWF-6's new-circle measures after deletion (plans/roadmap-input.json:71; plans/roadmap-input.json:132; plans/roadmap-input.json:151; docs/specs/usage-metrics.md:54).",
+      "resolution": "CWF-2 requires deleted circles to keep last name, creation time, deletion and whether the owner created it.",
+      "source": "docs/specs/usage-metrics.md Usage events; docs/specs/circles.md Deleted circles"
+    },
+    {
+      "finding": "The accounts epic promises that members can erase themselves completely, while the confirmed account contract retains anonymous usage events and permits deleted data to remain in provider backups until expiry. The objective overstates the promised erasure (plans/roadmap-input.json:7; docs/specs/accounts.md:120; docs/specs/accounts.md:124).",
+      "resolution": "Accounts epic objective no longer promises complete erasure; the new deletion epic describes removal from the live app and of event identity.",
+      "source": "docs/specs/accounts.md Delete account"
+    },
+    {
+      "finding": "The accounts epic contains both prerequisite CWF-1 and downstream CWF-5. CWF-2 depends on accounts through CWF-1, while CWF-5 depends on circles and find/contact; the board derives epic-level blockers from every story edge and therefore reports accounts and circles/find-contact as blocking each other even though the story graph can advance (plans/roadmap-input.json:49; plans/roadmap-input.json:76; plans/roadmap-input.json:139; factory/scripts/forge_cli/board.py:555).",
+      "resolution": "CWF-5 moved to a new account-deletion epic so epic gating derived from story edges has no cycle.",
+      "source": "plans/roadmap-input.json; factory/scripts/forge_cli/board.py"
+    },
+    {
+      "finding": "CWF-6 says a deleted-then-recreated owner loses access until configuration names a new Google account ID, but CWF-1 and its source spec identify the same Google account by its stable account ID across sign-ins. Signing up again with that Google account supplies the configured ID again, so this acceptance criterion cannot pass as written (plans/roadmap-input.json:37; plans/roadmap-input.json:157; docs/specs/accounts.md:24; docs/specs/usage-metrics.md:25).",
+      "resolution": "The Usage metrics spec was wrong: a same-Google-account re-signup keeps the configured ID. Spec amended (re-saved as draft, fresh spec grill) and CWF-6 criterion changed to match.",
+      "source": "docs/specs/usage-metrics.md The owner, AC10 (amended); docs/specs/accounts.md Identity"
+    }
+  ],
+  "amendments": [
+    {
+      "delta_index": 0,
+      "findings": [
+        "The accounts epic promises that members can erase themselves completely, while the confirmed account contract retains anonymous usage events and permits deleted data to remain in provider backups until expiry. The objective overstates the promised erasure (plans/roadmap-input.json:7; docs/specs/accounts.md:120; docs/specs/accounts.md:124)."
+      ],
+      "change": "Accounts epic objective reworded to visibility-only personal data.",
+      "reason": "Objective overstated erasure.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 1,
+      "findings": [
+        "The accounts epic contains both prerequisite CWF-1 and downstream CWF-5. CWF-2 depends on accounts through CWF-1, while CWF-5 depends on circles and find/contact; the board derives epic-level blockers from every story edge and therefore reports accounts and circles/find-contact as blocking each other even though the story graph can advance (plans/roadmap-input.json:49; plans/roadmap-input.json:76; plans/roadmap-input.json:139; factory/scripts/forge_cli/board.py:555).",
+        "The accounts epic promises that members can erase themselves completely, while the confirmed account contract retains anonymous usage events and permits deleted data to remain in provider backups until expiry. The objective overstates the promised erasure (plans/roadmap-input.json:7; docs/specs/accounts.md:120; docs/specs/accounts.md:124)."
+      ],
+      "change": "Added the account-deletion epic.",
+      "reason": "Break the epic gating cycle; describe deletion accurately.",
+      "source": "plans/roadmap-input.json"
+    },
+    {
+      "delta_index": 2,
+      "findings": [
+        "No story makes the accepted mobile-first, installable web app and free-tier hosting constraints testable. All six stories are marked fullstack, but none has an acceptance criterion for phone-browser use from a WhatsApp link, installability, or free-tier operation (plans/roadmap-input.json:31; docs/decisions/0004-mobile-web-free-tier.md:15)."
+      ],
+      "change": "CWF-1: mobile, installable, free-tier criterion.",
+      "reason": "Decision 0004 constraints were untestable.",
+      "source": "docs/decisions/0004-mobile-web-free-tier.md"
+    },
+    {
+      "delta_index": 3,
+      "findings": [
+        "CWF-1 requires consent and version storage but does not require the notice to disclose the data uses, recipients, deletion route, contact address, or backup retention specified for informed consent (plans/roadmap-input.json:39; docs/specs/accounts.md:59)."
+      ],
+      "change": "CWF-1: privacy-notice content criterion.",
+      "reason": "Informed-consent content was missing.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 4,
+      "findings": [
+        "CWF-1 has no criterion for viewing one's own profile, including the Google email, or for rejecting an invalid profile edit with a message while preserving the previous value (plans/roadmap-input.json:43; docs/specs/accounts.md:98)."
+      ],
+      "change": "CWF-1: profile view and invalid-edit criterion.",
+      "reason": "Profile behaviour was missing.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 5,
+      "findings": [
+        "CWF-2 requires an active invite link but omits the minimum 128 bits of randomness needed to prevent guessing (plans/roadmap-input.json:59; docs/specs/circles.md:31).",
+        "CWF-2 does not require Share on WhatsApp to prefill the circle name and link, leaving its central sharing action underspecified (plans/roadmap-input.json:59; docs/specs/circles.md:35)."
+      ],
+      "change": "CWF-2: 128-bit code criterion; share prefill added to the link criterion.",
+      "reason": "Code strength and share content were missing.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 6,
+      "findings": [
+        "CWF-2 has no criterion that a member can list their circles, see each circle's members and admin, or go straight into a circle when opening its valid link as an existing member (plans/roadmap-input.json:60; docs/specs/circles.md:53; docs/specs/circles.md:72)."
+      ],
+      "change": "CWF-2: existing members opening a valid link go straight to the circle.",
+      "reason": "Member entry path was missing.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 7,
+      "findings": [
+        "CWF-2 has no criterion that a member can list their circles, see each circle's members and admin, or go straight into a circle when opening its valid link as an existing member (plans/roadmap-input.json:60; docs/specs/circles.md:53; docs/specs/circles.md:72).",
+        "CWF-1 protects email and Google ID but omits the rule that another member may receive a person's name, WhatsApp number, and cards only while they share a circle, including through direct data requests. Later criteria cover particular circle and search flows without stating this account-wide data boundary (plans/roadmap-input.json:44; docs/specs/accounts.md:89)."
+      ],
+      "change": "CWF-2: circle and member list criterion; name and number data boundary.",
+      "reason": "Circle views and account-wide boundary were missing.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 8,
+      "findings": [
+        "CWF-2 grants removal power without stating that an admin cannot remove themselves, and it omits the rule that no list or names of removed people are shown. Both affect the admin handover and removal privacy behavior (plans/roadmap-input.json:68; docs/specs/circles.md:92; docs/specs/circles.md:108)."
+      ],
+      "change": "CWF-2: no removed-people list or names.",
+      "reason": "Removal privacy rule was missing.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 9,
+      "findings": [
+        "CWF-2 grants removal power without stating that an admin cannot remove themselves, and it omits the rule that no list or names of removed people are shown. Both affect the admin handover and removal privacy behavior (plans/roadmap-input.json:68; docs/specs/circles.md:92; docs/specs/circles.md:108)."
+      ],
+      "change": "CWF-2: admin cannot remove themselves.",
+      "reason": "Admin self-removal rule was missing.",
+      "source": "docs/specs/circles.md"
+    },
+    {
+      "delta_index": 10,
+      "findings": [
+        "CWF-6 needs creation time, deletion state, last name, and whether the creator was the owner for later-deleted circles. CWF-2 only preserves past events under the last name, and CWF-5 erases account identity; neither story commits to retaining the non-identifying historical facts needed to calculate CWF-6's new-circle measures after deletion (plans/roadmap-input.json:71; plans/roadmap-input.json:132; plans/roadmap-input.json:151; docs/specs/usage-metrics.md:54)."
+      ],
+      "change": "CWF-2: deleted circles keep name, creation time, deletion and owner-created flag.",
+      "reason": "Usage metrics need these after deletion.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 11,
+      "findings": [
+        "CWF-3 says added and edited cards become visible but does not require edits to apply every add rule, reject duplicates or unsafe variants, update matching searches, and disappear from searches matching only the old values (plans/roadmap-input.json:87; plans/roadmap-input.json:90; docs/specs/cards.md:118).",
+        "CWF-2 records a join event but does not require the new member and existing members to see each other's previously listed cards after joining. CWF-3 covers added and edited cards, leaving the join-time visibility handover unproved (plans/roadmap-input.json:62; plans/roadmap-input.json:90; docs/specs/circles.md:144).",
+        "CWF-1 protects email and Google ID but omits the rule that another member may receive a person's name, WhatsApp number, and cards only while they share a circle, including through direct data requests. Later criteria cover particular circle and search flows without stating this account-wide data boundary (plans/roadmap-input.json:44; docs/specs/accounts.md:89)."
+      ],
+      "change": "CWF-3: edit rules; join-time card visibility; card data boundary.",
+      "reason": "Edit rules, join handover and card boundary were missing.",
+      "source": "docs/specs/cards.md"
+    },
+    {
+      "delta_index": 12,
+      "findings": [
+        "CWF-3 tests corrected bank names on existing cards but omits preservation of search matches and the rule that banks are never removed from the fixed list, leaving saved cards and searches vulnerable to a later list update (plans/roadmap-input.json:95; docs/specs/cards.md:46; docs/specs/cards.md:134)."
+      ],
+      "change": "CWF-3: banks never removed.",
+      "reason": "Bank list rule was missing.",
+      "source": "docs/specs/cards.md"
+    },
+    {
+      "delta_index": 13,
+      "findings": [
+        "CWF-3 says added and edited cards become visible but does not require edits to apply every add rule, reject duplicates or unsafe variants, update matching searches, and disappear from searches matching only the old values (plans/roadmap-input.json:87; plans/roadmap-input.json:90; docs/specs/cards.md:118).",
+        "CWF-3 tests corrected bank names on existing cards but omits preservation of search matches and the rule that banks are never removed from the fixed list, leaving saved cards and searches vulnerable to a later list update (plans/roadmap-input.json:95; docs/specs/cards.md:46; docs/specs/cards.md:134)."
+      ],
+      "change": "CWF-4: search reflects adds, edits, removals; bank rename keeps matches.",
+      "reason": "Search reflection criteria were missing.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 14,
+      "findings": [
+        "CWF-4 calls for a prefilled card-only message but does not specify the confirmed message text, and its contact reminder omits that the card holder places the order themselves (plans/roadmap-input.json:115; plans/roadmap-input.json:119; docs/specs/find-and-contact.md:64; docs/specs/find-and-contact.md:77)."
+      ],
+      "change": "CWF-4: exact prefilled message text.",
+      "reason": "Message content was unspecified.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 15,
+      "findings": [
+        "CWF-4 calls for a prefilled card-only message but does not specify the confirmed message text, and its contact reminder omits that the card holder places the order themselves (plans/roadmap-input.json:115; plans/roadmap-input.json:119; docs/specs/find-and-contact.md:64; docs/specs/find-and-contact.md:77)."
+      ],
+      "change": "CWF-4: reminder includes that the holder places the order.",
+      "reason": "Reminder content was incomplete.",
+      "source": "docs/specs/find-and-contact.md"
+    },
+    {
+      "delta_index": 16,
+      "findings": [
+        "The accounts epic contains both prerequisite CWF-1 and downstream CWF-5. CWF-2 depends on accounts through CWF-1, while CWF-5 depends on circles and find/contact; the board derives epic-level blockers from every story edge and therefore reports accounts and circles/find-contact as blocking each other even though the story graph can advance (plans/roadmap-input.json:49; plans/roadmap-input.json:76; plans/roadmap-input.json:139; factory/scripts/forge_cli/board.py:555)."
+      ],
+      "change": "CWF-5 epic changed to account-deletion.",
+      "reason": "Epic gating cycle.",
+      "source": "plans/roadmap-input.json"
+    },
+    {
+      "delta_index": 17,
+      "findings": [
+        "The accounts epic promises that members can erase themselves completely, while the confirmed account contract retains anonymous usage events and permits deleted data to remain in provider backups until expiry. The objective overstates the promised erasure (plans/roadmap-input.json:7; docs/specs/accounts.md:120; docs/specs/accounts.md:124)."
+      ],
+      "change": "CWF-5 story says data is removed rather than erased.",
+      "reason": "Align with retained anonymous events and backups.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 18,
+      "findings": [
+        "CWF-6 requires per-circle rows but never states their measures or the current member-count column, including that this count is blank for deleted circles. A table containing only circle names would satisfy the roadmap wording (plans/roadmap-input.json:152; docs/specs/usage-metrics.md:72)."
+      ],
+      "change": "CWF-6: per-circle measures and member-count column.",
+      "reason": "Per-circle table content was unspecified.",
+      "source": "docs/specs/usage-metrics.md"
+    },
+    {
+      "delta_index": 19,
+      "findings": [
+        "CWF-6 says a deleted-then-recreated owner loses access until configuration names a new Google account ID, but CWF-1 and its source spec identify the same Google account by its stable account ID across sign-ins. Signing up again with that Google account supplies the configured ID again, so this acceptance criterion cannot pass as written (plans/roadmap-input.json:37; plans/roadmap-input.json:157; docs/specs/accounts.md:24; docs/specs/usage-metrics.md:25)."
+      ],
+      "change": "CWF-6: owner access continues after same-account re-signup; a different account needs configuration.",
+      "reason": "Match the amended Usage metrics spec.",
+      "source": "docs/specs/usage-metrics.md"
+    }
+  ],
+  "artifact_delta": [
+    {
+      "cold_start": 6,
+      "cold_end": 7,
+      "cold": "      \"objective\": \"Every member is a known, consenting adult with a WhatsApp number, and can erase themselves completely.\",\n",
+      "final_start": 6,
+      "final_end": 7,
+      "final": "      \"objective\": \"Every member is a known, consenting adult with a WhatsApp number, whose personal data only people in their circles can see.\",\n"
+    },
+    {
+      "cold_start": 20,
+      "cold_end": 20,
+      "cold": "",
+      "final_start": 20,
+      "final_end": 26,
+      "final": "    },\n    {\n      \"id\": \"account-deletion\",\n      \"title\": \"Account deletion\",\n      \"objective\": \"A member can delete their account, removing their personal data from the live app and the identity from their usage events.\",\n      \"source_refs\": [\"docs/specs/accounts.md\"]\n"
+    },
+    {
+      "cold_start": 36,
+      "cold_end": 36,
+      "cold": "",
+      "final_start": 42,
+      "final_end": 43,
+      "final": "        \"Every flow in this story works in a phone browser opened from a WhatsApp link, the app can be installed to the phone's home screen, and it runs on free hosting tiers only.\",\n"
+    },
+    {
+      "cold_start": 39,
+      "cold_end": 39,
+      "cold": "",
+      "final_start": 46,
+      "final_end": 47,
+      "final": "        \"The privacy notice states what is stored and why, who sees what, that card numbers, CVV, expiry and OTPs are never asked for or to be shared, how to withdraw consent, see and correct data, a contact address for questions and grievances, and that deleted data may survive in provider backups until they expire.\",\n"
+    },
+    {
+      "cold_start": 42,
+      "cold_end": 43,
+      "cold": "        \"Editing the display name or WhatsApp number applies the onboarding rules, and the saved value is what every later view and WhatsApp link uses.\",\n",
+      "final_start": 50,
+      "final_end": 51,
+      "final": "        \"A member can view their display name, WhatsApp number and Google email; editing the name or number applies the onboarding rules, an invalid value is rejected with a message and the previous value kept, and a saved value is what every later view and WhatsApp link uses.\",\n"
+    },
+    {
+      "cold_start": 58,
+      "cold_end": 59,
+      "cold": "        \"Only the admin can retrieve, copy or share the circle's active invite link in the app, including through direct data requests, and each Copy or Share on WhatsApp tap records one invite usage event with the admin and circle.\",\n",
+      "final_start": 66,
+      "final_end": 68,
+      "final": "        \"Each circle has exactly one active invite link whose code carries at least 128 bits of randomness.\",\n        \"Only the admin can retrieve, copy or share the circle's active invite link in the app, including through direct data requests; Share on WhatsApp opens WhatsApp with the circle name and link prefilled, and each Copy or Share on WhatsApp tap records one invite usage event with the admin and circle.\",\n"
+    },
+    {
+      "cold_start": 60,
+      "cold_end": 61,
+      "cold": "        \"A signed-out visitor who opens an invite link, signs in and completes onboarding lands back on that invite; an onboarded member who opens an invite link goes straight to it.\",\n",
+      "final_start": 69,
+      "final_end": 70,
+      "final": "        \"A signed-out visitor who opens an invite link, signs in and completes onboarding lands back on that invite; a person who is already a member and opens a valid link goes straight to the circle.\",\n"
+    },
+    {
+      "cold_start": 62,
+      "cold_end": 62,
+      "cold": "",
+      "final_start": 71,
+      "final_end": 73,
+      "final": "        \"A member sees the list of circles they belong to and, inside a circle, its name, its members by display name and which member is the admin.\",\n        \"A member's display name and WhatsApp number are returned only to members who share at least one circle with them, and only while they do, including through direct data requests.\",\n"
+    },
+    {
+      "cold_start": 64,
+      "cold_end": 65,
+      "cold": "        \"A removed person cannot rejoin through the current or any later invite link and sees only \\\"You can't join this circle.\\\"; after Clear all removals they can rejoin only by opening a valid link and pressing Join.\",\n",
+      "final_start": 75,
+      "final_end": 76,
+      "final": "        \"A removed person cannot rejoin through the current or any later invite link and sees only \\\"You can't join this circle.\\\"; after Clear all removals they can rejoin only by opening a valid link and pressing Join; no list or names of removed people are shown to anyone.\",\n"
+    },
+    {
+      "cold_start": 67,
+      "cold_end": 68,
+      "cold": "        \"Only the admin can remove members, clear removals, retrieve or reset the link, rename, hand over the admin role or delete the circle, including through direct data requests; a rename follows the 1 to 40 character rule.\",\n",
+      "final_start": 78,
+      "final_end": 79,
+      "final": "        \"Only the admin can remove members, clear removals, retrieve or reset the link, rename, hand over the admin role or delete the circle, including through direct data requests; the admin cannot remove themselves; a rename follows the 1 to 40 character rule.\",\n"
+    },
+    {
+      "cold_start": 70,
+      "cold_end": 71,
+      "cold": "        \"Deleting a circle ends every membership, makes its invite link show the no-longer-valid message, and keeps its past usage events under its last name marked (deleted).\",\n",
+      "final_start": 81,
+      "final_end": 82,
+      "final": "        \"Deleting a circle ends every membership and makes its invite link show the no-longer-valid message; a deleted circle keeps its past usage events, its last name, its creation time, its deletion and whether the owner created it, so later usage counts can show it marked (deleted).\",\n"
+    },
+    {
+      "cold_start": 89,
+      "cold_end": 90,
+      "cold": "        \"Members who share a circle see a member's added and edited cards at once, and a removed card disappears from every view at once.\",\n",
+      "final_start": 100,
+      "final_end": 103,
+      "final": "        \"Editing a card applies every rule for adding one, including the duplicate and unsafe-variant checks.\",\n        \"Members who share a circle see a member's added and edited cards at once, and a removed card disappears from every view at once; after someone joins a circle, they and the existing members see each other's previously listed cards.\",\n        \"A member's cards are returned only to members who share at least one circle with them, and only while they do, including through direct data requests; the holder always sees their own.\",\n"
+    },
+    {
+      "cold_start": 94,
+      "cold_end": 95,
+      "cold": "        \"Correcting a bank's display name changes it on every existing card of that bank.\"\n",
+      "final_start": 107,
+      "final_end": 108,
+      "final": "        \"Correcting a bank's display name changes it on every existing card of that bank, and no bank is ever removed from the list.\"\n"
+    },
+    {
+      "cold_start": 111,
+      "cold_end": 111,
+      "cold": "",
+      "final_start": 124,
+      "final_end": 125,
+      "final": "        \"Search results reflect cards and memberships at the moment of the search: a newly added card appears in matching searches, an edited card appears in searches matching its new values and not in searches matching only its old values, a removed card never appears, and correcting a bank's display name does not change which cards a search matches.\",\n"
+    },
+    {
+      "cold_start": 114,
+      "cold_end": 115,
+      "cold": "        \"Pressing Message on WhatsApp for a card still visible opens WhatsApp's chat link for the holder's current number with the prefilled card-only message, which the member can edit before sending.\",\n",
+      "final_start": 128,
+      "final_end": 129,
+      "final": "        \"Pressing Message on WhatsApp for a card still visible opens WhatsApp's chat link for the holder's current number with the message \\\"Hi <holder's display name>, do you have a moment? I need your <bank> <credit/debit> card<, variant if stated> for an offer.\\\", which the member can edit before sending.\",\n"
+    },
+    {
+      "cold_start": 118,
+      "cold_end": 119,
+      "cold": "        \"The never-share-card-details reminder is shown next to the contact button.\"\n",
+      "final_start": 132,
+      "final_end": 133,
+      "final": "        \"Next to the contact button, the app reminds the member that the card holder places the order themselves and that nobody should ever share card numbers, CVV, expiry or OTPs.\"\n"
+    },
+    {
+      "cold_start": 126,
+      "cold_end": 127,
+      "cold": "      \"epic\": \"accounts\",\n",
+      "final_start": 140,
+      "final_end": 141,
+      "final": "      \"epic\": \"account-deletion\",\n"
+    },
+    {
+      "cold_start": 128,
+      "cold_end": 129,
+      "cold": "      \"story\": \"As a member, I delete my account after confirming, so that my profile, number, cards and circle memberships are erased and my usage events no longer identify me.\",\n",
+      "final_start": 142,
+      "final_end": 143,
+      "final": "      \"story\": \"As a member, I delete my account after confirming, so that my profile, number, cards and circle memberships are removed and my usage events no longer identify me.\",\n"
+    },
+    {
+      "cold_start": 151,
+      "cold_end": 152,
+      "cold": "        \"The per-circle table has a row for every circle, including deleted circles labelled with their last name and (deleted), and a No circle row for events without a circle.\",\n",
+      "final_start": 165,
+      "final_end": 166,
+      "final": "        \"The per-circle table has a row for every circle, including deleted circles labelled with their last name and (deleted), and a No circle row for events without a circle; each row shows the period's joins, invites, cards listed, searches, searches that found nobody and WhatsApp taps, plus the circle's current member count (blank for deleted circles).\",\n"
+    },
+    {
+      "cold_start": 156,
+      "cold_end": 157,
+      "cold": "        \"A deleted-then-recreated owner account has no owner access until the configuration names its new Google account ID.\"\n",
+      "final_start": 170,
+      "final_end": 171,
+      "final": "        \"After the owner deletes their account and signs up again with the same Google account, they have owner access; a different Google account gains it only when the configuration names its ID.\"\n"
+    }
+  ],
+  "input_sha256": "8d018a719d5a8d6912eb006bc8cee0f26e1ee5f656e4cf510cd762d2b82d012f",
+  "recorded_at": "2026-09-26T19:19:13+00:00",
+  "commit": "8bf054e193fa8083ba7cc439ca45d07e88b5554a",
+  "launch_id": "launch-07c95cf90bec4d6f90dc91c63bf5466e",
+  "cold_input_sha256": "2b2ee53cefc11e7d2e3efe577266b946fd05d2936a20ec071e3523ef306c03c6",
+  "final_artifact_sha256": "8d018a719d5a8d6912eb006bc8cee0f26e1ee5f656e4cf510cd762d2b82d012f"
+}

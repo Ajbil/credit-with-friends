@@ -1,0 +1,179 @@
+{
+  "generated_by": "docs-decomposer",
+  "epics": [
+    {
+      "id": "accounts",
+      "title": "Accounts and privacy",
+      "objective": "Every member is a known, consenting adult with a WhatsApp number, whose personal data only people in their circles can see.",
+      "source_refs": ["docs/product/BRIEF.md", "docs/specs/accounts.md"]
+    },
+    {
+      "id": "circles-cards",
+      "title": "Circles and cards",
+      "objective": "Trusted circles form through admin-shared invite links, and members list the bank cards their circles can see.",
+      "source_refs": ["docs/product/BRIEF.md", "docs/specs/circles.md", "docs/specs/cards.md"]
+    },
+    {
+      "id": "find-contact",
+      "title": "Find and contact",
+      "objective": "A shopper finds which circle member holds a given bank card and opens a prefilled WhatsApp chat in one tap.",
+      "source_refs": ["docs/product/BRIEF.md", "docs/specs/find-and-contact.md"]
+    },
+    {
+      "id": "account-deletion",
+      "title": "Account deletion",
+      "objective": "A member can delete their account, removing their personal data from the live app and the identity from their usage events.",
+      "source_refs": ["docs/specs/accounts.md"]
+    },
+    {
+      "id": "usage-metrics",
+      "title": "Usage metrics",
+      "objective": "The owner can judge the MVP success bar from counts-only, owner-only usage figures.",
+      "source_refs": ["docs/product/BRIEF.md", "docs/specs/usage-metrics.md"]
+    }
+  ],
+  "items": [
+    {
+      "key": "CWF-1",
+      "title": "Sign in, onboard and manage profile",
+      "epic": "accounts",
+      "spec": "docs/specs/accounts.md",
+      "story": "As a visitor, I sign in with Google, give my name, WhatsApp number and 18+ confirmation, and consent to the privacy notice, so that I become a member other people can recognise and contact.",
+      "acceptance_criteria": [
+        "Every flow in this story works in a phone browser opened from a WhatsApp link, the app can be installed to the phone's home screen, and it runs on free hosting tiers only.",
+        "Completing onboarding creates exactly one account; later sign-ins with the same Google account, even after its email changes, open that same account.",
+        "Signing in without completing onboarding creates no member account; that person cannot join a circle, list a card or search, and never appears in any member, circle or search data, including through direct data requests.",
+        "Onboarding cannot be submitted without a 1 to 50 character display name, a WhatsApp number that normalises to a valid E.164 number (country code defaults to +91; non-Indian numbers accepted), the 18-or-older confirmation and explicit consent.",
+        "The privacy notice states what is stored and why, who sees what, that card numbers, CVV, expiry and OTPs are never asked for or to be shared, how to withdraw consent, see and correct data, a contact address for questions and grievances, and that deleted data may survive in provider backups until they expire.",
+        "The exact text of every privacy-notice version is kept, and every member's accepted version and acceptance time are stored.",
+        "\"Cancel and remove my sign-in\" erases the sign-in identity and signs the person out; an unfinished sign-in identity with no activity for 30 days is erased.",
+        "When a session expires or becomes invalid, the member sees the sign-in screen and, after signing in again, finds their data unchanged.",
+        "A member can view their display name, WhatsApp number and Google email; editing the name or number applies the onboarding rules, an invalid value is rejected with a message and the previous value kept, and a saved value is what every later view and WhatsApp link uses.",
+        "No screen or data response available to another member contains a member's email or Google account ID.",
+        "Signing out on one device does not sign the member out on another device.",
+        "After a notice version that changes data use is published, an existing member must accept it before continuing to use the app."
+      ],
+      "skill": "fullstack",
+      "depends_on": []
+    },
+    {
+      "key": "CWF-2",
+      "title": "Create, join and run circles",
+      "epic": "circles-cards",
+      "spec": "docs/specs/circles.md",
+      "story": "As a member, I create a circle and, as its admin, share its invite link so my group can join, and I can leave, remove people, reset the link, rename, hand over or delete the circle, so that only people I trust see each other.",
+      "acceptance_criteria": [
+        "Creating a circle with a 1 to 40 character name makes the creator its only member and its admin; an empty or longer name is rejected, and a member who already belongs to 20 circles cannot create another.",
+        "Each circle has exactly one active invite link whose code carries at least 128 bits of randomness.",
+        "Only the admin can retrieve, copy or share the circle's active invite link in the app, including through direct data requests; Share on WhatsApp opens WhatsApp with the circle name and link prefilled, and each Copy or Share on WhatsApp tap records one invite usage event with the admin and circle.",
+        "Opening a valid link without being a member shows the circle name and member count but no member names, and does not join the person until they press Join.",
+        "A signed-out visitor who opens an invite link, signs in and completes onboarding lands back on that invite; a person who is already a member and opens a valid link goes straight to the circle.",
+        "Joining records a join usage event with the member and circle.",
+        "A member sees the list of circles they belong to and, inside a circle, its name, its members by display name and which member is the admin.",
+        "A member's display name and WhatsApp number are returned only to members who share at least one circle with them, and only while they do, including through direct data requests.",
+        "An unknown, malformed, reset or deleted-circle link shows the same no-longer-valid message to everyone, including members, and reveals nothing about any circle; after a reset, the new link works and existing members are unaffected.",
+        "A member who leaves, or is removed, immediately stops seeing that circle and the data of members they share no other circle with, and those members stop seeing theirs, including through direct data requests; visibility through any other shared circle continues.",
+        "A removed person cannot rejoin through the current or any later invite link and sees only \"You can't join this circle.\"; after Clear all removals they can rejoin only by opening a valid link and pressing Join; no list or names of removed people are shown to anyone.",
+        "A person who left voluntarily can rejoin through a valid link.",
+        "Joining is refused with a reason at 100 members per circle and at 20 circles per member, and simultaneous joins never exceed either limit.",
+        "Only the admin can remove members, clear removals, retrieve or reset the link, rename, hand over the admin role or delete the circle, including through direct data requests; the admin cannot remove themselves; a rename follows the 1 to 40 character rule.",
+        "Leaving, removing a member and deleting a circle each require a confirmation step.",
+        "When the admin leaves, the remaining member with the earliest join time becomes admin; when the last member leaves, the circle is deleted and its link shows the no-longer-valid message.",
+        "Deleting a circle ends every membership and makes its invite link show the no-longer-valid message; a deleted circle keeps its past usage events, its last name, its creation time, its deletion and whether the owner created it, so later usage counts can show it marked (deleted).",
+        "The admin can hand the admin role to another member, after which only the new admin has admin powers.",
+        "Non-members never receive a circle's member list or member names, including through direct data requests."
+      ],
+      "skill": "fullstack",
+      "depends_on": ["CWF-1"]
+    },
+    {
+      "key": "CWF-3",
+      "title": "List and manage my cards",
+      "epic": "circles-cards",
+      "spec": "docs/specs/cards.md",
+      "story": "As a member, I list the bank cards I hold (bank, credit or debit, optional variant) and keep them up to date, so that people in my circles can find me when they need one of those cards.",
+      "acceptance_criteria": [
+        "Every bank in the initial list can be selected, and a member can add a card with a listed bank, a type of credit or debit, and no variant; it then appears in their own card list, even if they belong to no circle.",
+        "A bank that is not on the list cannot be saved, including through direct data requests.",
+        "A variant longer than 40 characters after trimming is rejected, and a variant with three or more digits in a row (ignoring spaces, dashes and slashes between them) is rejected with the never-enter-card-details message.",
+        "Adding a card identical to one the member already holds is rejected; adding the same bank and type with a different variant succeeds.",
+        "A 21st card cannot be added.",
+        "Editing a card applies every rule for adding one, including the duplicate and unsafe-variant checks.",
+        "Members who share a circle see a member's added and edited cards at once, and a removed card disappears from every view at once; after someone joins a circle, they and the existing members see each other's previously listed cards.",
+        "A member's cards are returned only to members who share at least one circle with them, and only while they do, including through direct data requests; the holder always sees their own.",
+        "No member can edit or remove another member's card, including through direct data requests.",
+        "A member with no cards can finish onboarding and skip adding cards; a member who arrived through an invite link sees that invite before being invited to add cards.",
+        "Adding a card records one card listed usage event carrying the member and the circles they belong to at that moment, or no circle.",
+        "The add and edit screens show the never-enter-card-details reminder, and the add screen shows the owner's contact address for a missing bank.",
+        "Correcting a bank's display name changes it on every existing card of that bank, and no bank is ever removed from the list."
+      ],
+      "skill": "fullstack",
+      "depends_on": ["CWF-1", "CWF-2"]
+    },
+    {
+      "key": "CWF-4",
+      "title": "Find a card holder and message them on WhatsApp",
+      "epic": "find-contact",
+      "spec": "docs/specs/find-and-contact.md",
+      "story": "As a shopper, I search my circles for a bank card by bank, type and optional variant, or browse a member's cards, and tap to open a prefilled WhatsApp chat with a holder, so that I can get an offer without messaging everyone I know.",
+      "acceptance_criteria": [
+        "Without a variant, a search returns exactly the other members who share a circle with the searcher and hold a card of the chosen bank and type; with a variant, it returns exactly those whose card of that bank and type has a matching variant or no variant. The searcher is never included.",
+        "Credit or debit returns holders of either type; credit or debit alone returns only that type.",
+        "With a variant entered, people with a card whose variant contains the text (ignoring case) appear under Matching variant; people whose only qualifying cards have no variant appear under Variant not stated; cards with a different stated variant never appear.",
+        "A variant entry of only spaces behaves exactly like no variant.",
+        "Each result shows the person once, with their display name, all their qualifying cards and the names of the circles shared with the searcher, sorted alphabetically within the single list or within each group.",
+        "Search results reflect cards and memberships at the moment of the search: a newly added card appears in matching searches, an edited card appears in searches matching its new values and not in searches matching only its old values, a removed card never appears, and correcting a bank's display name does not change which cards a search matches.",
+        "Members who share no circle with the searcher never appear in results or in browsed member lists, including through direct data requests.",
+        "A search with no matches shows only the no-one-yet message.",
+        "Each search records one search usage event with the searcher, their circles (or none), the number of distinct people found, and the chosen bank and type (never the variant text).",
+        "Pressing Message on WhatsApp for a card still visible opens WhatsApp's chat link for the holder's current number with the message \"Hi <holder's display name>, do you have a moment? I need your <bank> <credit/debit> card<, variant if stated> for an offer.\", which the member can edit before sending.",
+        "Pressing Message on WhatsApp after the card was removed, or after the two members stopped sharing any circle, shows \"This card is no longer available.\" and opens nothing.",
+        "Each successful contact press, from search or from a browsed member's list, records one WhatsApp tap usage event with the member who pressed, the holder and their shared circles; a failure to record does not stop WhatsApp from opening.",
+        "From a circle's member list, a member can see another member's cards and contact them the same way.",
+        "Next to the contact button, the app reminds the member that the card holder places the order themselves and that nobody should ever share card numbers, CVV, expiry or OTPs."
+      ],
+      "skill": "fullstack",
+      "depends_on": ["CWF-2", "CWF-3"]
+    },
+    {
+      "key": "CWF-5",
+      "title": "Delete my account",
+      "epic": "account-deletion",
+      "spec": "docs/specs/accounts.md",
+      "story": "As a member, I delete my account after confirming, so that my profile, number, cards and circle memberships are removed and my usage events no longer identify me.",
+      "acceptance_criteria": [
+        "Deletion requires an explicit confirmation, and the sole admin of a circle can delete their account.",
+        "After deletion, the member's name, number and cards appear nowhere, their usage events carry no member identifier, all their sessions have ended, and a request using an old session cannot recreate any data.",
+        "If deletion fails partway, no data is removed and the member can retry.",
+        "Signing in again with a deleted member's Google account starts onboarding as a new person with no cards and no circle memberships.",
+        "When an admin deletes their account, the remaining member with the earliest join time becomes admin of each of their circles; a circle left with no members is deleted and its link shows the no-longer-valid message.",
+        "A removed person who deletes their account and signs up again is not blocked from that circle."
+      ],
+      "skill": "fullstack",
+      "depends_on": ["CWF-2", "CWF-3", "CWF-4"]
+    },
+    {
+      "key": "CWF-6",
+      "title": "Owner usage view",
+      "epic": "usage-metrics",
+      "spec": "docs/specs/usage-metrics.md",
+      "story": "As the owner, I open a counts-only usage view for the last 7 days, 30 days or all time, so that I can judge whether the MVP is spreading and being used through a sale season.",
+      "acceptance_criteria": [
+        "Only the account whose Google account ID is named as owner in the deployment configuration can open the usage view or receive its data, including through direct data requests; every other member is refused.",
+        "Each of the five events is recorded with its time and the fields listed in the spec's table; a failure to record any event never blocks or undoes the member's action and leaves that event uncounted; creating a circle records no join event.",
+        "The owner can switch between last 7 days, last 30 days and all time; the 7- and 30-day periods start at 00:00 Indian Standard Time six and 29 days before today and end when the view is opened.",
+        "The overall numbers show new members (current accounts only), active members, new circles and those created by someone other than the owner (including later-deleted circles), joins, invites, cards listed, searches, searches that found nobody, WhatsApp taps and distinct card holders contacted for the period, plus current totals of members, circles and cards.",
+        "The per-circle table has a row for every circle, each showing its name (the last name plus (deleted) for deleted circles) and creation date, and a No circle row for events without a circle; each row shows the period's joins, invites, cards listed, searches, searches that found nobody and WhatsApp taps, plus the circle's current member count (blank for deleted circles).",
+        "An event carrying several circles adds one to each of those rows and one to the overall number.",
+        "After a member deletes their account, the event counts are unchanged, no event carries their identifier, member totals drop by one, and distinct active-member and card-holder counts no longer include them.",
+        "The usage view never shows a member's name, WhatsApp number, email or cards, and no request returns individual event records or member identifiers, including to the owner.",
+        "The Searched cards table lists every bank and type searched in the period with its search count and found-nobody count, highest search count first, and never shows variant text.",
+        "After the owner deletes their account and signs up again with the same Google account, they have owner access; a different Google account gains it only when the configuration names its ID.",
+        "A member sees their own Google account ID on their profile, and no other member ever receives it.",
+        "A circle created by the configured owner is counted as owner-created, and changing the configured owner later does not reclassify it, including after the circle is deleted."
+      ],
+      "skill": "fullstack",
+      "depends_on": ["CWF-2", "CWF-3", "CWF-4", "CWF-5"]
+    }
+  ]
+}

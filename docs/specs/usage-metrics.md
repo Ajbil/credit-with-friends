@@ -2,7 +2,7 @@
 slug: usage-metrics
 title: Usage metrics
 status: confirmed
-saved: 2026-09-26T18:54:21+00:00
+saved: 2026-09-26T19:17:20+00:00
 ---
 
 # Usage metrics
@@ -26,8 +26,14 @@ members' personal data.
   identifier the Accounts capability uses, not an email address) is named in
   the app's deployment configuration. There is no in-app way to become, add or
   change the owner.
-- If the owner deletes their account and signs up again, the new account has a
-  new ID and has no owner access until the configuration is updated.
+- Owner access follows the configured Google account ID. If the owner deletes
+  their account and signs up again with the same Google account, they are a
+  new member with no prior data (Accounts) but keep owner access, because the
+  ID is unchanged. Moving ownership to a different Google account requires a
+  configuration change.
+- Every member's own profile shows their Google account ID to them alone, so
+  the owner can copy theirs into the configuration. It is never shown to
+  another member (Accounts).
 - The owner also uses the app as an ordinary member; the usage view is an
   extra screen only they can open.
 
@@ -43,16 +49,33 @@ members' personal data.
   | WhatsApp tap | a member presses Message on WhatsApp (Find and contact) | member, card holder, their shared circles |
 
 - Every event also carries the time it happened.
-- A WhatsApp tap whose recording fails goes uncounted, as Find and contact
-  requires; every other event is always recorded.
+- This spec extends the search event defined by Find and contact with the
+  chosen bank and type; the app records them with every search.
+- Creating a circle does not record a join event; it is counted as a new
+  circle instead.
+- Recording an event never blocks, delays or undoes the member's action. If
+  recording fails, that event goes uncounted; this applies to all five events,
+  as Find and contact already requires for WhatsApp taps.
+- The privacy notice's description of usage events (Accounts) includes that a
+  WhatsApp tap records the card holder contacted and that a search records the
+  bank and type searched. This is part of the first notice version, so it
+  triggers no re-acceptance.
 - The member and card-holder links on events are kept only so the view can
   count distinct active members and distinct card holders contacted. When a
   member deletes their account, their identity is removed from every event
-  they appear in (Accounts); the events stay, carrying no member identifier.
+  they appear in; the events stay with their time, circles and search bank and
+  type but no member identifier, and are used only to produce counts. This is
+  how the Accounts rule that events "remain only as anonymous counts" is met.
   Counts for a very small circle may still let someone guess who acted, which
   is why the view is owner-only and shows counts alone.
-- When a circle is deleted, its events stay, and its last name, creation time
-  and deletion are kept so the view can show and count it (Circles).
+- Distinct active-member and card-holder counts only count identities still on
+  events, so they drop when a member deletes their account.
+- Every circle records, when it is created, whether its creator was the
+  configured owner at that moment; a later change of owner does not reclassify
+  existing circles.
+- When a circle is deleted, its events stay, and its last name, creation time,
+  deletion and owner-created flag are kept so the view can show and count it
+  (Circles).
 - Events are kept for as long as the app runs.
 
 **Usage view**
@@ -69,8 +92,9 @@ members' personal data.
   - joins, invites, cards listed, searches, searches that found nobody,
     WhatsApp taps, and distinct card holders contacted.
 - Current totals, independent of the period: members, circles and cards.
-- A per-circle table with one row per circle, including deleted ones labelled
-  with their last name and "(deleted)", showing for the period: joins, invites,
+- A per-circle table with one row per circle, identified by its name (its last
+  name plus "(deleted)" for deleted ones) and its creation date, so circles
+  with the same name can be told apart, showing for the period: joins, invites,
   cards listed, searches, searches that found nobody, and WhatsApp taps, plus
   the circle's current member count (blank for deleted circles). A row "No
   circle" shows events that carried no circle.
@@ -83,7 +107,8 @@ members' personal data.
 - A "Searched cards" table for the period, across all circles: one row per
   bank and type that was searched, showing the number of searches and the
   number that found nobody, sorted by number of searches, highest first. It
-  shows which cards members look for and which ones their circles lack.
+  shows which cards members look for and how often those searches, including
+  any variant filter, found nobody.
 - The view shows counts only: never member names, WhatsApp numbers, emails or
   cards.
 - Numbers are as of the moment the view is opened.
@@ -110,7 +135,9 @@ members' personal data.
    configuration can open the usage view or receive its data, including
    through direct data requests; every other member is refused.
 2. Each of the five events is recorded with its time and the fields listed in
-   the table, except that a WhatsApp tap whose recording fails goes uncounted.
+   the table; a failure to record any event never blocks or undoes the
+   member's action and leaves that event uncounted; creating a circle records
+   no join event.
 3. The owner can switch between last 7 days, last 30 days and all time; the
    7- and 30-day periods start at 00:00 Indian Standard Time six and 29 days
    before today and end when the view is opened, and every period-based number
@@ -120,19 +147,26 @@ members' personal data.
    (including later-deleted circles), joins, invites, cards listed, searches,
    searches that found nobody, WhatsApp taps and distinct card holders
    contacted for the period, plus current totals of members, circles and cards.
-5. The per-circle table has a row for every circle, including deleted circles
-   labelled with their last name and "(deleted)", and a "No circle" row for
-   events without a circle.
+5. The per-circle table has a row for every circle, each showing its name (the
+   last name plus "(deleted)" for deleted circles) and creation date, and a
+   "No circle" row for events without a circle.
 6. An event carrying several circles adds one to each of those rows and one to
    the overall number.
 7. After a member deletes their account, the event counts (joins, invites,
    cards listed, searches and WhatsApp taps) are unchanged, no event carries
-   their identifier, and member totals drop by one.
+   their identifier, member totals drop by one, and distinct active-member and
+   card-holder counts no longer include them.
 8. The usage view never shows a member's name, WhatsApp number, email or
    cards, and no request returns individual event records or member
    identifiers, including to the owner.
 9. The "Searched cards" table lists every bank and type searched in the period
    with its search count and found-nobody count, highest search count first,
    and never shows variant text.
-10. A deleted-then-recreated owner account has no owner access until the
-    configuration names its new Google account ID.
+10. After the owner deletes their account and signs up again with the same
+    Google account, they have owner access; a different Google account gains
+    it only when the configuration names its ID.
+11. A member sees their own Google account ID on their profile, and no other
+    member ever receives it.
+12. A circle created by the configured owner is counted as owner-created, and
+    changing the configured owner later does not reclassify it, including after
+    the circle is deleted.
