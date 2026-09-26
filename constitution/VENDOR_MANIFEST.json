@@ -1,5 +1,5 @@
 {
-  "harness_commit": "cb82a75c8adef63bc6960d086841f7169a14df64",
+  "harness_commit": "d176e301eaa6d610aa9a46c4d9ef5fb424d20ca4",
   "files": {
     "factory/scripts/check_agents_hygiene.py": "5ee309dba816ff6573e98550313992be22e7e9a20c58caa2fbbe35f26139fc12",
     "factory/scripts/check_board_complete.py": "75022051af7cc2928039641ba2ef1a5f31e45e6b5c1651e15c2213cca6c6a7a0",
@@ -102,7 +102,7 @@
     "factory/prompts/skill-miner.md": "01a26af6b85a1effa81d5ba35fa44089d70608d37151f9f2f751c98a6711a74a",
     "factory/prompts/tester-functional.md": "713101d9e70337d66df3a11d2ffdc3116db5fb3576ef5a9633912a5e77319982",
     "forge": "c1ff75251e0f72cfec6108e0078ebf8f1f87876ccdd311704dab8ce284a9eed4",
-    ".claude/settings.json": "c19d6de171e5c7b7df5cca4904be2f25f0425dcb16f2b590e34ce0569347b824",
-    ".codex/hooks.json": "8e2334970716fc9b189c05403cc26dc974745ca513a5fc970404b2105e9bc21b"
+    ".claude/settings.json": "66addb73e7a10f1341e2f82ad694e69e93563d01ffa1f0c56b6a8c5c3f86f90f",
+    ".codex/hooks.json": "6fe7fdfc37c7bc7a8f761b344753fc3d3ca8a43a821d5888d6792b8bd3627ab3"
   }
 }
