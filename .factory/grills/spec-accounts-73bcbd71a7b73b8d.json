@@ -1,0 +1,384 @@
+{
+  "generated_by": "griller",
+  "gate": "spec",
+  "verdict": "pass",
+  "gaps": [
+    "docs/specs/accounts.md:24-25 does not define what identifies the same Google account. The handover must distinguish Google's stable account identifier from an email address that can change, and say how that identifier is discarded on deletion so a later sign-in creates a new member.",
+    "docs/specs/accounts.md:24-25 and docs/specs/accounts.md:38-49 leave the pre-consent account state undefined. Google sign-in creates an account before notice acceptance, but the spec does not say which Google data may be stored then, whether the account is provisional, or how abandoned onboarding data is erased.",
+    "docs/specs/accounts.md:26 and docs/specs/accounts.md:57-58 do not define what happens when a device session expires, is revoked by Google, or becomes invalid. The absolute promise to stay signed in until sign-out or deletion cannot guide those failure paths.",
+    "docs/specs/accounts.md:28-30 and docs/product/BRIEF.md:27 leave invite return underspecified: the destination must survive Google sign-in and incomplete onboarding, and the flow needs an outcome when the link has been reset or the circle deleted. The spec also says nothing about an already onboarded visitor opening an invite.",
+    "docs/specs/accounts.md:32-49 makes onboarding mandatory but does not establish whether an incomplete member can view and delete the provisional account. Sending every visit back to onboarding can otherwise trap personal data if the person declines consent.",
+    "docs/specs/accounts.md:33-49 gives no eligibility rule for under-18 visitors, despite the family-circle audience in docs/product/DISCOVERY.md:26 and the stated DPDP compliance goal in docs/product/BRIEF.md:46. The Act defines a child as under 18 and calls for verifiable parental consent when its relevant provisions commence: [DPDP Act](https://www.meity.gov.in/static/uploads/2024/02/Digital-Personal-Data-Protection-Act-2023.pdf).",
+    "docs/specs/accounts.md:35-37 and docs/specs/accounts.md:85-87 do not define the accepted international-number format or normalization. Implementers must guess whether the stored number includes '+', how whitespace is handled, and what exact value a WhatsApp link receives.",
+    "docs/specs/accounts.md:38-46 lists data and audience but omits the purposes for processing each category, including owner-only per-circle usage measurement required by docs/decisions/0008-first-party-usage-counters.md:16-19. It also leaves out how a member can withdraw consent, exercise data rights, or raise a grievance, although the spec claims informed DPDP consent. [DPDP Act, section 5](https://www.meity.gov.in/static/uploads/2024/02/Digital-Personal-Data-Protection-Act-2023.pdf).",
+    "docs/specs/accounts.md:38-46 says the member accepts a privacy notice, but does not define an affirmative consent action distinct from merely reading it, or how the app preserves the exact notice text associated with the recorded version. A version label and time alone do not establish what was shown.",
+    "docs/specs/accounts.md:47-49 and docs/specs/accounts.md:82-84 prohibit screens and listings but leave direct data reads and writes unspecified. The contract needs a server-side rule preventing incomplete accounts from joining circles, listing cards, searching, or being returned in member data.",
+    "docs/specs/accounts.md:52-55 and docs/specs/accounts.md:85-87 validate name and number during onboarding only. The edit flow does not say whether blank names or malformed numbers are rejected, or when changed names and numbers replace values already visible to circle members.",
+    "docs/specs/accounts.md:55 and docs/specs/accounts.md:94 protect email on screens only. The draft does not prohibit exposing another member's email through member, search, profile, or circle data responses; nor does it state that name, number, and cards remain accessible only while two members share a circle. See docs/decisions/0006-circles-invite-link.md:16-20.",
+    "docs/specs/accounts.md:63-66 delegates admin departure to a future Circles capability without requiring that deletion remain possible for a sole admin. That leaves a reachable deletion dead end unless the Circles contract supplies an explicit outcome.",
+    "docs/specs/accounts.md:63-70 promises immediate removal across profiles, cards, memberships, and usage but does not define failure behavior if only part succeeds, what happens to active sessions on other devices, or whether an in-flight request can recreate member data after deletion.",
+    "docs/specs/accounts.md:67-68 and docs/specs/accounts.md:96-97 permit anonymous retained totals but do not specify whether identifiable event rows, circle links, timestamps, logs, or backups remain, or when they are erased. That makes the deletion promise and its acceptance test ambiguous.",
+    "docs/specs/accounts.md:75 records notice versions while excluding re-consent, but does not say what happens to existing members when a later version changes data use or sharing. An implementer must guess whether the new use is blocked, grandfathered, or applied without consent.",
+    "docs/specs/accounts.md:78-99 has no acceptance criterion for the stated profile-name edit, deletion confirmation, incomplete-account deletion, or server-side circle visibility boundary. Those behaviours could be omitted while all ten listed criteria pass."
+  ],
+  "contradictions": [
+    "docs/specs/accounts.md:15-16 says India's DPDP Act presently requires consent and erasure for this app, while the relevant Act provisions were scheduled to commence eighteen months after the 13 November 2025 notification, after this draft's 2026-09-26 date. The product may choose to meet them from day one, as docs/decisions/0001-mvp-small-group-india.md:27 says, but the legal-timing claim is inaccurate. [Commencement notification](https://www.meity.gov.in/static/uploads/2025/11/c56ceae6c383460ca69577428b36828b.pdf).",
+    "docs/specs/accounts.md:39-40 says the notice describes stored 'usage counts', while docs/specs/accounts.md:67 and docs/specs/accounts.md:96-97 refer to identifiable usage events, and docs/product/BRIEF.md:42 defines a usage event as related to a member and circle. The notice would underdescribe the data retained before deletion."
+  ],
+  "resolutions": [
+    "Identity is Google's stable account ID, not email; deletion discards it so a later sign-in is a new person.",
+    "No member account exists before consent; only the Google sign-in identity is held, erasable via cancel or after 30 days inactive.",
+    "Expired or invalid sessions return the member to Google sign-in with no data loss.",
+    "Invite is remembered through sign-in and onboarding; onboarded members go straight to it; invalid-invite outcome is owned by the Circles capability.",
+    "Onboarding is a single step with 'cancel and remove my sign-in'; no provisional member data exists to trap.",
+    "Owner chose 18+ self-declared; parental-consent flows are out of scope.",
+    "Numbers are normalised to E.164 (+, country code, digits only; spaces, dashes, brackets removed); the WhatsApp link uses those digits.",
+    "Notice now lists the purpose of each data category (including owner-only per-circle usage), consent withdrawal via deletion, data access/correction via profile, and a grievance contact.",
+    "Consent requires an explicit action (unticked box and continue); the exact text of each notice version is retained.",
+    "Added an Enforcement section: rules are enforced by the system, covering incomplete accounts and data returned outside shared circles.",
+    "Profile edits use onboarding validation (name 1-50 chars, E.164 number); invalid values are rejected; saved changes apply immediately.",
+    "Email and Google account ID are never returned to another member in any response; name, number and cards only while a circle is shared.",
+    "Deletion is never blocked, including for a sole admin; the Circles capability defines the admin-leave outcome that deletion applies.",
+    "Deletion is all-or-nothing with retry; every session on every device ends and old-session requests are refused and cannot recreate data.",
+    "Deletion removes the member link from usage events (anonymous counts only) and the consent record; live data goes immediately, provider backups expire on the provider's retention, stated in the notice.",
+    "Material notice changes require re-acceptance before continued use; wording-only changes do not. Removed re-consent from out of scope.",
+    "Added acceptance criteria for name edit, deletion confirmation, incomplete-account cancel, server-side visibility, sole-admin deletion, partial failure and notice changes.",
+    "Reworded: the product meets DPDP consent/erasure standards from day one by choice (decision 0001), without claiming the provisions are in force.",
+    "Notice now describes usage events linked to the member and circle, with the link removed on deletion, matching the Brief's usage-event concept.",
+    "Applied: 18+ self-declared confirmation at onboarding; under-18s and parental consent out of scope."
+  ],
+  "finding_dispositions": [
+    {
+      "finding": "docs/specs/accounts.md:24-25 does not define what identifies the same Google account. The handover must distinguish Google's stable account identifier from an email address that can change, and say how that identifier is discarded on deletion so a later sign-in creates a new member.",
+      "resolution": "Identity is Google's stable account ID, not email; deletion discards it so a later sign-in is a new person.",
+      "source": "docs/specs/accounts.md Identity, Delete account; AC1, AC14"
+    },
+    {
+      "finding": "docs/specs/accounts.md:24-25 and docs/specs/accounts.md:38-49 leave the pre-consent account state undefined. Google sign-in creates an account before notice acceptance, but the spec does not say which Google data may be stored then, whether the account is provisional, or how abandoned onboarding data is erased.",
+      "resolution": "No member account exists before consent; only the Google sign-in identity is held, erasable via cancel or after 30 days inactive.",
+      "source": "docs/specs/accounts.md Sign in, Onboarding; AC2, AC5; docs/decisions/0001-mvp-small-group-india.md"
+    },
+    {
+      "finding": "docs/specs/accounts.md:26 and docs/specs/accounts.md:57-58 do not define what happens when a device session expires, is revoked by Google, or becomes invalid. The absolute promise to stay signed in until sign-out or deletion cannot guide those failure paths.",
+      "resolution": "Expired or invalid sessions return the member to Google sign-in with no data loss.",
+      "source": "docs/specs/accounts.md Sign in; AC7"
+    },
+    {
+      "finding": "docs/specs/accounts.md:28-30 and docs/product/BRIEF.md:27 leave invite return underspecified: the destination must survive Google sign-in and incomplete onboarding, and the flow needs an outcome when the link has been reset or the circle deleted. The spec also says nothing about an already onboarded visitor opening an invite.",
+      "resolution": "Invite is remembered through sign-in and onboarding; onboarded members go straight to it; invalid-invite outcome is owned by the Circles capability.",
+      "source": "docs/specs/accounts.md Sign in; AC6; docs/decisions/0006-circles-invite-link.md"
+    },
+    {
+      "finding": "docs/specs/accounts.md:32-49 makes onboarding mandatory but does not establish whether an incomplete member can view and delete the provisional account. Sending every visit back to onboarding can otherwise trap personal data if the person declines consent.",
+      "resolution": "Onboarding is a single step with 'cancel and remove my sign-in'; no provisional member data exists to trap.",
+      "source": "docs/specs/accounts.md Sign in, Onboarding; AC5"
+    },
+    {
+      "finding": "docs/specs/accounts.md:33-49 gives no eligibility rule for under-18 visitors, despite the family-circle audience in docs/product/DISCOVERY.md:26 and the stated DPDP compliance goal in docs/product/BRIEF.md:46. The Act defines a child as under 18 and calls for verifiable parental consent when its relevant provisions commence: [DPDP Act](https://www.meity.gov.in/static/uploads/2024/02/Digital-Personal-Data-Protection-Act-2023.pdf).",
+      "resolution": "Owner chose 18+ self-declared; parental-consent flows are out of scope.",
+      "source": "Owner decision: members must be 18 or older, self-declared at onboarding; no under-18 or parental-consent flow (Arihant, 2026-09-26)"
+    },
+    {
+      "finding": "docs/specs/accounts.md:35-37 and docs/specs/accounts.md:85-87 do not define the accepted international-number format or normalization. Implementers must guess whether the stored number includes '+', how whitespace is handled, and what exact value a WhatsApp link receives.",
+      "resolution": "Numbers are normalised to E.164 (+, country code, digits only; spaces, dashes, brackets removed); the WhatsApp link uses those digits.",
+      "source": "docs/specs/accounts.md Onboarding; AC3"
+    },
+    {
+      "finding": "docs/specs/accounts.md:38-46 lists data and audience but omits the purposes for processing each category, including owner-only per-circle usage measurement required by docs/decisions/0008-first-party-usage-counters.md:16-19. It also leaves out how a member can withdraw consent, exercise data rights, or raise a grievance, although the spec claims informed DPDP consent. [DPDP Act, section 5](https://www.meity.gov.in/static/uploads/2024/02/Digital-Personal-Data-Protection-Act-2023.pdf).",
+      "resolution": "Notice now lists the purpose of each data category (including owner-only per-circle usage), consent withdrawal via deletion, data access/correction via profile, and a grievance contact.",
+      "source": "docs/specs/accounts.md Onboarding; docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "finding": "docs/specs/accounts.md:38-46 says the member accepts a privacy notice, but does not define an affirmative consent action distinct from merely reading it, or how the app preserves the exact notice text associated with the recorded version. A version label and time alone do not establish what was shown.",
+      "resolution": "Consent requires an explicit action (unticked box and continue); the exact text of each notice version is retained.",
+      "source": "docs/specs/accounts.md Onboarding; AC3, AC4"
+    },
+    {
+      "finding": "docs/specs/accounts.md:47-49 and docs/specs/accounts.md:82-84 prohibit screens and listings but leave direct data reads and writes unspecified. The contract needs a server-side rule preventing incomplete accounts from joining circles, listing cards, searching, or being returned in member data.",
+      "resolution": "Added an Enforcement section: rules are enforced by the system, covering incomplete accounts and data returned outside shared circles.",
+      "source": "docs/specs/accounts.md Enforcement; AC2, AC9"
+    },
+    {
+      "finding": "docs/specs/accounts.md:52-55 and docs/specs/accounts.md:85-87 validate name and number during onboarding only. The edit flow does not say whether blank names or malformed numbers are rejected, or when changed names and numbers replace values already visible to circle members.",
+      "resolution": "Profile edits use onboarding validation (name 1-50 chars, E.164 number); invalid values are rejected; saved changes apply immediately.",
+      "source": "docs/specs/accounts.md Onboarding, Profile; AC8"
+    },
+    {
+      "finding": "docs/specs/accounts.md:55 and docs/specs/accounts.md:94 protect email on screens only. The draft does not prohibit exposing another member's email through member, search, profile, or circle data responses; nor does it state that name, number, and cards remain accessible only while two members share a circle. See docs/decisions/0006-circles-invite-link.md:16-20.",
+      "resolution": "Email and Google account ID are never returned to another member in any response; name, number and cards only while a circle is shared.",
+      "source": "docs/specs/accounts.md Enforcement; AC9; docs/decisions/0006-circles-invite-link.md"
+    },
+    {
+      "finding": "docs/specs/accounts.md:63-66 delegates admin departure to a future Circles capability without requiring that deletion remain possible for a sole admin. That leaves a reachable deletion dead end unless the Circles contract supplies an explicit outcome.",
+      "resolution": "Deletion is never blocked, including for a sole admin; the Circles capability defines the admin-leave outcome that deletion applies.",
+      "source": "docs/specs/accounts.md Delete account; AC11"
+    },
+    {
+      "finding": "docs/specs/accounts.md:63-70 promises immediate removal across profiles, cards, memberships, and usage but does not define failure behavior if only part succeeds, what happens to active sessions on other devices, or whether an in-flight request can recreate member data after deletion.",
+      "resolution": "Deletion is all-or-nothing with retry; every session on every device ends and old-session requests are refused and cannot recreate data.",
+      "source": "docs/specs/accounts.md Delete account; AC12, AC13"
+    },
+    {
+      "finding": "docs/specs/accounts.md:67-68 and docs/specs/accounts.md:96-97 permit anonymous retained totals but do not specify whether identifiable event rows, circle links, timestamps, logs, or backups remain, or when they are erased. That makes the deletion promise and its acceptance test ambiguous.",
+      "resolution": "Deletion removes the member link from usage events (anonymous counts only) and the consent record; live data goes immediately, provider backups expire on the provider's retention, stated in the notice.",
+      "source": "docs/specs/accounts.md Onboarding, Delete account; AC12; docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "finding": "docs/specs/accounts.md:75 records notice versions while excluding re-consent, but does not say what happens to existing members when a later version changes data use or sharing. An implementer must guess whether the new use is blocked, grandfathered, or applied without consent.",
+      "resolution": "Material notice changes require re-acceptance before continued use; wording-only changes do not. Removed re-consent from out of scope.",
+      "source": "docs/specs/accounts.md Onboarding, Out of scope; AC15"
+    },
+    {
+      "finding": "docs/specs/accounts.md:78-99 has no acceptance criterion for the stated profile-name edit, deletion confirmation, incomplete-account deletion, or server-side circle visibility boundary. Those behaviours could be omitted while all ten listed criteria pass.",
+      "resolution": "Added acceptance criteria for name edit, deletion confirmation, incomplete-account cancel, server-side visibility, sole-admin deletion, partial failure and notice changes.",
+      "source": "docs/specs/accounts.md Acceptance criteria 1-15"
+    },
+    {
+      "finding": "docs/specs/accounts.md:15-16 says India's DPDP Act presently requires consent and erasure for this app, while the relevant Act provisions were scheduled to commence eighteen months after the 13 November 2025 notification, after this draft's 2026-09-26 date. The product may choose to meet them from day one, as docs/decisions/0001-mvp-small-group-india.md:27 says, but the legal-timing claim is inaccurate. [Commencement notification](https://www.meity.gov.in/static/uploads/2025/11/c56ceae6c383460ca69577428b36828b.pdf).",
+      "resolution": "Reworded: the product meets DPDP consent/erasure standards from day one by choice (decision 0001), without claiming the provisions are in force.",
+      "source": "docs/decisions/0001-mvp-small-group-india.md"
+    },
+    {
+      "finding": "docs/specs/accounts.md:39-40 says the notice describes stored 'usage counts', while docs/specs/accounts.md:67 and docs/specs/accounts.md:96-97 refer to identifiable usage events, and docs/product/BRIEF.md:42 defines a usage event as related to a member and circle. The notice would underdescribe the data retained before deletion.",
+      "resolution": "Notice now describes usage events linked to the member and circle, with the link removed on deletion, matching the Brief's usage-event concept.",
+      "source": "docs/specs/accounts.md Onboarding; docs/product/BRIEF.md"
+    },
+    {
+      "finding": "Owner decision: members must be 18 or older, self-declared at onboarding; no under-18 or parental-consent flow (Arihant, 2026-09-26)",
+      "resolution": "Applied: 18+ self-declared confirmation at onboarding; under-18s and parental consent out of scope.",
+      "source": "Owner decision: members must be 18 or older, self-declared at onboarding; no under-18 or parental-consent flow (Arihant, 2026-09-26)"
+    }
+  ],
+  "amendments": [
+    {
+      "delta_index": 0,
+      "findings": [
+        "docs/specs/accounts.md:15-16 says India's DPDP Act presently requires consent and erasure for this app, while the relevant Act provisions were scheduled to commence eighteen months after the 13 November 2025 notification, after this draft's 2026-09-26 date. The product may choose to meet them from day one, as docs/decisions/0001-mvp-small-group-india.md:27 says, but the legal-timing claim is inaccurate. [Commencement notification](https://www.meity.gov.in/static/uploads/2025/11/c56ceae6c383460ca69577428b36828b.pdf)."
+      ],
+      "change": "Why: replaced the claim that the DPDP Act presently requires consent/erasure with a day-one product choice citing decision 0001.",
+      "reason": "Contradiction on legal timing.",
+      "source": "docs/decisions/0001-mvp-small-group-india.md"
+    },
+    {
+      "delta_index": 1,
+      "findings": [
+        "docs/specs/accounts.md:24-25 does not define what identifies the same Google account. The handover must distinguish Google's stable account identifier from an email address that can change, and say how that identifier is discarded on deletion so a later sign-in creates a new member."
+      ],
+      "change": "Added an Identity section: Google stable account ID, not email, identifies a person.",
+      "reason": "Same-account identity was undefined.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 2,
+      "findings": [
+        "docs/specs/accounts.md:24-25 and docs/specs/accounts.md:38-49 leave the pre-consent account state undefined. Google sign-in creates an account before notice acceptance, but the spec does not say which Google data may be stored then, whether the account is provisional, or how abandoned onboarding data is erased.",
+        "docs/specs/accounts.md:26 and docs/specs/accounts.md:57-58 do not define what happens when a device session expires, is revoked by Google, or becomes invalid. The absolute promise to stay signed in until sign-out or deletion cannot guide those failure paths.",
+        "docs/specs/accounts.md:28-30 and docs/product/BRIEF.md:27 leave invite return underspecified: the destination must survive Google sign-in and incomplete onboarding, and the flow needs an outcome when the link has been reset or the circle deleted. The spec also says nothing about an already onboarded visitor opening an invite.",
+        "docs/specs/accounts.md:32-49 makes onboarding mandatory but does not establish whether an incomplete member can view and delete the provisional account. Sending every visit back to onboarding can otherwise trap personal data if the person declines consent."
+      ],
+      "change": "Sign in: no account before consent; cancel-and-remove and 30-day erasure; session expiry/invalidation path; invite remembered through sign-in and onboarding, onboarded members go straight to it.",
+      "reason": "Pre-consent state, session failure and invite return were undefined.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 3,
+      "findings": [
+        "docs/specs/accounts.md:52-55 and docs/specs/accounts.md:85-87 validate name and number during onboarding only. The edit flow does not say whether blank names or malformed numbers are rejected, or when changed names and numbers replace values already visible to circle members."
+      ],
+      "change": "Onboarding heading made a single step; 'member' to 'person'; display name limited to 1-50 characters after trimming.",
+      "reason": "Validation rules needed for onboarding and edits.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 4,
+      "findings": [
+        "docs/specs/accounts.md:33-49 gives no eligibility rule for under-18 visitors, despite the family-circle audience in docs/product/DISCOVERY.md:26 and the stated DPDP compliance goal in docs/product/BRIEF.md:46. The Act defines a child as under 18 and calls for verifiable parental consent when its relevant provisions commence: [DPDP Act](https://www.meity.gov.in/static/uploads/2024/02/Digital-Personal-Data-Protection-Act-2023.pdf).",
+        "docs/specs/accounts.md:35-37 and docs/specs/accounts.md:85-87 do not define the accepted international-number format or normalization. Implementers must guess whether the stored number includes '+', how whitespace is handled, and what exact value a WhatsApp link receives.",
+        "docs/specs/accounts.md:38-46 lists data and audience but omits the purposes for processing each category, including owner-only per-circle usage measurement required by docs/decisions/0008-first-party-usage-counters.md:16-19. It also leaves out how a member can withdraw consent, exercise data rights, or raise a grievance, although the spec claims informed DPDP consent. [DPDP Act, section 5](https://www.meity.gov.in/static/uploads/2024/02/Digital-Personal-Data-Protection-Act-2023.pdf).",
+        "docs/specs/accounts.md:38-46 says the member accepts a privacy notice, but does not define an affirmative consent action distinct from merely reading it, or how the app preserves the exact notice text associated with the recorded version. A version label and time alone do not establish what was shown.",
+        "docs/specs/accounts.md:67-68 and docs/specs/accounts.md:96-97 permit anonymous retained totals but do not specify whether identifiable event rows, circle links, timestamps, logs, or backups remain, or when they are erased. That makes the deletion promise and its acceptance test ambiguous.",
+        "docs/specs/accounts.md:39-40 says the notice describes stored 'usage counts', while docs/specs/accounts.md:67 and docs/specs/accounts.md:96-97 refer to identifiable usage events, and docs/product/BRIEF.md:42 defines a usage event as related to a member and circle. The notice would underdescribe the data retained before deletion."
+      ],
+      "change": "Onboarding: E.164 normalisation, 18+ self-declaration, explicit consent action, per-category purposes including usage events linked to member and circle.",
+      "reason": "Number format, age eligibility, consent action, purposes and usage-event description were missing or inconsistent.",
+      "source": "docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "delta_index": 5,
+      "findings": [
+        "docs/specs/accounts.md:38-46 lists data and audience but omits the purposes for processing each category, including owner-only per-circle usage measurement required by docs/decisions/0008-first-party-usage-counters.md:16-19. It also leaves out how a member can withdraw consent, exercise data rights, or raise a grievance, although the spec claims informed DPDP consent. [DPDP Act, section 5](https://www.meity.gov.in/static/uploads/2024/02/Digital-Personal-Data-Protection-Act-2023.pdf)."
+      ],
+      "change": "Notice audience: only the owner sees usage data; nobody else sees any of it.",
+      "reason": "Purposes/audience must include owner-only usage.",
+      "source": "docs/decisions/0008-first-party-usage-counters.md"
+    },
+    {
+      "delta_index": 6,
+      "findings": [
+        "docs/specs/accounts.md:24-25 and docs/specs/accounts.md:38-49 leave the pre-consent account state undefined. Google sign-in creates an account before notice acceptance, but the spec does not say which Google data may be stored then, whether the account is provisional, or how abandoned onboarding data is erased.",
+        "docs/specs/accounts.md:32-49 makes onboarding mandatory but does not establish whether an incomplete member can view and delete the provisional account. Sending every visit back to onboarding can otherwise trap personal data if the person declines consent.",
+        "docs/specs/accounts.md:38-46 lists data and audience but omits the purposes for processing each category, including owner-only per-circle usage measurement required by docs/decisions/0008-first-party-usage-counters.md:16-19. It also leaves out how a member can withdraw consent, exercise data rights, or raise a grievance, although the spec claims informed DPDP consent. [DPDP Act, section 5](https://www.meity.gov.in/static/uploads/2024/02/Digital-Personal-Data-Protection-Act-2023.pdf).",
+        "docs/specs/accounts.md:38-46 says the member accepts a privacy notice, but does not define an affirmative consent action distinct from merely reading it, or how the app preserves the exact notice text associated with the recorded version. A version label and time alone do not establish what was shown.",
+        "docs/specs/accounts.md:47-49 and docs/specs/accounts.md:82-84 prohibit screens and listings but leave direct data reads and writes unspecified. The contract needs a server-side rule preventing incomplete accounts from joining circles, listing cards, searching, or being returned in member data.",
+        "docs/specs/accounts.md:55 and docs/specs/accounts.md:94 protect email on screens only. The draft does not prohibit exposing another member's email through member, search, profile, or circle data responses; nor does it state that name, number, and cards remain accessible only while two members share a circle. See docs/decisions/0006-circles-invite-link.md:16-20.",
+        "docs/specs/accounts.md:67-68 and docs/specs/accounts.md:96-97 permit anonymous retained totals but do not specify whether identifiable event rows, circle links, timestamps, logs, or backups remain, or when they are erased. That makes the deletion promise and its acceptance test ambiguous.",
+        "docs/specs/accounts.md:75 records notice versions while excluding re-consent, but does not say what happens to existing members when a later version changes data use or sharing. An implementer must guess whether the new use is blocked, grandfathered, or applied without consent."
+      ],
+      "change": "Notice: withdrawal, data rights, grievance contact, backup expiry; exact notice text retained; material-change re-acceptance; account created only on submission; new Enforcement section for system-enforced visibility.",
+      "reason": "Rights, notice versioning, provisional state and server-side enforcement were undefined.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 7,
+      "findings": [
+        "docs/specs/accounts.md:52-55 and docs/specs/accounts.md:85-87 validate name and number during onboarding only. The edit flow does not say whether blank names or malformed numbers are rejected, or when changed names and numbers replace values already visible to circle members.",
+        "docs/specs/accounts.md:55 and docs/specs/accounts.md:94 protect email on screens only. The draft does not prohibit exposing another member's email through member, search, profile, or circle data responses; nor does it state that name, number, and cards remain accessible only while two members share a circle. See docs/decisions/0006-circles-invite-link.md:16-20."
+      ],
+      "change": "Profile: edits follow onboarding rules, invalid values rejected, saved changes apply immediately; email rule moved to Enforcement.",
+      "reason": "Edit validation and propagation were undefined.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 8,
+      "findings": [
+        "docs/specs/accounts.md:24-25 does not define what identifies the same Google account. The handover must distinguish Google's stable account identifier from an email address that can change, and say how that identifier is discarded on deletion so a later sign-in creates a new member.",
+        "docs/specs/accounts.md:63-66 delegates admin departure to a future Circles capability without requiring that deletion remain possible for a sole admin. That leaves a reachable deletion dead end unless the Circles contract supplies an explicit outcome.",
+        "docs/specs/accounts.md:63-70 promises immediate removal across profiles, cards, memberships, and usage but does not define failure behavior if only part succeeds, what happens to active sessions on other devices, or whether an in-flight request can recreate member data after deletion.",
+        "docs/specs/accounts.md:67-68 and docs/specs/accounts.md:96-97 permit anonymous retained totals but do not specify whether identifiable event rows, circle links, timestamps, logs, or backups remain, or when they are erased. That makes the deletion promise and its acceptance test ambiguous."
+      ],
+      "change": "Delete account: never blocked for admins; all-or-nothing with retry; removes Google ID, email and consent record; anonymous usage counts; all sessions end, old sessions refused; backup expiry.",
+      "reason": "Deletion edge cases were undefined.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 9,
+      "findings": [
+        "Owner decision: members must be 18 or older, self-declared at onboarding; no under-18 or parental-consent flow (Arihant, 2026-09-26)",
+        "docs/specs/accounts.md:75 records notice versions while excluding re-consent, but does not say what happens to existing members when a later version changes data use or sharing. An implementer must guess whether the new use is blocked, grandfathered, or applied without consent."
+      ],
+      "change": "Out of scope: replaced re-consent exclusion with parental-consent exclusion (under-18s cannot join); owner wording tightened.",
+      "reason": "Owner chose 18+ only; re-consent is now in scope.",
+      "source": "Owner decision: members must be 18 or older, self-declared at onboarding; no under-18 or parental-consent flow (Arihant, 2026-09-26)"
+    },
+    {
+      "delta_index": 10,
+      "findings": [
+        "docs/specs/accounts.md:24-25 does not define what identifies the same Google account. The handover must distinguish Google's stable account identifier from an email address that can change, and say how that identifier is discarded on deletion so a later sign-in creates a new member.",
+        "docs/specs/accounts.md:24-25 and docs/specs/accounts.md:38-49 leave the pre-consent account state undefined. Google sign-in creates an account before notice acceptance, but the spec does not say which Google data may be stored then, whether the account is provisional, or how abandoned onboarding data is erased.",
+        "docs/specs/accounts.md:26 and docs/specs/accounts.md:57-58 do not define what happens when a device session expires, is revoked by Google, or becomes invalid. The absolute promise to stay signed in until sign-out or deletion cannot guide those failure paths.",
+        "docs/specs/accounts.md:28-30 and docs/product/BRIEF.md:27 leave invite return underspecified: the destination must survive Google sign-in and incomplete onboarding, and the flow needs an outcome when the link has been reset or the circle deleted. The spec also says nothing about an already onboarded visitor opening an invite.",
+        "docs/specs/accounts.md:32-49 makes onboarding mandatory but does not establish whether an incomplete member can view and delete the provisional account. Sending every visit back to onboarding can otherwise trap personal data if the person declines consent.",
+        "docs/specs/accounts.md:33-49 gives no eligibility rule for under-18 visitors, despite the family-circle audience in docs/product/DISCOVERY.md:26 and the stated DPDP compliance goal in docs/product/BRIEF.md:46. The Act defines a child as under 18 and calls for verifiable parental consent when its relevant provisions commence: [DPDP Act](https://www.meity.gov.in/static/uploads/2024/02/Digital-Personal-Data-Protection-Act-2023.pdf).",
+        "docs/specs/accounts.md:35-37 and docs/specs/accounts.md:85-87 do not define the accepted international-number format or normalization. Implementers must guess whether the stored number includes '+', how whitespace is handled, and what exact value a WhatsApp link receives.",
+        "docs/specs/accounts.md:38-46 says the member accepts a privacy notice, but does not define an affirmative consent action distinct from merely reading it, or how the app preserves the exact notice text associated with the recorded version. A version label and time alone do not establish what was shown.",
+        "docs/specs/accounts.md:47-49 and docs/specs/accounts.md:82-84 prohibit screens and listings but leave direct data reads and writes unspecified. The contract needs a server-side rule preventing incomplete accounts from joining circles, listing cards, searching, or being returned in member data.",
+        "docs/specs/accounts.md:52-55 and docs/specs/accounts.md:85-87 validate name and number during onboarding only. The edit flow does not say whether blank names or malformed numbers are rejected, or when changed names and numbers replace values already visible to circle members.",
+        "docs/specs/accounts.md:55 and docs/specs/accounts.md:94 protect email on screens only. The draft does not prohibit exposing another member's email through member, search, profile, or circle data responses; nor does it state that name, number, and cards remain accessible only while two members share a circle. See docs/decisions/0006-circles-invite-link.md:16-20.",
+        "docs/specs/accounts.md:63-66 delegates admin departure to a future Circles capability without requiring that deletion remain possible for a sole admin. That leaves a reachable deletion dead end unless the Circles contract supplies an explicit outcome.",
+        "docs/specs/accounts.md:63-70 promises immediate removal across profiles, cards, memberships, and usage but does not define failure behavior if only part succeeds, what happens to active sessions on other devices, or whether an in-flight request can recreate member data after deletion.",
+        "docs/specs/accounts.md:67-68 and docs/specs/accounts.md:96-97 permit anonymous retained totals but do not specify whether identifiable event rows, circle links, timestamps, logs, or backups remain, or when they are erased. That makes the deletion promise and its acceptance test ambiguous.",
+        "docs/specs/accounts.md:75 records notice versions while excluding re-consent, but does not say what happens to existing members when a later version changes data use or sharing. An implementer must guess whether the new use is blocked, grandfathered, or applied without consent.",
+        "docs/specs/accounts.md:78-99 has no acceptance criterion for the stated profile-name edit, deletion confirmation, incomplete-account deletion, or server-side circle visibility boundary. Those behaviours could be omitted while all ten listed criteria pass."
+      ],
+      "change": "Acceptance criteria rewritten from 10 to 15 to cover every amended behaviour.",
+      "reason": "Criteria were missing for several behaviours.",
+      "source": "docs/specs/accounts.md"
+    }
+  ],
+  "artifact_delta": [
+    {
+      "cold_start": 14,
+      "cold_end": 17,
+      "cold": "India's DPDP Act requires informed consent before that data is used and a way to\nerase it. Sign-in must cost nothing to run, so it uses Google and an\nunverified, self-entered WhatsApp number.\n",
+      "final_start": 14,
+      "final_end": 19,
+      "final": "the product meets the DPDP Act's consent and erasure standards from day one\n(decision 0001), whether or not those provisions are yet in force: informed,\naffirmative consent before data is used, and a way to erase it. Sign-in must\ncost nothing to run, so it uses Google and an unverified, self-entered WhatsApp\nnumber.\n"
+    },
+    {
+      "cold_start": 19,
+      "cold_end": 19,
+      "cold": "",
+      "final_start": 21,
+      "final_end": 26,
+      "final": "\n**Identity**\n- A person is identified by their Google account's stable account ID, not by\n  their email address. If their Google email changes, they keep the same\n  account.\n"
+    },
+    {
+      "cold_start": 23,
+      "cold_end": 30,
+      "cold": "- The first sign-in creates a member account. Later sign-ins return to the\n  same account.\n- A member stays signed in on that device until they sign out or delete their\n  account.\n- A visitor who arrived through a circle invite link is returned to that\n  invite once onboarding is complete; joining the circle itself belongs to the\n  Circles capability.\n",
+      "final_start": 30,
+      "final_end": 45,
+      "final": "- Signing in does not by itself create a member account. Until the privacy\n  notice is accepted, the app holds only the Google sign-in identity (account\n  ID, name, email) needed to keep the person signed in.\n- Onboarding offers \"cancel and remove my sign-in\", which erases that sign-in\n  identity immediately and signs the person out. A sign-in identity that never\n  completes onboarding is erased after 30 days without activity.\n- A member stays signed in on that device until they sign out, delete their\n  account, or the session expires or becomes invalid (for example, Google\n  access is revoked). They then see the sign-in screen and sign in with Google\n  again; no data is lost.\n- A signed-out visitor who opens a circle invite link has that invite\n  remembered through Google sign-in and onboarding, and is returned to it once\n  onboarding is complete. An already onboarded member who opens an invite link\n  goes straight to it. What the invite shows, including for a reset link or a\n  deleted circle, belongs to the Circles capability.\n"
+    },
+    {
+      "cold_start": 31,
+      "cold_end": 34,
+      "cold": "**Onboarding (required before anything else)**\n- The member provides:\n  - a display name, prefilled from their Google profile and editable;\n",
+      "final_start": 46,
+      "final_end": 50,
+      "final": "**Onboarding (a single step, required before anything else)**\n- The person provides:\n  - a display name, prefilled from their Google profile and editable, 1 to 50\n    characters after trimming spaces;\n"
+    },
+    {
+      "cold_start": 36,
+      "cold_end": 40,
+      "cold": "    other country.\n- The member reads a privacy notice and accepts it. The notice says:\n  - what is stored: name, email, WhatsApp number, listed cards, circle\n    memberships and usage counts;\n",
+      "final_start": 52,
+      "final_end": 69,
+      "final": "    other country. The number is stored in international E.164 form: \"+\",\n    country code and number, digits only, with spaces, dashes and brackets\n    removed. The WhatsApp link uses those same digits;\n  - a confirmation that they are 18 or older (self-declared).\n- The person is shown the privacy notice and gives consent by an explicit\n  action, such as ticking an unticked \"I agree\" box and continuing; reading or\n  scrolling alone is not consent. The notice states:\n  - what is stored and why:\n    - display name and WhatsApp number, so circle members can recognise and\n      contact them;\n    - email and Google account ID, to sign them in; never shown to other\n      members;\n    - listed cards, so circle members can find a card holder;\n    - circle memberships, to decide who can see whom;\n    - usage events (joins, invites, cards listed, searches, WhatsApp taps)\n      linked to them and their circle, so the owner can see per circle whether\n      the app is used; the link to them is removed on deletion;\n"
+    },
+    {
+      "cold_start": 41,
+      "cold_end": 42,
+      "cold": "    WhatsApp number and cards;\n",
+      "final_start": 70,
+      "final_end": 72,
+      "final": "    WhatsApp number and cards; only the owner sees usage data; nobody else\n    sees any of it;\n"
+    },
+    {
+      "cold_start": 44,
+      "cold_end": 49,
+      "cold": "  - how to delete their account.\n- The app records when the notice was accepted and which version of it.\n- Until onboarding is complete, the person cannot join circles, list cards or\n  appear to anyone else. Each visit sends them back to the step they have not\n  finished.\n",
+      "final_start": 74,
+      "final_end": 96,
+      "final": "  - how to withdraw consent (delete the account), how to see and correct their\n    data (the profile), and a contact address for questions and grievances;\n  - that deleted data may survive in the hosting provider's automatic backups\n    until those backups expire.\n- The app keeps the exact text of every notice version and records, for each\n  member, which version they accepted and when.\n- If a later notice version changes what data is collected, why, or who sees\n  it, an existing member must accept it before they continue using the app;\n  until they do, no new data use applies to them. Wording-only changes need no\n  re-acceptance.\n- The member account is created only when onboarding is submitted with all of\n  the above.\n\n**Enforcement**\n- These rules are enforced by the system itself, not only by what screens\n  show:\n  - a person without a completed account cannot join circles, list cards or\n    search, and is never returned in any member, circle or search data;\n  - a member's display name, WhatsApp number and cards are returned only to\n    members who share at least one circle with them, and only while they do;\n  - a member's email and Google account ID are never returned to another\n    member.\n"
+    },
+    {
+      "cold_start": 52,
+      "cold_end": 55,
+      "cold": "- They can edit the display name and WhatsApp number; every later WhatsApp\n  link uses the new number.\n- The email is never shown to other members.\n",
+      "final_start": 99,
+      "final_end": 104,
+      "final": "- They can edit the display name and WhatsApp number under the same rules as\n  onboarding. An invalid value is rejected with a message and the previous\n  value is kept.\n- A saved change is what circle members see, and what every WhatsApp link\n  uses, from then on.\n"
+    },
+    {
+      "cold_start": 60,
+      "cold_end": 70,
+      "cold": "- A member can delete their account after an explicit confirmation step that\n  says the deletion is permanent.\n- Deletion immediately:\n  - removes their profile, WhatsApp number and every listed card;\n  - removes them from every circle, with the same effect as leaving it (the\n    Circles capability defines what happens when an admin leaves);\n  - removes their identity from usage counts; totals may keep the count\n    anonymously.\n- After deletion they are signed out. Signing in again with the same Google\n  account starts a brand-new account with no prior data.\n",
+      "final_start": 109,
+      "final_end": 127,
+      "final": "- Any member can delete their account, including the admin or sole member of\n  a circle; deletion is never blocked. The Circles capability defines what\n  happens to a circle when its admin leaves, and deletion applies that outcome\n  to every circle the member is in.\n- Deletion needs an explicit confirmation step that says it is permanent.\n- Deletion is all-or-nothing: either everything below happens, or nothing is\n  removed and the member sees an error and can retry.\n- Deletion removes:\n  - the profile, WhatsApp number, email, Google account ID and consent record;\n  - every listed card and every circle membership;\n  - the link between the member and their usage events; the events remain\n    only as anonymous counts with no member identifier.\n- Every session on every device ends. A request that still carries an old\n  session is refused and cannot recreate any data.\n- Removed data disappears from the live app immediately; copies in the hosting\n  provider's automatic backups expire under that provider's retention period.\n- Signing in again later with the same Google account is treated as a new\n  person with no prior data.\n"
+    },
+    {
+      "cold_start": 74,
+      "cold_end": 76,
+      "cold": "- Re-consent flows when the privacy notice changes.\n- Designating the owner/admin who sees usage counts (Usage metrics capability).\n",
+      "final_start": 131,
+      "final_end": 133,
+      "final": "- Parental-consent flows; people under 18 cannot join.\n- Designating the owner who sees usage counts (Usage metrics capability).\n"
+    },
+    {
+      "cold_start": 79,
+      "cold_end": 99,
+      "cold": "1. A first-time Google sign-in creates exactly one account; signing in again\n   with the same Google account opens that same account.\n2. A signed-in person who has not finished onboarding cannot reach any circle,\n   card or search screen, and does not appear in any circle's member list or\n   search result.\n3. Onboarding cannot be completed without a display name, a WhatsApp number in\n   a valid international format and acceptance of the privacy notice; the\n   country code defaults to +91 and a non-Indian number is accepted.\n4. The accepted privacy-notice version and acceptance time are stored for every\n   member who completes onboarding.\n5. A visitor who opened an invite link and completed sign-in plus onboarding\n   lands back on that invite.\n6. After a member changes their WhatsApp number, the WhatsApp link shown to\n   other members opens a chat with the new number.\n7. No screen available to another member shows a member's email address.\n8. Signing out on one device does not sign the member out on another device.\n9. After deletion, the member's name, number and cards no longer appear in any\n   circle or search result, and their usage events no longer identify them.\n10. Signing in again with a deleted member's Google account creates a new\n    account with no cards and no circle memberships.\n",
+      "final_start": 136,
+      "final_end": 172,
+      "final": "1. Completing onboarding creates exactly one account; later sign-ins with the\n   same Google account, even after its email changes, open that same account.\n2. Signing in without completing onboarding creates no member account; that\n   person cannot join a circle, list a card or search, and never appears in any\n   member, circle or search data, including through direct data requests.\n3. Onboarding cannot be submitted without a 1 to 50 character display name, a\n   WhatsApp number that normalises to a valid E.164 number (the country code\n   defaults to +91 and a non-Indian number is accepted), the 18-or-older\n   confirmation and explicit consent.\n4. The exact text of every privacy-notice version is kept, and every member's\n   accepted version and acceptance time are stored.\n5. \"Cancel and remove my sign-in\" erases the sign-in identity and signs the\n   person out; an unfinished sign-in identity with no activity for 30 days is\n   erased.\n6. A signed-out visitor who opens an invite link, signs in and completes\n   onboarding lands back on that invite; an onboarded member who opens an\n   invite link goes straight to it.\n7. When a session expires or becomes invalid, the member sees the sign-in\n   screen and, after signing in again, finds their data unchanged.\n8. Editing the display name or WhatsApp number applies the onboarding rules;\n   after a valid change, other members see the new name and the WhatsApp link\n   opens a chat with the new number.\n9. No screen or data response available to another member contains a member's\n   email or Google account ID, and a member's name, number and cards are\n   returned only to members who share a circle with them.\n10. Signing out on one device does not sign the member out on another device.\n11. Deletion requires an explicit confirmation, and the sole admin of a circle\n    can delete their account.\n12. After deletion, the member's name, number and cards appear nowhere, their\n    usage events carry no member identifier, all their sessions have ended,\n    and a request using an old session cannot recreate any data.\n13. If deletion fails partway, no data is removed and the member can retry.\n14. Signing in again with a deleted member's Google account starts onboarding\n    as a new person with no cards and no circle memberships.\n15. After a notice version that changes data use is published, an existing\n    member must accept it before continuing to use the app.\n"
+    }
+  ],
+  "input_sha256": "ea021d39feed81b236f9ad13f8201ad2bb102393b38dda86bdda36f9e613befa",
+  "recorded_at": "2026-09-26T13:11:26+00:00",
+  "commit": "f99398f486e259fb98cc119311bf8b08bbc5c40b",
+  "launch_id": "launch-4fdfc79755884d8ab054f4998029355c",
+  "cold_input_sha256": "3979c6884da184631dac98964fa9b203273ae13cecbf6aaf34dc9092438f6d96",
+  "final_artifact_sha256": "ea021d39feed81b236f9ad13f8201ad2bb102393b38dda86bdda36f9e613befa"
+}
