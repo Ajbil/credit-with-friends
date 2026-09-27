@@ -1,0 +1,282 @@
+{
+  "generated_by": "griller",
+  "gate": "plan",
+  "verdict": "pass",
+  "gaps": [
+    "The plan omits the invite return path: a signed-out visitor must reach the invite after sign-in and onboarding, while an existing member goes straight to it. It specifies neither a durable return-path handoff nor a test, even though the authentication design carries that path in OAuth state (docs/specs/accounts.md:41; docs/specs/accounts.md:152; docs/architecture/12-auth-sessions-security.md:5).",
+    "The production plan says only the owner will use the app before all stories ship, but does not say how a publicly reachable app with Google sign-in will prevent other people from onboarding. The owner-only release boundary is binding (docs/decisions/0009-launch-after-full-mvp.md:17; docs/product/BRIEF.md:53).",
+    "The setup handoff does not explain how OWNER_GOOGLE_ACCOUNT_ID is bootstrapped: the owner is meant to read it from their profile after signing in, while deployment configuration is validated at API startup. It also leaves the required production configuration and who verifies each value out of the promised checklist (docs/specs/usage-metrics.md:24; docs/architecture/10-system-overview.md:77).",
+    "The account task has no explicit transaction and concurrency contract for simultaneous onboarding submissions, conversion of a pending session, and removal of pending identity. A unique Google ID alone does not describe the response or cleanup when two requests race (docs/architecture/11-data-model.md:13; docs/architecture/12-auth-sessions-security.md:14; plans/roadmap.json:11).",
+    "The plan names session expiry but does not cover the specified 30-day idle refresh, 401 behavior, or how a local session becomes invalid after Google access is revoked. Its proposed expiry test could pass without proving those behaviors (docs/architecture/12-auth-sessions-security.md:20; docs/specs/accounts.md:37).",
+    "The plan says a material notice forces re-acceptance but does not define how a version is published or how the API blocks every member action until acceptance. The specified boundary is server enforced and forbids new data use before consent (docs/specs/accounts.md:79; docs/specs/accounts.md:81; docs/architecture/00-handoff-guide.md:32).",
+    "The privacy-notice handoff does not explicitly require the first version to state that data is stored in Singapore and to match the provider's backup retention, or require approval of that exact published text before onboarding is enabled (docs/decisions/0013-hosting-render-cloudflare.md:30; docs/specs/accounts.md:75; docs/specs/accounts.md:79).",
+    "The foundation and web tasks omit explicit proof for the binding web CSP, API HSTS, production exclusion of the test sign-in route, dependency audit, and committed OpenAPI diff check. The generic 'CI runs every check' line does not identify which task installs these gates (docs/architecture/12-auth-sessions-security.md:38; docs/architecture/12-auth-sessions-security.md:76; docs/architecture/12-auth-sessions-security.md:70; docs/architecture/10-system-overview.md:64)."
+  ],
+  "contradictions": [
+    "The plan requires every CWF-1 criterion to have an automated test before this story is done, yet CWF-1 includes direct circle, card, and search enforcement and visibility outcomes while those capabilities are scheduled in later stories. The plan names no current replacement authority or later proof gate for these criteria, so its done condition cannot pass as written (plans/roadmap.json:12; plans/roadmap.json:18; plans/roadmap.json:28; docs/specs/accounts.md:88).",
+    "The plan calls for a Render blueprint, while the accepted MVP deviation explicitly specifies Render and Cloudflare configuration in their dashboards with no infrastructure as code. A blueprint changes that deployment contract without an accepted replacement decision (docs/architecture/90-constitution-deviations.md:11; docs/decisions/0013-hosting-render-cloudflare.md:36)."
+  ],
+  "resolutions": [
+    "The signed OAuth state carries a return path through Google and onboarding and is tested in CWF-1; the invite behaviour itself is roadmap CWF-2's criterion.",
+    "Owner-only production is enforced by a LAUNCH_OPEN switch and email allowlist that stores nothing for refused sign-ins (accepted decision 0016), tested and checked in production.",
+    "The API boots without the owner ID; the owner reads it from the profile and sets it before any circle exists; the deployment runbook lists every setting, who supplies it and how it is checked.",
+    "Onboarding submission is one transaction creating member and consent, removing the pending identity and upgrading the session; a concurrent duplicate gets a conflict and continues as the existing member.",
+    "30-day idle expiry refreshed on use, 401 then sign-in screen; Google tokens are not kept, so revocation takes effect at expiry or next sign-in, which satisfies the spec's illustrative example.",
+    "Notice versions are published by migration; a material-change version blocks every member route except notice read/accept and sign-out with a notice-acceptance-required error until accepted.",
+    "Version 1 states Singapore storage and the 3-day point-in-time and 7-day backup periods and is published only after the owner approves the exact text.",
+    "The foundation task installs HSTS/Helmet, the production dependency audit and the OpenAPI diff; the accounts task keeps the test route out of production builds; the web task serves the CSP; each has a named check in the verify plan.",
+    "Done now means proven on the surfaces this story builds, via one shared member-only guard and own-profile-only email/ID; CWF-2 to CWF-4 re-prove the circle, card and search parts through the same checks.",
+    "Replaced the Render blueprint with dashboard configuration recorded in a deployment runbook, as decision 0014 requires."
+  ],
+  "finding_dispositions": [
+    {
+      "finding": "The plan omits the invite return path: a signed-out visitor must reach the invite after sign-in and onboarding, while an existing member goes straight to it. It specifies neither a durable return-path handoff nor a test, even though the authentication design carries that path in OAuth state (docs/specs/accounts.md:41; docs/specs/accounts.md:152; docs/architecture/12-auth-sessions-security.md:5).",
+      "resolution": "The signed OAuth state carries a return path through Google and onboarding and is tested in CWF-1; the invite behaviour itself is roadmap CWF-2's criterion.",
+      "source": "plans/roadmap.json CWF-2; docs/architecture/12-auth-sessions-security.md Google sign-in"
+    },
+    {
+      "finding": "The production plan says only the owner will use the app before all stories ship, but does not say how a publicly reachable app with Google sign-in will prevent other people from onboarding. The owner-only release boundary is binding (docs/decisions/0009-launch-after-full-mvp.md:17; docs/product/BRIEF.md:53).",
+      "resolution": "Owner-only production is enforced by a LAUNCH_OPEN switch and email allowlist that stores nothing for refused sign-ins (accepted decision 0016), tested and checked in production.",
+      "source": "docs/decisions/0016-prelaunch-allowlist.md"
+    },
+    {
+      "finding": "The setup handoff does not explain how OWNER_GOOGLE_ACCOUNT_ID is bootstrapped: the owner is meant to read it from their profile after signing in, while deployment configuration is validated at API startup. It also leaves the required production configuration and who verifies each value out of the promised checklist (docs/specs/usage-metrics.md:24; docs/architecture/10-system-overview.md:77).",
+      "resolution": "The API boots without the owner ID; the owner reads it from the profile and sets it before any circle exists; the deployment runbook lists every setting, who supplies it and how it is checked.",
+      "source": "docs/architecture/10-system-overview.md Configuration; docs/specs/usage-metrics.md The owner"
+    },
+    {
+      "finding": "The account task has no explicit transaction and concurrency contract for simultaneous onboarding submissions, conversion of a pending session, and removal of pending identity. A unique Google ID alone does not describe the response or cleanup when two requests race (docs/architecture/11-data-model.md:13; docs/architecture/12-auth-sessions-security.md:14; plans/roadmap.json:11).",
+      "resolution": "Onboarding submission is one transaction creating member and consent, removing the pending identity and upgrading the session; a concurrent duplicate gets a conflict and continues as the existing member.",
+      "source": "docs/architecture/12-auth-sessions-security.md; docs/architecture/11-data-model.md"
+    },
+    {
+      "finding": "The plan names session expiry but does not cover the specified 30-day idle refresh, 401 behavior, or how a local session becomes invalid after Google access is revoked. Its proposed expiry test could pass without proving those behaviors (docs/architecture/12-auth-sessions-security.md:20; docs/specs/accounts.md:37).",
+      "resolution": "30-day idle expiry refreshed on use, 401 then sign-in screen; Google tokens are not kept, so revocation takes effect at expiry or next sign-in, which satisfies the spec's illustrative example.",
+      "source": "docs/architecture/12-auth-sessions-security.md Sessions; docs/specs/accounts.md Sign in"
+    },
+    {
+      "finding": "The plan says a material notice forces re-acceptance but does not define how a version is published or how the API blocks every member action until acceptance. The specified boundary is server enforced and forbids new data use before consent (docs/specs/accounts.md:79; docs/specs/accounts.md:81; docs/architecture/00-handoff-guide.md:32).",
+      "resolution": "Notice versions are published by migration; a material-change version blocks every member route except notice read/accept and sign-out with a notice-acceptance-required error until accepted.",
+      "source": "docs/specs/accounts.md Onboarding"
+    },
+    {
+      "finding": "The privacy-notice handoff does not explicitly require the first version to state that data is stored in Singapore and to match the provider's backup retention, or require approval of that exact published text before onboarding is enabled (docs/decisions/0013-hosting-render-cloudflare.md:30; docs/specs/accounts.md:75; docs/specs/accounts.md:79).",
+      "resolution": "Version 1 states Singapore storage and the 3-day point-in-time and 7-day backup periods and is published only after the owner approves the exact text.",
+      "source": "docs/decisions/0013-hosting-render-cloudflare.md; docs/specs/accounts.md Onboarding"
+    },
+    {
+      "finding": "The foundation and web tasks omit explicit proof for the binding web CSP, API HSTS, production exclusion of the test sign-in route, dependency audit, and committed OpenAPI diff check. The generic 'CI runs every check' line does not identify which task installs these gates (docs/architecture/12-auth-sessions-security.md:38; docs/architecture/12-auth-sessions-security.md:76; docs/architecture/12-auth-sessions-security.md:70; docs/architecture/10-system-overview.md:64).",
+      "resolution": "The foundation task installs HSTS/Helmet, the production dependency audit and the OpenAPI diff; the accounts task keeps the test route out of production builds; the web task serves the CSP; each has a named check in the verify plan.",
+      "source": "docs/architecture/12-auth-sessions-security.md; docs/architecture/10-system-overview.md Environments"
+    },
+    {
+      "finding": "The plan requires every CWF-1 criterion to have an automated test before this story is done, yet CWF-1 includes direct circle, card, and search enforcement and visibility outcomes while those capabilities are scheduled in later stories. The plan names no current replacement authority or later proof gate for these criteria, so its done condition cannot pass as written (plans/roadmap.json:12; plans/roadmap.json:18; plans/roadmap.json:28; docs/specs/accounts.md:88).",
+      "resolution": "Done now means proven on the surfaces this story builds, via one shared member-only guard and own-profile-only email/ID; CWF-2 to CWF-4 re-prove the circle, card and search parts through the same checks.",
+      "source": "plans/roadmap.json CWF-2, CWF-3, CWF-4; docs/specs/accounts.md Enforcement"
+    },
+    {
+      "finding": "The plan calls for a Render blueprint, while the accepted MVP deviation explicitly specifies Render and Cloudflare configuration in their dashboards with no infrastructure as code. A blueprint changes that deployment contract without an accepted replacement decision (docs/architecture/90-constitution-deviations.md:11; docs/decisions/0013-hosting-render-cloudflare.md:36).",
+      "resolution": "Replaced the Render blueprint with dashboard configuration recorded in a deployment runbook, as decision 0014 requires.",
+      "source": "docs/decisions/0014-mvp-constitution-deviations.md; docs/architecture/90-constitution-deviations.md"
+    }
+  ],
+  "amendments": [
+    {
+      "delta_index": 0,
+      "findings": [
+        "The production plan says only the owner will use the app before all stories ship, but does not say how a publicly reachable app with Google sign-in will prevent other people from onboarding. The owner-only release boundary is binding (docs/decisions/0009-launch-after-full-mvp.md:17; docs/product/BRIEF.md:53)."
+      ],
+      "change": "What changes: pre-launch allowlist behaviour.",
+      "reason": "Owner-only boundary was not enforced.",
+      "source": "docs/decisions/0016-prelaunch-allowlist.md"
+    },
+    {
+      "delta_index": 1,
+      "findings": [
+        "The privacy-notice handoff does not explicitly require the first version to state that data is stored in Singapore and to match the provider's backup retention, or require approval of that exact published text before onboarding is enabled (docs/decisions/0013-hosting-render-cloudflare.md:30; docs/specs/accounts.md:75; docs/specs/accounts.md:79)."
+      ],
+      "change": "Notice is drafted for owner approval; later stories line reworded.",
+      "reason": "Exact notice text needs owner approval.",
+      "source": "docs/decisions/0013-hosting-render-cloudflare.md"
+    },
+    {
+      "delta_index": 2,
+      "findings": [
+        "The plan requires every CWF-1 criterion to have an automated test before this story is done, yet CWF-1 includes direct circle, card, and search enforcement and visibility outcomes while those capabilities are scheduled in later stories. The plan names no current replacement authority or later proof gate for these criteria, so its done condition cannot pass as written (plans/roadmap.json:12; plans/roadmap.json:18; plans/roadmap.json:28; docs/specs/accounts.md:88).",
+        "The production plan says only the owner will use the app before all stories ship, but does not say how a publicly reachable app with Google sign-in will prevent other people from onboarding. The owner-only release boundary is binding (docs/decisions/0009-launch-after-full-mvp.md:17; docs/product/BRIEF.md:53)."
+      ],
+      "change": "Done when: criteria proven on this story's surfaces, re-proven by later stories; production check includes a refused non-listed account.",
+      "reason": "Done condition could not pass; gate needs a production check.",
+      "source": "docs/specs/accounts.md"
+    },
+    {
+      "delta_index": 3,
+      "findings": [
+        "The setup handoff does not explain how OWNER_GOOGLE_ACCOUNT_ID is bootstrapped: the owner is meant to read it from their profile after signing in, while deployment configuration is validated at API startup. It also leaves the required production configuration and who verifies each value out of the promised checklist (docs/specs/usage-metrics.md:24; docs/architecture/10-system-overview.md:77).",
+        "The production plan says only the owner will use the app before all stories ship, but does not say how a publicly reachable app with Google sign-in will prevent other people from onboarding. The owner-only release boundary is binding (docs/decisions/0009-launch-after-full-mvp.md:17; docs/product/BRIEF.md:53)."
+      ],
+      "change": "What I need: deployment checklist and sharing the allowed emails.",
+      "reason": "Bootstrap and configuration handoff were missing.",
+      "source": "docs/architecture/10-system-overview.md"
+    },
+    {
+      "delta_index": 4,
+      "findings": [
+        "The foundation and web tasks omit explicit proof for the binding web CSP, API HSTS, production exclusion of the test sign-in route, dependency audit, and committed OpenAPI diff check. The generic 'CI runs every check' line does not identify which task installs these gates (docs/architecture/12-auth-sessions-security.md:38; docs/architecture/12-auth-sessions-security.md:76; docs/architecture/12-auth-sessions-security.md:70; docs/architecture/10-system-overview.md:64)."
+      ],
+      "change": "Foundation: HSTS, and CI with audit and OpenAPI diff.",
+      "reason": "Security gates had no owning task.",
+      "source": "docs/architecture/12-auth-sessions-security.md"
+    },
+    {
+      "delta_index": 5,
+      "findings": [
+        "The plan omits the invite return path: a signed-out visitor must reach the invite after sign-in and onboarding, while an existing member goes straight to it. It specifies neither a durable return-path handoff nor a test, even though the authentication design carries that path in OAuth state (docs/specs/accounts.md:41; docs/specs/accounts.md:152; docs/architecture/12-auth-sessions-security.md:5).",
+        "The production plan says only the owner will use the app before all stories ship, but does not say how a publicly reachable app with Google sign-in will prevent other people from onboarding. The owner-only release boundary is binding (docs/decisions/0009-launch-after-full-mvp.md:17; docs/product/BRIEF.md:53).",
+        "The account task has no explicit transaction and concurrency contract for simultaneous onboarding submissions, conversion of a pending session, and removal of pending identity. A unique Google ID alone does not describe the response or cleanup when two requests race (docs/architecture/11-data-model.md:13; docs/architecture/12-auth-sessions-security.md:14; plans/roadmap.json:11).",
+        "The plan names session expiry but does not cover the specified 30-day idle refresh, 401 behavior, or how a local session becomes invalid after Google access is revoked. Its proposed expiry test could pass without proving those behaviors (docs/architecture/12-auth-sessions-security.md:20; docs/specs/accounts.md:37).",
+        "The plan says a material notice forces re-acceptance but does not define how a version is published or how the API blocks every member action until acceptance. The specified boundary is server enforced and forbids new data use before consent (docs/specs/accounts.md:79; docs/specs/accounts.md:81; docs/architecture/00-handoff-guide.md:32).",
+        "The privacy-notice handoff does not explicitly require the first version to state that data is stored in Singapore and to match the provider's backup retention, or require approval of that exact published text before onboarding is enabled (docs/decisions/0013-hosting-render-cloudflare.md:30; docs/specs/accounts.md:75; docs/specs/accounts.md:79).",
+        "The setup handoff does not explain how OWNER_GOOGLE_ACCOUNT_ID is bootstrapped: the owner is meant to read it from their profile after signing in, while deployment configuration is validated at API startup. It also leaves the required production configuration and who verifies each value out of the promised checklist (docs/specs/usage-metrics.md:24; docs/architecture/10-system-overview.md:77).",
+        "The foundation and web tasks omit explicit proof for the binding web CSP, API HSTS, production exclusion of the test sign-in route, dependency audit, and committed OpenAPI diff check. The generic 'CI runs every check' line does not identify which task installs these gates (docs/architecture/12-auth-sessions-security.md:38; docs/architecture/12-auth-sessions-security.md:76; docs/architecture/12-auth-sessions-security.md:70; docs/architecture/10-system-overview.md:64).",
+        "The plan calls for a Render blueprint, while the accepted MVP deviation explicitly specifies Render and Cloudflare configuration in their dashboards with no infrastructure as code. A blueprint changes that deployment contract without an accepted replacement decision (docs/architecture/90-constitution-deviations.md:11; docs/decisions/0013-hosting-render-cloudflare.md:36)."
+      ],
+      "change": "Accounts, guard, notice publishing, owner bootstrap, web CSP and dashboard-based deployment detailed.",
+      "reason": "Return path, gate, onboarding concurrency, sessions, notice enforcement and content, bootstrap, CSP and deployment contract were missing or contradictory.",
+      "source": "docs/decisions/0014-mvp-constitution-deviations.md"
+    },
+    {
+      "delta_index": 6,
+      "findings": [
+        "The foundation and web tasks omit explicit proof for the binding web CSP, API HSTS, production exclusion of the test sign-in route, dependency audit, and committed OpenAPI diff check. The generic 'CI runs every check' line does not identify which task installs these gates (docs/architecture/12-auth-sessions-security.md:38; docs/architecture/12-auth-sessions-security.md:76; docs/architecture/12-auth-sessions-security.md:70; docs/architecture/10-system-overview.md:64).",
+        "The production plan says only the owner will use the app before all stories ship, but does not say how a publicly reachable app with Google sign-in will prevent other people from onboarding. The owner-only release boundary is binding (docs/decisions/0009-launch-after-full-mvp.md:17; docs/product/BRIEF.md:53).",
+        "The plan says a material notice forces re-acceptance but does not define how a version is published or how the API blocks every member action until acceptance. The specified boundary is server enforced and forbids new data use before consent (docs/specs/accounts.md:79; docs/specs/accounts.md:81; docs/architecture/00-handoff-guide.md:32).",
+        "The plan calls for a Render blueprint, while the accepted MVP deviation explicitly specifies Render and Cloudflare configuration in their dashboards with no infrastructure as code. A blueprint changes that deployment contract without an accepted replacement decision (docs/architecture/90-constitution-deviations.md:11; docs/decisions/0013-hosting-render-cloudflare.md:36)."
+      ],
+      "change": "Task table updated: audit and OpenAPI diff, pre-launch gate, notice publishing, not-open-yet screen, content policy, runbook.",
+      "reason": "Task outcomes match the amended approach.",
+      "source": "docs/architecture/12-auth-sessions-security.md"
+    },
+    {
+      "delta_index": 7,
+      "findings": [
+        "The plan omits the invite return path: a signed-out visitor must reach the invite after sign-in and onboarding, while an existing member goes straight to it. It specifies neither a durable return-path handoff nor a test, even though the authentication design carries that path in OAuth state (docs/specs/accounts.md:41; docs/specs/accounts.md:152; docs/architecture/12-auth-sessions-security.md:5).",
+        "The production plan says only the owner will use the app before all stories ship, but does not say how a publicly reachable app with Google sign-in will prevent other people from onboarding. The owner-only release boundary is binding (docs/decisions/0009-launch-after-full-mvp.md:17; docs/product/BRIEF.md:53).",
+        "The account task has no explicit transaction and concurrency contract for simultaneous onboarding submissions, conversion of a pending session, and removal of pending identity. A unique Google ID alone does not describe the response or cleanup when two requests race (docs/architecture/11-data-model.md:13; docs/architecture/12-auth-sessions-security.md:14; plans/roadmap.json:11).",
+        "The plan names session expiry but does not cover the specified 30-day idle refresh, 401 behavior, or how a local session becomes invalid after Google access is revoked. Its proposed expiry test could pass without proving those behaviors (docs/architecture/12-auth-sessions-security.md:20; docs/specs/accounts.md:37).",
+        "The plan says a material notice forces re-acceptance but does not define how a version is published or how the API blocks every member action until acceptance. The specified boundary is server enforced and forbids new data use before consent (docs/specs/accounts.md:79; docs/specs/accounts.md:81; docs/architecture/00-handoff-guide.md:32).",
+        "The foundation and web tasks omit explicit proof for the binding web CSP, API HSTS, production exclusion of the test sign-in route, dependency audit, and committed OpenAPI diff check. The generic 'CI runs every check' line does not identify which task installs these gates (docs/architecture/12-auth-sessions-security.md:38; docs/architecture/12-auth-sessions-security.md:76; docs/architecture/12-auth-sessions-security.md:70; docs/architecture/10-system-overview.md:64)."
+      ],
+      "change": "Verify plan lists the new tests and security checks.",
+      "reason": "Each new behaviour needs named proof.",
+      "source": "docs/architecture/12-auth-sessions-security.md"
+    },
+    {
+      "delta_index": 8,
+      "findings": [
+        "The foundation and web tasks omit explicit proof for the binding web CSP, API HSTS, production exclusion of the test sign-in route, dependency audit, and committed OpenAPI diff check. The generic 'CI runs every check' line does not identify which task installs these gates (docs/architecture/12-auth-sessions-security.md:38; docs/architecture/12-auth-sessions-security.md:76; docs/architecture/12-auth-sessions-security.md:70; docs/architecture/10-system-overview.md:64)."
+      ],
+      "change": "Removed the generic 'CI runs every check' line, replaced by named checks.",
+      "reason": "The generic line identified no owner.",
+      "source": "docs/architecture/10-system-overview.md"
+    },
+    {
+      "delta_index": 9,
+      "findings": [
+        "The production plan says only the owner will use the app before all stories ship, but does not say how a publicly reachable app with Google sign-in will prevent other people from onboarding. The owner-only release boundary is binding (docs/decisions/0009-launch-after-full-mvp.md:17; docs/product/BRIEF.md:53)."
+      ],
+      "change": "Production check confirms a non-listed account sees Not open yet.",
+      "reason": "Gate needs production proof.",
+      "source": "docs/decisions/0016-prelaunch-allowlist.md"
+    }
+  ],
+  "artifact_delta": [
+    {
+      "cold_start": 14,
+      "cold_end": 14,
+      "cold": "",
+      "final_start": 14,
+      "final_end": 16,
+      "final": "- Until launch, only emails you list can sign in; anyone else sees \"Not open\n  yet\" and nothing about them is stored.\n"
+    },
+    {
+      "cold_start": 17,
+      "cold_end": 20,
+      "cold": "- A plain-English privacy notice, version 1, is drafted for your review.\n- Circles, cards and search are not in this story. Only you use production\n  until every story ships.\n",
+      "final_start": 19,
+      "final_end": 21,
+      "final": "- A plain-English privacy notice, version 1, is drafted for your approval.\n- Circles, cards and search come in later stories.\n"
+    },
+    {
+      "cold_start": 23,
+      "cold_end": 27,
+      "cold": "- Every CWF-1 acceptance criterion is proven by an automated test, and the main\n  flow passes a browser test on a phone-sized screen.\n- The app is deployed on Render and Cloudflare at your domain, and you have\n  signed in with your own Google account on your phone and installed it.\n",
+      "final_start": 24,
+      "final_end": 29,
+      "final": "- Every CWF-1 acceptance criterion is proven by an automated test on the\n  screens and endpoints this story builds; the circle, card and search parts of\n  those criteria are proven again by those stories through the same checks.\n- The app is deployed at your domain, you have signed in with your own Google\n  account on your phone and installed it, and a non-listed account is refused.\n"
+    },
+    {
+      "cold_start": 43,
+      "cold_end": 47,
+      "cold": "  checklist I will give you. You enter every secret directly into Render or\n  Cloudflare; share only non-secret values such as the domain and your contact\n  email.\n- Review the privacy notice text in its pull request.\n",
+      "final_start": 45,
+      "final_end": 49,
+      "final": "  deployment checklist. You enter every secret directly into Render or\n  Cloudflare; share only non-secret values such as the domain, your contact\n  email and the allowed emails.\n- Approve the exact privacy notice text in its pull request.\n"
+    },
+    {
+      "cold_start": 59,
+      "cold_end": 64,
+      "cold": "  Helmet, CORS limited to the web origin, the custom-header and Origin check on\n  state-changing requests, rate limits, strict validation, Swagger outside\n  production with a committed OpenAPI file, a health endpoint, and Prisma with\n  constitution naming and UUIDv7 keys. The in-process service bus is added in\n  CWF-2, when the first cross-module call appears.\n",
+      "final_start": 61,
+      "final_end": 68,
+      "final": "  Helmet with HSTS, CORS limited to the web origin, the custom-header and\n  Origin check on state-changing requests, rate limits, strict validation,\n  Swagger outside production with a committed OpenAPI file, a health endpoint,\n  and Prisma with constitution naming and UUIDv7 keys. CI runs lint, types,\n  unit, integration against PostgreSQL 18, end-to-end, build, a production\n  dependency audit and an OpenAPI diff check. The in-process service bus is\n  added in CWF-2, when the first cross-module call appears.\n"
+    },
+    {
+      "cold_start": 65,
+      "cold_end": 79,
+      "cold": "  through the certified `openid-client` library rather than Passport, because\n  sessions are server-side and not JWTs; WhatsApp numbers are validated and\n  normalised to E.164 with `libphonenumber-js`. Pending sign-ins, per-device\n  sessions, members, consents and notice versions follow the data model; a\n  notice version flagged as a material change forces re-acceptance; the daily\n  cleanup runs in-process; the test sign-in route exists only in tests.\n- Web: TanStack Router and Query, Tailwind and shadcn/ui, an orval client\n  generated from the OpenAPI file, and a service worker that caches only the\n  app shell; screens for sign-in, onboarding, profile, re-acceptance and\n  session expiry, designed mobile-first.\n- Deployment: a Render blueprint for the API and database in Singapore with\n  migrations as the pre-deploy step, Cloudflare Pages for the web app, DNS for\n  the domain and its API subdomain, and a Google sign-in client in production\n  status.\n",
+      "final_start": 69,
+      "final_end": 100,
+      "final": "  through `openid-client`, and E.164 WhatsApp numbers through\n  `libphonenumber-js`. The signed state carries a return path through Google\n  and onboarding, which CWF-2 uses for invite links. The pre-launch gate\n  refuses non-listed emails before anything is stored. Onboarding submission is\n  one transaction that creates the member and consent, removes the pending\n  identity and upgrades the session; a concurrent duplicate gets a conflict and\n  the web app continues as the existing member. Sessions have a 30-day idle\n  expiry refreshed on use; an expired or unknown session gets 401 and the\n  sign-in screen. Google tokens are not kept, so revoking Google access takes\n  effect when the session expires or at the next sign-in.\n- One shared guard lets only completed members reach member routes, and a\n  member's own-profile response is the only one carrying email and Google\n  account ID; later stories' routes reuse both.\n- Privacy notice versions are published by a database migration. When the\n  latest version is flagged as a material change, every member route except\n  reading and accepting the notice and signing out returns a\n  notice-acceptance-required error until the member accepts. Version 1 states\n  that data is stored in Singapore and the backup periods (3-day point-in-time\n  restore, 7-day daily backups), and is published only after you approve it.\n- Owner ID bootstrap: the API boots without the owner ID; you sign in, copy\n  your ID from the profile and set it before any circle exists.\n- Web: TanStack Router and Query, Tailwind and shadcn/ui, an orval client from\n  the OpenAPI file, a service worker caching only the app shell, and a strict\n  Content-Security-Policy served by Cloudflare Pages; screens for sign-in,\n  not-open-yet, onboarding, profile, re-acceptance and session expiry, designed\n  mobile-first.\n- Deployment: Render and Cloudflare configured in their dashboards (no\n  infrastructure-as-code), recorded in a deployment runbook that lists every\n  setting, who supplies it and how it is checked; API and database in\n  Singapore with migrations run before each deploy; DNS for the domain and its\n  API subdomain; Google sign-in client in production status.\n"
+    },
+    {
+      "cold_start": 87,
+      "cold_end": 91,
+      "cold": "| Monorepo and API foundation | Repo scaffold, API skeleton with configuration, logging, error format, security middleware, database tooling and health check; CI runs lint, types, tests and build |\n| Accounts API | Google sign-in, pending sign-ins, sessions, onboarding with consent, profile, sign-out, re-acceptance, daily cleanup and test sign-in |\n| Web app: sign-in, onboarding and profile | Installable mobile-first screens for sign-in, onboarding, consent, profile, re-acceptance and session expiry, with privacy notice version 1 |\n| Production deployment | Render and Cloudflare configured, domain and Google sign-in live, production check passed |\n",
+      "final_start": 108,
+      "final_end": 112,
+      "final": "| Monorepo and API foundation | Repo scaffold, API skeleton with configuration, logging, error format, security middleware, database tooling and health check; CI with every check including audit and OpenAPI diff |\n| Accounts API | Google sign-in with pre-launch gate, pending sign-ins, sessions, onboarding with consent, profile, sign-out, notice publishing and re-acceptance, daily cleanup and test sign-in |\n| Web app: sign-in, onboarding and profile | Installable mobile-first screens for sign-in, not-open-yet, onboarding, consent, profile, re-acceptance and session expiry, with privacy notice version 1 and a strict content policy |\n| Production deployment | Deployment runbook, Render and Cloudflare configured, domain and Google sign-in live, production check passed |\n"
+    },
+    {
+      "cold_start": 95,
+      "cold_end": 99,
+      "cold": "  criterion: single account per Google ID across email changes, no member\n  before onboarding, validation limits, notice text and version storage,\n  cancel and 30-day erasure, session expiry, profile edits, email and Google ID\n  never exposed to others, per-device sign-out, and re-acceptance.\n",
+      "final_start": 116,
+      "final_end": 126,
+      "final": "  criterion: single account per Google ID across email changes; no member\n  before onboarding and the member-only guard; validation limits; concurrent\n  onboarding; notice text, version storage and material-change blocking;\n  cancel and 30-day erasure; idle expiry, refresh and 401; profile edits and\n  rejection of invalid values; email and Google ID absent from non-own\n  responses; per-device sign-out; the pre-launch gate storing nothing for\n  refused emails; the return path surviving sign-in and onboarding.\n- Security checks: HSTS and Helmet headers on the API, the test sign-in route\n  absent from the production build, the web content policy present, the\n  dependency audit and the OpenAPI diff in CI.\n"
+    },
+    {
+      "cold_start": 103,
+      "cold_end": 104,
+      "cold": "- CI runs every check on each pull request.\n",
+      "final_start": 130,
+      "final_end": 130,
+      "final": ""
+    },
+    {
+      "cold_start": 105,
+      "cold_end": 107,
+      "cold": "  the app, edit your profile and sign out of one device while staying signed in\n  on another.\n",
+      "final_start": 131,
+      "final_end": 133,
+      "final": "  the app, edit your profile, sign out of one device while staying signed in on\n  another, and confirm a non-listed Google account sees \"Not open yet\".\n"
+    }
+  ],
+  "input_sha256": "5e6382e575a5be35b0abf3d771ed11bbb0875d674fed2f6bf4fe0f14906b715f",
+  "issue": "CWF-1",
+  "recorded_at": "2026-09-27T08:00:59+00:00",
+  "commit": "1c25a9fefe3ce4bc33d34243ae20544e1ef47969",
+  "launch_id": "launch-fa1dc3bd67544624abc26a59aad5062a",
+  "cold_input_sha256": "bd3c1980819f301ec1a3729d56258cbd4d5de92ff6b2716b6dd59f090495c68e",
+  "final_artifact_sha256": "89e1a9dafed8f91c1e21d7f2ad4e32564cf8ff6285f9f800a876531967e408b1"
+}

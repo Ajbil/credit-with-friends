@@ -1,0 +1,25 @@
+{
+  "issue": "CWF-1",
+  "stages": [
+    {
+      "id": "T1-foundation",
+      "title": "Monorepo and API foundation",
+      "status": "pending"
+    },
+    {
+      "id": "T2-accounts-api",
+      "title": "Accounts API",
+      "status": "pending"
+    },
+    {
+      "id": "T3-web-app",
+      "title": "Web app: sign-in, onboarding and profile",
+      "status": "pending"
+    },
+    {
+      "id": "T4-deploy",
+      "title": "Production deployment",
+      "status": "pending"
+    }
+  ]
+}

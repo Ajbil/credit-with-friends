@@ -1,0 +1,97 @@
+{
+  "generated_by": "claude-code:plan-mode",
+  "project": "credit-with-friends",
+  "story": "CWF-1",
+  "epic": "accounts",
+  "plan_file": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md",
+  "doc_roots": [
+    "docs/product",
+    "docs/specs",
+    "docs/architecture",
+    "docs/decisions"
+  ],
+  "user_facing": true,
+  "tasks": [
+    {
+      "id": "T1-foundation",
+      "title": "Monorepo and API foundation",
+      "epic_id": "accounts",
+      "objective": "Create the pnpm and Turborepo monorepo with a NestJS API skeleton and the shared cross-cutting pieces every later task builds on: validated configuration, structured logging without personal data, the constitution response and error format, security middleware, PostgreSQL 18 with Prisma, a health endpoint and a CI pipeline.",
+      "acceptance_criteria": [
+        "pnpm install, typecheck, lint and build pass from a clean checkout, and Forge's existing root files (AGENTS.md, WORKFLOW.md, CLAUDE.md, docs/, factory/, constitution/, harness/) are unchanged.",
+        "The API refuses to start when a required configuration value is missing or invalid, naming the value, and starts when OWNER_GOOGLE_ACCOUNT_ID is absent.",
+        "GET /api/v1/health returns 200 in the constitution success envelope, and an unknown route returns the constitution error payload with no stack trace, SQL or library message.",
+        "Responses carry Helmet headers including HSTS; CORS allows only WEB_ORIGIN with credentials; a POST, PATCH or DELETE without the X-Requested-With header or with a foreign Origin is refused with 403; exceeding a rate limit returns 429 in the standard error format.",
+        "Local PostgreSQL 18 runs through Docker Compose, Prisma migrations apply, and new tables use constitution naming with uuidv7 primary keys.",
+        "Logs are structured JSON with correlation ids and contain no personal data.",
+        "Swagger is served outside production only, and the committed OpenAPI file matches the running API.",
+        "CI on every pull request runs lint, typecheck, unit tests, integration tests against PostgreSQL 18, build, a production dependency audit that fails on high or critical advisories, and an OpenAPI diff check."
+      ],
+      "user_facing": false
+    },
+    {
+      "id": "T2-accounts-api",
+      "title": "Accounts API",
+      "epic_id": "accounts",
+      "objective": "Build the accounts module: Google sign-in with the pre-launch gate, pending sign-ins, per-device sessions, onboarding with consent, the shared member-only guard, profile, sign-out, privacy notice publishing and re-acceptance, the daily cleanup job and the test-only sign-in route, so the web app can sign people in and manage their profile.",
+      "acceptance_criteria": [
+        "Completing onboarding creates exactly one account; later sign-ins with the same Google account, even after its email changes, open that same account.",
+        "Signing in without completing onboarding creates no member account, and a pending session is refused by the shared member-only guard on every member route.",
+        "Onboarding cannot be submitted without a 1 to 50 character display name, a WhatsApp number that normalises to a valid E.164 number (country code defaults to +91; non-Indian numbers accepted), the 18-or-older confirmation and explicit consent; a concurrent duplicate submission gets a conflict and leaves one account.",
+        "The exact text of every privacy-notice version is kept, every member's accepted version and acceptance time are stored, and when the latest version is a material change every member route except reading and accepting the notice and signing out returns a notice-acceptance-required error until the member accepts.",
+        "Cancel and remove my sign-in erases the sign-in identity and signs the person out, and the daily cleanup erases an unfinished sign-in identity with no activity for 30 days.",
+        "Sessions expire after 30 days without use and are refreshed on use; an expired or unknown session gets 401, and after signing in again the member's data is unchanged.",
+        "A member can read their display name, WhatsApp number, Google email and Google account ID; editing the name or number applies the onboarding rules, an invalid value is rejected with a message and the previous value is kept.",
+        "Only the member's own profile response contains their email or Google account ID.",
+        "Signing out ends only the current device's session.",
+        "While LAUNCH_OPEN is false, a Google sign-in whose email is not in PRELAUNCH_ALLOWED_EMAILS is refused and nothing about that person is stored.",
+        "A return path given at sign-in survives Google and onboarding and is returned to the web app afterwards.",
+        "The test sign-in route exists only when TEST_AUTH_ENABLED is true and is absent from the production build."
+      ],
+      "user_facing": false,
+      "dependencies": [
+        "T1-foundation"
+      ]
+    },
+    {
+      "id": "T3-web-app",
+      "title": "Web app: sign-in, onboarding and profile",
+      "epic_id": "accounts",
+      "objective": "Build the installable, mobile-first React web app with screens for sign-in, not-open-yet, onboarding with consent, profile, re-acceptance and session expiry, including privacy notice version 1 for the owner's approval and a strict content security policy.",
+      "acceptance_criteria": [
+        "Every flow in this story works in a phone browser at 375 px width opened from a link, and the app can be installed to the home screen (valid manifest and a service worker that caches only the app shell).",
+        "A visitor can sign in with Google, sees Not open yet when refused by the pre-launch gate, and otherwise completes one-screen onboarding with inline validation messages for name, WhatsApp number (+91 default, other countries selectable), 18+ confirmation and an unticked consent box.",
+        "Privacy notice version 1 states what is stored and why, who sees what, that card numbers, CVV, expiry and OTPs are never asked for or to be shared, how to withdraw consent and see or correct data, the owner contact address, that data is stored in Singapore, the backup periods, and that WhatsApp-tap events record the card holder contacted and search events record the bank and type searched; it is published only after the owner approves its exact text.",
+        "The profile screen shows name, WhatsApp number, Google email and the member's own Google account ID, allows editing name and number with the same validation, and signs out of the current device only.",
+        "Cancel and remove my sign-in is offered during onboarding and signs the person out.",
+        "When a session expires the app shows the sign-in screen, and after signing in again returns the member to where they were.",
+        "When a changed notice needs acceptance, the app shows it and allows nothing else until it is accepted.",
+        "The deployed web app sends a strict Content-Security-Policy allowing only itself and the API origin for connections."
+      ],
+      "user_facing": true,
+      "dependencies": [
+        "T2-accounts-api"
+      ]
+    },
+    {
+      "id": "T4-deploy",
+      "title": "Production deployment",
+      "epic_id": "accounts",
+      "objective": "Deploy the API and database on Render in Singapore and the web app on Cloudflare Pages at the owner's .in domain, with Google sign-in in production status, recorded in a deployment runbook, and prove sign-in works in production.",
+      "acceptance_criteria": [
+        "A deployment runbook in docs/ lists every Render, Cloudflare, DNS and Google Cloud setting, who supplies each value and how it is checked, and contains no secret values.",
+        "The web app is served at the apex of the owner's domain and the API at its api subdomain over HTTPS, and the app runs within the hosting budget of decision 0011 on the hosting of decision 0013.",
+        "Database migrations run before each API deploy, and a failed migration stops the deploy.",
+        "In production the owner signs in with their Google account on a phone, completes onboarding, installs the app, edits their profile, and signs out of one device while staying signed in on another.",
+        "In production a Google account not on the allowlist sees Not open yet and nothing about it is stored."
+      ],
+      "user_facing": false,
+      "dependencies": [
+        "T2-accounts-api",
+        "T3-web-app"
+      ]
+    }
+  ],
+  "plan_sha256": "5e6382e575a5be35b0abf3d771ed11bbb0875d674fed2f6bf4fe0f14906b715f",
+  "commit": "1c25a9fefe3ce4bc33d34243ae20544e1ef47969"
+}
