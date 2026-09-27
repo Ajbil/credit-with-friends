@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 import { configureApi } from './common/api/api.config';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
   const config = app.get(ConfigService<ApiConfig, true>);
   configureApi(app, config);
   await app.listen(config.getOrThrow('port'));
