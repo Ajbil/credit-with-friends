@@ -50,12 +50,12 @@
       "packages/shared/"
     ],
     "recorded_at": "2026-09-27T16:02:00+00:00",
-    "commit": "f4e46b5e85fd25092c9c9ec84e2cc81e79fcaf84",
+    "commit": "38446fbfe46044631dfbdbad3c5e146535edfad0",
     "pass_fail_summary": "close-owned proof: 8 verifier result(s), 14 required test result(s) passed; covered ids=config-rejects-missing-required-value,config-rejects-malformed-value,config-allows-missing-owner-id,health-returns-success-envelope,unknown-route-returns-constitution-error,validation-error-returns-400-with-field-errors,helmet-and-hsts-headers-present,cors-allows-only-web-origin,state-change-requires-header-and-origin,rate-limit-returns-429-standard-error,database-reachable-with-uuidv7,logs-redact-personal-data,swagger-ui-absent-in-production,openapi-file-matches-running-api; executed commands=22; backing=verify.json",
     "worker_commit": "33ffb29d994c6b87196258ff82359550f993cd7d",
     "bound_by": "stage-proof",
-    "bound_at": "2026-09-27T18:16:35+00:00"
+    "bound_at": "2026-09-27T18:22:35+00:00"
   },
-  "commit": "f4e46b5e85fd25092c9c9ec84e2cc81e79fcaf84",
-  "updated_at": "2026-09-27T18:16:35+00:00"
+  "commit": "38446fbfe46044631dfbdbad3c5e146535edfad0",
+  "updated_at": "2026-09-27T18:22:35+00:00"
 }
