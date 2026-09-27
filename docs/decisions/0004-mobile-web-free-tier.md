@@ -1,8 +1,9 @@
 ---
-status: accepted
+status: superseded
 confirmed_by: "Arihant"
 date: 2026-09-26
 stories: []
+superseded_by: 0011-mobile-web-hosting-budget
 ---
 
 # Mobile-first web app on free hosting tiers

@@ -7,7 +7,7 @@
       "spec": "docs/specs/accounts.md",
       "story": "As a visitor, I sign in with Google, give my name, WhatsApp number and 18+ confirmation, and consent to the privacy notice, so that I become a member other people can recognise and contact.",
       "acceptance_criteria": [
-        "Every flow in this story works in a phone browser opened from a WhatsApp link, the app can be installed to the phone's home screen, and it runs on free hosting tiers only.",
+        "Every flow in this story works in a phone browser opened from a WhatsApp link, the app can be installed to the phone's home screen, and it runs within the hosting budget of decision 0011 on the hosting of decision 0013.",
         "Completing onboarding creates exactly one account; later sign-ins with the same Google account, even after its email changes, open that same account.",
         "Signing in without completing onboarding creates no member account; that person cannot join a circle, list a card or search, and never appears in any member, circle or search data, including through direct data requests.",
         "Onboarding cannot be submitted without a 1 to 50 character display name, a WhatsApp number that normalises to a valid E.164 number (country code defaults to +91; non-Indian numbers accepted), the 18-or-older confirmation and explicit consent.",

@@ -49,7 +49,7 @@ one in under a minute, without broadcasting to everyone they know.
 - A member's cards are visible only to members of circles they belong to.
 - Google sign-in; the WhatsApp number is self-entered and unverified.
 - Usage counters are first-party only; no third-party trackers.
-- Runs on free hosting tiers only.
+- Hosting costs at most INR 2,000 per month, preferring free options when equally good (decision 0011).
 - Real members are invited only once every roadmap story has shipped, so every privacy-notice promise, including self-service account deletion, holds from the first sign-up; the owner may test earlier builds alone.
 - The owner's Google account ID and contact address are deployment configuration, set before the first circle is created.
 - Mobile-first: usable on a phone browser opened from a WhatsApp link.
