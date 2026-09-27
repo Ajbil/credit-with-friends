@@ -86,9 +86,15 @@ and validated at boot; the app refuses to start when one is missing or invalid.
 | `SESSION_SECRET` | key for hashing session tokens and signing OAuth state |
 | `WEB_ORIGIN` | `https://yourdomain.in`, the only CORS origin |
 | `API_ORIGIN` | `https://api.yourdomain.in`, for OAuth redirect URIs |
-| `OWNER_GOOGLE_ACCOUNT_ID` | the owner's stable Google account ID (usage-metrics spec) |
+| `OWNER_GOOGLE_ACCOUNT_ID` | the owner's stable Google account ID (usage-metrics spec); optional at boot so the owner can deploy first, read the ID on their profile, then set it before any circle is created |
 | `OWNER_CONTACT_EMAIL` | contact address shown in the privacy notice and missing-bank hint |
+| `LAUNCH_OPEN` | `false` until launch; while false only `PRELAUNCH_ALLOWED_EMAILS` may sign in (decision 0016) |
+| `PRELAUNCH_ALLOWED_EMAILS` | comma-separated Google emails allowed before launch |
 | `TEST_AUTH_ENABLED` | `true` only in local/CI tests; enables the test sign-in route |
+
+Render and Cloudflare are configured in their dashboards (decision 0014); the
+exact settings and who supplies each value live in a deployment runbook in
+`docs/`, written by the deployment task.
 
 ## Cost envelope
 
