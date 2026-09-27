@@ -14,6 +14,7 @@ export interface ApiConfig {
   prelaunchAllowedEmails: string[];
   sessionSecret: string;
   testAuthEnabled: boolean;
+  trustProxy: number;
   webOrigin: string;
 }
 
@@ -61,6 +62,9 @@ export function validateConfig(env: Record<string, unknown>): ApiConfig {
   const rawPort = env.PORT ?? '3000';
   const port = typeof rawPort === 'string' && /^\d+$/.test(rawPort) ? Number(rawPort) : NaN;
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT must be an integer from 1 to 65535');
+  const rawTrustProxy = env.TRUST_PROXY ?? '0';
+  const trustProxy = typeof rawTrustProxy === 'string' && /^\d+$/.test(rawTrustProxy) ? Number(rawTrustProxy) : NaN;
+  if (!Number.isSafeInteger(trustProxy) || trustProxy < 0) throw new Error('TRUST_PROXY must be a non-negative integer');
 
   const ownerContactEmail = required(env, 'OWNER_CONTACT_EMAIL');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerContactEmail)) {
@@ -84,6 +88,7 @@ export function validateConfig(env: Record<string, unknown>): ApiConfig {
     prelaunchAllowedEmails: typeof allowlist === 'string' && allowlist !== '' ? allowlist.split(',').map((email) => email.trim().toLowerCase()) : [],
     sessionSecret: required(env, 'SESSION_SECRET'),
     testAuthEnabled: boolean(env, 'TEST_AUTH_ENABLED', false),
+    trustProxy,
     webOrigin: origin(env, 'WEB_ORIGIN'),
   };
 }

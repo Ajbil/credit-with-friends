@@ -29,6 +29,9 @@ describe('validateConfig', () => {
       ['DATABASE_URL', 'https://example.com/database'],
       ['OWNER_CONTACT_EMAIL', 'not-an-email'],
       ['PORT', '70000'],
+      ['TRUST_PROXY', '-1'],
+      ['TRUST_PROXY', '1.5'],
+      ['TRUST_PROXY', 'invalid'],
     ]) {
       expect(() => validateConfig({ ...validEnvironment, [name]: value })).toThrow(name);
     }
@@ -37,5 +40,7 @@ describe('validateConfig', () => {
   it('config-allows-missing-owner-id', () => {
     const config = validateConfig(validEnvironment);
     expect(config.ownerGoogleAccountId).toBeUndefined();
+    expect(config.trustProxy).toBe(0);
+    expect(validateConfig({ ...validEnvironment, TRUST_PROXY: '1' }).trustProxy).toBe(1);
   });
 });

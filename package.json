@@ -6,6 +6,7 @@
     "node": ">=22 <23"
   },
   "scripts": {
+    "postinstall": "pnpm --filter @symphony/api prisma:generate",
     "dev": "turbo run dev --cache-dir .turbo/cache",
     "build": "turbo run build --cache-dir .turbo/cache",
     "test": "turbo run test --cache-dir .turbo/cache",

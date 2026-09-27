@@ -18,6 +18,7 @@ function fieldErrors(errors: ValidationError[], parent = ''): Array<{ field: str
 
 export function configureApi(app: INestApplication, config: ConfigService<ApiConfig, true>): void {
   app.useLogger(app.get(Logger));
+  app.getHttpAdapter().getInstance().set('trust proxy', config.getOrThrow('trustProxy'));
   app.use(helmet({ strictTransportSecurity: { maxAge: 31_536_000, includeSubDomains: true } }));
   const webOrigin = config.getOrThrow('webOrigin');
   app.enableCors({
