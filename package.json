@@ -1,0 +1,27 @@
+{
+  "name": "credit-with-friends",
+  "private": true,
+  "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "dev": "turbo run dev --cache-dir .turbo/cache",
+    "build": "turbo run build --cache-dir .turbo/cache",
+    "test": "turbo run test --cache-dir .turbo/cache",
+    "test:integration": "turbo run test:integration --cache-dir .turbo/cache",
+    "typecheck": "turbo run typecheck --cache-dir .turbo/cache",
+    "lint": "turbo run lint --cache-dir .turbo/cache",
+    "db:migrate:deploy": "pnpm --filter @symphony/api db:migrate:deploy"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "prettier": "^3.6.2",
+    "turbo": "^2.6.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/credit_with_friends
+      SESSION_SECRET: ci-session-secret-not-for-production-32
+      WEB_ORIGIN: http://localhost:5173
+      API_ORIGIN: http://localhost:3000
+      OWNER_CONTACT_EMAIL: owner@example.in
+      PORT: 3000
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: credit_with_friends
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d credit_with_friends"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm db:migrate:deploy
+      - run: pnpm test:integration
+      - run: pnpm build
+      - run: pnpm audit --prod --audit-level=high
+      - run: pnpm --filter @symphony/api openapi:check
