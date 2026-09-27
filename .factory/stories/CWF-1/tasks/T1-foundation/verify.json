@@ -1,0 +1,124 @@
+{
+  "ok": true,
+  "completed_at": "2026-09-27T16:02:00+00:00",
+  "commit": "33ffb29d994c6b87196258ff82359550f993cd7d",
+  "task_id": "T1-foundation",
+  "recorded_by": "stage-proof",
+  "tree_digest": "ecbd96c10463c5bdb765735f8a51663b5356d24769b4cacb1d836f9113edbb6c",
+  "proof_key": "3cea053876a450a42a6bf87750e3dcb28a8cd0bf107351f6f994f46dd0d25505",
+  "results": [
+    {
+      "command": "pnpm install --frozen-lockfile",
+      "exit_code": 0,
+      "output_tail": "Scope: all 2 workspace projects\nLockfile is up to date, resolution step is skipped\nAlready up to date\n\n\u256d Warning \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502                                                                              \u2502\n\u2502   Ignored build scripts: @prisma/client@6.19.3, @prisma/engines@6.19.3,      \u2502\n\u2502   @scarf/scarf@1.4.0, esbuild@0.28.2, prisma@6.19.3.                         \u2502\n\u2502   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     \u2502\n\u2502   to run scripts.                                                            \u2502\n\u2502                                                                              \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nDone in 988ms using pnpm v10.28.1"
+    },
+    {
+      "command": "pnpm lint",
+      "exit_code": 0,
+      "output_tail": "\n> credit-with-friends@ lint D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\n> turbo run lint --cache-dir .turbo/cache\n\n\n   \u2022 turbo 2.11.4\n   \u2022 Packages in scope: @symphony/api\n   \u2022 Running lint in 1 package\n   \u2022 Remote caching disabled\n\n@symphony/api:lint: cache miss, executing b95525fc9597cb4d\n@symphony/api:lint: \n@symphony/api:lint: > @symphony/api@0.0.0 lint D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\\apps\\api\n@symphony/api:lint: > eslint src test\n@symphony/api:lint: \n\n Tasks:    1 successful, 1 total\nCached:    0 cached, 1 total\n  Time:    1.945s"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "output_tail": "\n> credit-with-friends@ typecheck D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\n> turbo run typecheck --cache-dir .turbo/cache\n\n\n   \u2022 turbo 2.11.4\n   \u2022 Packages in scope: @symphony/api\n   \u2022 Running typecheck in 1 package\n   \u2022 Remote caching disabled\n\n@symphony/api:typecheck: cache miss, executing b4cfbe2d22d60564\n@symphony/api:typecheck: \n@symphony/api:typecheck: > @symphony/api@0.0.0 typecheck D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\\apps\\api\n@symphony/api:typecheck: > tsc --noEmit\n@symphony/api:typecheck: \n\n Tasks:    1 successful, 1 total\nCached:    0 cached, 1 total\n  Time:    2.47s"
+    },
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "output_tail": "\n> credit-with-friends@ build D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\n> turbo run build --cache-dir .turbo/cache\n\n\n   \u2022 turbo 2.11.4\n   \u2022 Packages in scope: @symphony/api\n   \u2022 Running build in 1 package\n   \u2022 Remote caching disabled\n\n@symphony/api:build: cache miss, executing bcd0c769adaebc7c\n@symphony/api:build: \n@symphony/api:build: > @symphony/api@0.0.0 build D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\\apps\\api\n@symphony/api:build: > prisma generate && nest build\n@symphony/api:build: \n@symphony/api:build: Environment variables loaded from .env\n@symphony/api:build: Prisma schema loaded from prisma\\schema.prisma\n@symphony/api:build: \n@symphony/api:build: \u2714 Generated Prisma Client (v6.19.3) to .\\..\\..\\node_modules\\.pnpm\\@prisma+client@6.19.3_prism_1d040ab5215f59f0e27ddee7f0cf082e\\node_modules\\@prisma\\client in 62ms\n@symphony/api:build: \n@symphony/api:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)\n@symphony/api:build: \n@symphony/api:build: Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints\n@symphony/api:build: \n\n Tasks:    1 successful, 1 total\nCached:    0 cached, 1 total\n  Time:    5.303s"
+    },
+    {
+      "command": "pnpm test",
+      "exit_code": 0,
+      "output_tail": "\n> credit-with-friends@ test D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\n> turbo run test --cache-dir .turbo/cache\n\n\n   \u2022 turbo 2.11.4\n   \u2022 Packages in scope: @symphony/api\n   \u2022 Running test in 1 package\n   \u2022 Remote caching disabled\n\n@symphony/api:test: cache hit, replaying logs 0635869f5dba12a7\n@symphony/api:test: \n@symphony/api:test: > @symphony/api@0.0.0 test D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\\apps\\api\n@symphony/api:test: > vitest run --root ../.. --project api-unit\n@symphony/api:test: \n@symphony/api:test: \n@symphony/api:test:  RUN  v3.2.7 D:/Arihant Personal/CreditWithFriends/credit-with-friends-CWF-1-T1-foundation\n@symphony/api:test: \n@symphony/api:test:  \u2713 |api-unit| apps/api/src/common/config/config.spec.ts (3 tests) 404ms\n@symphony/api:test:  \u2713 |api-unit| apps/api/src/common/logging/logging.spec.ts (1 test) 8ms\n@symphony/api:test: \n@symphony/api:test:  Test Files  2 passed (2)\n@symphony/api:test:       Tests  4 passed (4)\n@symphony/api:test:    Start at  21:21:22\n@symphony/api:test:    Duration  925ms (transform 94ms, setup 0ms, collect 499ms, tests 412ms, environment 1ms, prepare 270ms)\n@symphony/api:test: \n\n Tasks:    1 successful, 1 total\nCached:    1 cached, 1 total\n  Time:    57ms >>> FULL TURBO"
+    },
+    {
+      "command": "docker compose up -d --wait postgres",
+      "exit_code": 0,
+      "output_tail": " Container credit-with-friends-cwf-1-t1-foundation-postgres-1 Running \n Container credit-with-friends-cwf-1-t1-foundation-postgres-1 Waiting \n Container credit-with-friends-cwf-1-t1-foundation-postgres-1 Healthy"
+    },
+    {
+      "command": "pnpm db:migrate:deploy",
+      "exit_code": 0,
+      "output_tail": "Environment variables loaded from .env\n\n> credit-with-friends@ db:migrate:deploy D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\n> pnpm --filter @symphony/api db:migrate:deploy\n\n\n> @symphony/api@0.0.0 db:migrate:deploy D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-1-T1-foundation\\apps\\api\n> prisma migrate deploy\n\nPrisma schema loaded from prisma\\schema.prisma\nDatasource \"db\": PostgreSQL database \"credit_with_friends\", schema \"public\" at \"localhost:5433\"\n\n1 migration found in prisma/migrations\n\n\nNo pending migrations to apply."
+    },
+    {
+      "command": "pnpm test:integration",
+      "exit_code": 0,
+      "output_tail": "@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.462Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"b395585a-7294-4782-b090-7e302c244988\",\"requestId\":\"b395585a-7294-4782-b090-7e302c244988\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.463Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"fc2d74d6-558c-44a8-a2b8-447b2eeb8eca\",\"requestId\":\"fc2d74d6-558c-44a8-a2b8-447b2eeb8eca\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.465Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"846a362d-e023-470d-b5be-2753da845994\",\"requestId\":\"846a362d-e023-470d-b5be-2753da845994\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":1},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.467Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"8fbc6131-ef59-4d32-8645-3adab06ff823\",\"requestId\":\"8fbc6131-ef59-4d32-8645-3adab06ff823\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.468Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"0d2ea852-1f3d-4797-aed4-59d034139906\",\"requestId\":\"0d2ea852-1f3d-4797-aed4-59d034139906\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.469Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"c8d31812-7a6f-4cfb-96bf-3870fed7d964\",\"requestId\":\"c8d31812-7a6f-4cfb-96bf-3870fed7d964\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.471Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"2039aa40-de95-4e63-9046-a904c6631f96\",\"requestId\":\"2039aa40-de95-4e63-9046-a904c6631f96\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":1},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.472Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"4aba2c29-4f0b-4d79-a28b-97fa696e2469\",\"requestId\":\"4aba2c29-4f0b-4d79-a28b-97fa696e2469\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.474Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"bcfa836c-aca7-444c-99ea-a8775df2e7c8\",\"requestId\":\"bcfa836c-aca7-444c-99ea-a8775df2e7c8\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":1},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.475Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"598154a4-06d5-4833-8460-b4e4d8b5bfea\",\"requestId\":\"598154a4-06d5-4833-8460-b4e4d8b5bfea\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.477Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"9d81f0b8-7e07-48c3-ba49-72ce01a641da\",\"requestId\":\"9d81f0b8-7e07-48c3-ba49-72ce01a641da\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":1},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.478Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"ef7b27f3-e62b-4118-a208-79ac5f9bd127\",\"requestId\":\"ef7b27f3-e62b-4118-a208-79ac5f9bd127\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.480Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"491b80fb-9a53-4f93-9757-54d5507eb9a4\",\"requestId\":\"491b80fb-9a53-4f93-9757-54d5507eb9a4\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":1},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.482Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"589aa842-3e51-42b4-95f6-01e1e1961523\",\"requestId\":\"589aa842-3e51-42b4-95f6-01e1e1961523\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":1},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.486Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"56d22775-a895-4390-a6e7-8e89f47df365\",\"requestId\":\"56d22775-a895-4390-a6e7-8e89f47df365\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.489Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"2b75dffb-e6e8-4de4-b992-3f2b40141324\",\"requestId\":\"2b75dffb-e6e8-4de4-b992-3f2b40141324\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":200,\"durationMs\":0},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"error\",\"timestampUtc\":\"2026-09-27T16:01:15.491Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"59e29181-7fb3-465b-b3a7-bb5baa2fa502\",\"requestId\":\"59e29181-7fb3-465b-b3a7-bb5baa2fa502\",\"context\":{\"errorId\":\"953d7bab-0c11-4d97-ac22-9bfceee7d479\",\"statusCode\":429,\"code\":\"RATE_LIMIT_EXCEEDED\",\"correlationId\":\"59e29181-7fb3-465b-b3a7-bb5baa2fa502\",\"requestId\":\"59e29181-7fb3-465b-b3a7-bb5baa2fa502\"},\"message\":\"Request failed\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.492Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"req\":\"[REDACTED]\",\"correlationId\":\"59e29181-7fb3-465b-b3a7-bb5baa2fa502\",\"requestId\":\"59e29181-7fb3-465b-b3a7-bb5baa2fa502\",\"context\":{\"method\":\"GET\",\"route\":\"/api/v1/test-probe/rate-limit\",\"status\":429,\"durationMs\":1},\"message\":\"API request completed\"}\n@symphony/api:test:integration: {\"level\":\"warn\",\"timestampUtc\":\"2026-09-27T16:01:15.524Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"LegacyRouteConverter\",\"message\":\"Unsupported route path: \\\"/api/v1/*\\\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \\\"path-to-regexp\\\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \\\"/users\\\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert to \\\"/api/v1/{*path}\\\"...\"}\n@symphony/api:test:integration: {\"level\":\"warn\",\"timestampUtc\":\"2026-09-27T16:01:15.525Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"LegacyRouteConverter\",\"message\":\"Unsupported route path: \\\"/api/v1/*\\\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \\\"path-to-regexp\\\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \\\"/users\\\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert to \\\"/api/v1/{*path}\\\"...\"}\n@symphony/api:test:integration: {\"level\":\"warn\",\"timestampUtc\":\"2026-09-27T16:01:15.525Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"LegacyRouteConverter\",\"message\":\"Unsupported route path: \\\"/api/v1/*\\\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \\\"path-to-regexp\\\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \\\"/users\\\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert to \\\"/api/v1/{*path}\\\"...\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.525Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"RoutesResolver\",\"message\":\"ProbeController {/api/v1/test-probe}:\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.526Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"RouterExplorer\",\"message\":\"Mapped {/api/v1/test-probe/validate, POST} route\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.526Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"RouterExplorer\",\"message\":\"Mapped {/api/v1/test-probe/mutation, ALL} route\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.526Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"RouterExplorer\",\"message\":\"Mapped {/api/v1/test-probe/rate-limit, GET} route\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.526Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"RoutesResolver\",\"message\":\"HealthController {/api/v1/health}:\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.526Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"RouterExplorer\",\"message\":\"Mapped {/api/v1/health, GET} route\"}\n@symphony/api:test:integration: {\"level\":\"info\",\"timestampUtc\":\"2026-09-27T16:01:15.527Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":\"NestApplication\",\"message\":\"Nest application successfully started\"}\n@symphony/api:test:integration: {\"level\":\"error\",\"timestampUtc\":\"2026-09-27T16:01:15.531Z\",\"environment\":\"Local\",\"serviceName\":\"credit-with-friends-api\",\"moduleName\":\"api\",\"context\":{\"errorId\":\"f640a0ef-5ca1-46b0-b1b4-c2518ef2430b\",\"statusCode\":404,\"code\":\"NOT_FOUND\",\"correlationId\":\"c2678c2c-9ffb-478f-997f-1308b6652752\",\"requestId\":null},\"message\":\"Request failed\"}\n@symphony/api:test:integration:  \u001b[32m\u2713\u001b[39m \u001b[30m\u001b[43m api-integration \u001b[49m\u001b[39m apps/api/test/foundation.integration.spec.ts \u001b[2m(\u001b[22m\u001b[2m10 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[33m 793\u001b[2mms\u001b[22m\u001b[39m\n@symphony/api:test:integration: \n@symphony/api:test:integration: \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m1 passed\u001b[39m\u001b[22m\u001b[90m (1)\u001b[39m\n@symphony/api:test:integration: \u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m10 passed\u001b[39m\u001b[22m\u001b[90m (10)\u001b[39m\n@symphony/api:test:integration: \u001b[2m   Start at \u001b[22m 21:31:13\n@symphony/api:test:integration: \u001b[2m   Duration \u001b[22m 2.01s\u001b[2m (transform 121ms, setup 0ms, collect 818ms, tests 793ms, environment 0ms, prepare 136ms)\u001b[22m\n@symphony/api:test:integration: \n\n Tasks:    1 successful, 1 total\nCached:    0 cached, 1 total\n  Time:    3.246s"
+    }
+  ],
+  "required_tests": [
+    {
+      "id": "config-rejects-missing-required-value",
+      "path": "apps/api/src/common/config/config.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "config-rejects-malformed-value",
+      "path": "apps/api/src/common/config/config.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "config-allows-missing-owner-id",
+      "path": "apps/api/src/common/config/config.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "health-returns-success-envelope",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "unknown-route-returns-constitution-error",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "validation-error-returns-400-with-field-errors",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "helmet-and-hsts-headers-present",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "cors-allows-only-web-origin",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "state-change-requires-header-and-origin",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "rate-limit-returns-429-standard-error",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "database-reachable-with-uuidv7",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "logs-redact-personal-data",
+      "path": "apps/api/src/common/logging/logging.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "swagger-ui-absent-in-production",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    },
+    {
+      "id": "openapi-file-matches-running-api",
+      "path": "apps/api/test/foundation.integration.spec.ts",
+      "status": "passed"
+    }
+  ],
+  "test_id_misses": []
+}
