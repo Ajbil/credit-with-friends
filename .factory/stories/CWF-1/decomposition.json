@@ -27,7 +27,93 @@
         "Swagger is served outside production only, and the committed OpenAPI file matches the running API.",
         "CI on every pull request runs lint, typecheck, unit tests, integration tests against PostgreSQL 18, build, a production dependency audit that fails on high or critical advisories, and an OpenAPI diff check."
       ],
-      "user_facing": false
+      "user_facing": false,
+      "write_scope": [
+        "package.json",
+        "pnpm-workspace.yaml",
+        "pnpm-lock.yaml",
+        "turbo.json",
+        "tsconfig.base.json",
+        ".npmrc",
+        ".nvmrc",
+        "vitest.config.ts",
+        "eslint.config.mjs",
+        ".prettierrc",
+        ".prettierignore",
+        "docker-compose.yml",
+        ".env.example",
+        ".gitignore",
+        ".github/workflows/ci.yml",
+        "apps/api/",
+        "packages/shared/"
+      ],
+      "verify_commands": [
+        "pnpm install --frozen-lockfile",
+        "pnpm lint",
+        "pnpm typecheck",
+        "pnpm build",
+        "pnpm test",
+        "docker compose up -d --wait postgres",
+        "pnpm test:integration"
+      ],
+      "required_tests": [
+        {
+          "id": "config-rejects-missing-required-value",
+          "path": "apps/api/src/common/config/config.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "config-allows-missing-owner-id",
+          "path": "apps/api/src/common/config/config.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "health-returns-success-envelope",
+          "path": "apps/api/test/foundation.integration.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "unknown-route-returns-constitution-error",
+          "path": "apps/api/test/foundation.integration.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "helmet-and-hsts-headers-present",
+          "path": "apps/api/test/foundation.integration.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "cors-allows-only-web-origin",
+          "path": "apps/api/test/foundation.integration.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "state-change-requires-header-and-origin",
+          "path": "apps/api/test/foundation.integration.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "rate-limit-returns-429-standard-error",
+          "path": "apps/api/test/foundation.integration.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "database-reachable-with-uuidv7",
+          "path": "apps/api/test/foundation.integration.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "logs-redact-personal-data",
+          "path": "apps/api/src/common/logging/logging.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        },
+        {
+          "id": "openapi-file-matches-running-api",
+          "path": "apps/api/test/foundation.integration.spec.ts",
+          "command": "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
+        }
+      ],
+      "reviewer_focus": "Load-bearing law: constitution/03-modular-monolith-structure.md (src/common, modules layout), constitution/pnp-coding-standards-modular-monolith.md (file suffixes, interfaces, DTOs), constitution/pnp-api-standards.md and constitution/07-exception-handling.md (success envelope and error payload), constitution/05-logging-and-observability.md (JSON logs, no PII), constitution/pnp-database-standards.md (naming, AtUtc, UUID ids), plus the deviations in docs/architecture/90-constitution-deviations.md and decisions 0012 and 0014. Task-specific seams: the config module is the ONLY reader of process.env; exactly one global exception filter and one response interceptor produce every response shape; security middleware order (helmet, CORS, forgery guard, throttler, validation) and its test coverage; the root Vitest projects config so tests run by repo-relative path. Must NOT: touch Forge root files (AGENTS.md, WORKFLOW.md, CLAUDE.md, docs/, factory/, constitution/, harness/, forge, forge.cmd, harness.yaml, .github/workflows/roadmap-gate.yml); add Redis, BullMQ, AWS CDK, a service bus, domain tables, auth or apps/web. Keep files within harness code-quality limits (about 200 lines per file, 25 per function)."
     },
     {
       "id": "T2-accounts-api",
@@ -93,5 +179,5 @@
     }
   ],
   "plan_sha256": "5e6382e575a5be35b0abf3d771ed11bbb0875d674fed2f6bf4fe0f14906b715f",
-  "commit": "1c25a9fefe3ce4bc33d34243ae20544e1ef47969"
+  "commit": "213467d692e0e97ade0e38f4a2f9e7370e44b066"
 }
