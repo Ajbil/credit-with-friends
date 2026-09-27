@@ -1,0 +1,337 @@
+{
+  "brief_sha256": "5e73f9db2581d3199d19565a78dc4eb4b6fcd0ffaafe4bb043578207ac1f9843",
+  "delta_id": "4404de4953f2fccf6570177b3fb7b8593607364312e74d8d738cbd96bae0f8c3",
+  "format": "forge-review-generation/v1",
+  "generated_by": "autoreview",
+  "generation_id": "3da1bd82f6b50f373b412cd826a72fc138669decec32d2ea4089fea998bb3621",
+  "helper": {
+    "path": "C:\\Users\\caw-d\\.codex\\skills\\autoreview\\scripts\\autoreview",
+    "sha256": "3eaef2b638a3c9abc49c42feaa4eedd1a4973011b3156f9b654df25462192588",
+    "version": "ce14dcca09b3affb922ddcca11465619e67f5114"
+  },
+  "input": {
+    "bytes": 7454,
+    "sha256": "386a395766fc44cf61b43d1d231f19a0fc65b8a83963303ea2f4b3c728a539e6"
+  },
+  "inspected_commit": "134a3991a9c09dbe4db0846ce48102509d5ee393",
+  "lenses": {
+    "performance": {
+      "blocking_findings": [],
+      "branch_diff_digest": "4404de4953f2fccf6570177b3fb7b8593607364312e74d8d738cbd96bae0f8c3",
+      "brief_sha256": "5e73f9db2581d3199d19565a78dc4eb4b6fcd0ffaafe4bb043578207ac1f9843",
+      "commit": "134a3991a9c09dbe4db0846ce48102509d5ee393",
+      "generated_by": "autoreview",
+      "non_blocking_findings": [],
+      "recommendation": "approve",
+      "review_run_id": "2d92ff4d0152602499b8be65c478acaba6a8c0fbd9ac606e163a9b4fa1d97a3d",
+      "reviewed_scope": [
+        ".env.example",
+        ".github/workflows/ci.yml",
+        ".npmrc",
+        ".nvmrc",
+        ".prettierignore",
+        ".prettierrc",
+        "apps/api/nest-cli.json",
+        "apps/api/openapi.json",
+        "apps/api/package.json",
+        "apps/api/prisma/migrations/20260927000000_initial/migration.sql",
+        "apps/api/prisma/migrations/migration_lock.toml",
+        "apps/api/prisma/schema.prisma",
+        "apps/api/src/app.module.ts",
+        "apps/api/src/common/api/api-exception.filter.ts",
+        "apps/api/src/common/api/api-response.interceptor.ts",
+        "apps/api/src/common/api/api.config.ts",
+        "apps/api/src/common/api/api.dto.ts",
+        "apps/api/src/common/config/config.module.ts",
+        "apps/api/src/common/config/config.spec.ts",
+        "apps/api/src/common/database/prisma.service.ts",
+        "apps/api/src/common/logging/logging.config.ts",
+        "apps/api/src/common/logging/logging.spec.ts",
+        "apps/api/src/common/logging/request-logging.middleware.ts",
+        "apps/api/src/common/security/request-forgery.guard.ts",
+        "apps/api/src/main.ts",
+        "apps/api/src/modules/health/health.controller.ts",
+        "apps/api/src/modules/health/health.module.ts",
+        "apps/api/test/foundation.integration.spec.ts",
+        "apps/api/tsconfig.json",
+        "docker-compose.yml",
+        "eslint.config.mjs",
+        "package.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "tsconfig.base.json",
+        "turbo.json",
+        "vitest.config.ts"
+      ],
+      "score": 10,
+      "skills_used": [],
+      "summary": "performance lens over T1-foundation (37 product path(s), 30ff03b..134a399, Codex via the autoreview skill): 0 blocking, 0 non-blocking. No actionable performance defect is evident in the supplied change.",
+      "task_id": "T1-foundation"
+    },
+    "quality": {
+      "blocking_findings": [
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": "",
+          "line": null,
+          "summary": "T1-C1: pnpm install, typecheck, lint and build pass from a clean checkout, and Forge's existing root files (AGENTS.md, WORKFLOW.md, CLAUDE.md, docs/, factory/, constitution/, harness/) are unchanged. — partial: the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "title": "VERDICT T1-C1: partial"
+        },
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": "",
+          "line": null,
+          "summary": "T1-C2: The API refuses to start when a required configuration value is missing or malformed, naming the value, starts when OWNER_GOOGLE_ACCOUNT_ID is absent, and listens on the validated PORT. — partial: the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "title": "VERDICT T1-C2: partial"
+        },
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": "",
+          "line": null,
+          "summary": "T1-C3: GET /api/v1/health returns 200 in the constitution success envelope, an unknown route returns the constitution error payload with no stack trace, SQL or library message, and a request failing DTO validation returns 400 with field errors in the same payload. — partial: the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "title": "VERDICT T1-C3: partial"
+        },
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": "",
+          "line": null,
+          "summary": "T1-C4: Responses carry Helmet headers including HSTS; CORS allows only WEB_ORIGIN with credentials; a POST, PATCH or DELETE without the X-Requested-With header or with a foreign Origin is refused with 403; exceeding a rate limit returns 429 in the standard error format. — partial: the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "title": "VERDICT T1-C4: partial"
+        },
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": "",
+          "line": null,
+          "summary": "T1-C5: Local PostgreSQL 18 runs through Docker Compose, Prisma migrations apply to a clean database, uuidv7() is available, and the Prisma schema is set up for constitution table and column naming. — partial: the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "title": "VERDICT T1-C5: partial"
+        },
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": "",
+          "line": null,
+          "summary": "T1-C6: Logs are structured JSON with correlation ids; request logs record method, route pattern, status and duration only, and no log contains request bodies, query strings, cookies, authorization headers or personal data. — partial: the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "title": "VERDICT T1-C6: partial"
+        },
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": "",
+          "line": null,
+          "summary": "T1-C7: Swagger UI is served outside production only, and the committed OpenAPI file matches the running API. — partial: the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "title": "VERDICT T1-C7: partial"
+        },
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": "",
+          "line": null,
+          "summary": "T1-C8: CI on every pull request runs lint, typecheck, unit tests, integration tests against PostgreSQL 18, build, a production dependency audit that fails on high or critical advisories, and an OpenAPI diff check. — partial: the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "title": "VERDICT T1-C8: partial"
+        }
+      ],
+      "branch_diff_digest": "4404de4953f2fccf6570177b3fb7b8593607364312e74d8d738cbd96bae0f8c3",
+      "brief_sha256": "5e73f9db2581d3199d19565a78dc4eb4b6fcd0ffaafe4bb043578207ac1f9843",
+      "commit": "134a3991a9c09dbe4db0846ce48102509d5ee393",
+      "contract_verdicts": [
+        {
+          "contract_id": "T1-C1",
+          "evidence": "the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "verdict": "partial"
+        },
+        {
+          "contract_id": "T1-C2",
+          "evidence": "the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "verdict": "partial"
+        },
+        {
+          "contract_id": "T1-C3",
+          "evidence": "the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "verdict": "partial"
+        },
+        {
+          "contract_id": "T1-C4",
+          "evidence": "the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "verdict": "partial"
+        },
+        {
+          "contract_id": "T1-C5",
+          "evidence": "the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "verdict": "partial"
+        },
+        {
+          "contract_id": "T1-C6",
+          "evidence": "the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "verdict": "partial"
+        },
+        {
+          "contract_id": "T1-C7",
+          "evidence": "the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "verdict": "partial"
+        },
+        {
+          "contract_id": "T1-C8",
+          "evidence": "the reviewer emitted no VERDICT line for this contract; recorded as partial (fail-closed) — re-review or verdict it",
+          "verdict": "partial"
+        }
+      ],
+      "generated_by": "autoreview",
+      "non_blocking_findings": [
+        {
+          "area": "apps/api/src",
+          "category": "bug",
+          "file_path": "apps/api/src/main.ts",
+          "line": 8,
+          "summary": "Buffer bootstrap logs before attaching Pino (apps/api/src/main.ts:8): When the API starts, `NestFactory.create(AppModule)` runs before `configureApi` attaches the Pino logger.",
+          "title": "Buffer bootstrap logs before attaching Pino"
+        }
+      ],
+      "recommendation": "request-changes",
+      "rejected_findings": [
+        {
+          "cite": "evidence pnpm-lock.yaml:1",
+          "finding": {
+            "area": ".github/workflows",
+            "category": "bug",
+            "file_path": ".github/workflows/ci.yml",
+            "line": 49,
+            "summary": "Commit a lockfile matching the new workspace manifests (.github/workflows/ci.yml:49): On a clean pull request checkout, CI runs `pnpm install --frozen-lockfile`, but the complete branch diff adds the root and API package manifests without adding or updating `pnpm-lock.yaml`.",
+            "title": "Commit a lockfile matching the new workspace manifests"
+          },
+          "reason": "pnpm-lock.yaml (lockfileVersion 9.0) is committed in 33ffb29 alongside the manifests; the review bundle deliberately excluded its bytes ('review tip excludes 1 lock/generated path(s)... pnpm-lock.yaml'), so the reviewer could not see it, and the task proof ran pnpm install --frozen-lockfile successfully.",
+          "rejected_at": "2026-09-27T16:05:50+00:00",
+          "rejected_by": "claude-coordinator",
+          "task_id": "T1-foundation"
+        }
+      ],
+      "review_run_id": "2d92ff4d0152602499b8be65c478acaba6a8c0fbd9ac606e163a9b4fa1d97a3d",
+      "reviewed_scope": [
+        ".env.example",
+        ".github/workflows/ci.yml",
+        ".npmrc",
+        ".nvmrc",
+        ".prettierignore",
+        ".prettierrc",
+        "apps/api/nest-cli.json",
+        "apps/api/openapi.json",
+        "apps/api/package.json",
+        "apps/api/prisma/migrations/20260927000000_initial/migration.sql",
+        "apps/api/prisma/migrations/migration_lock.toml",
+        "apps/api/prisma/schema.prisma",
+        "apps/api/src/app.module.ts",
+        "apps/api/src/common/api/api-exception.filter.ts",
+        "apps/api/src/common/api/api-response.interceptor.ts",
+        "apps/api/src/common/api/api.config.ts",
+        "apps/api/src/common/api/api.dto.ts",
+        "apps/api/src/common/config/config.module.ts",
+        "apps/api/src/common/config/config.spec.ts",
+        "apps/api/src/common/database/prisma.service.ts",
+        "apps/api/src/common/logging/logging.config.ts",
+        "apps/api/src/common/logging/logging.spec.ts",
+        "apps/api/src/common/logging/request-logging.middleware.ts",
+        "apps/api/src/common/security/request-forgery.guard.ts",
+        "apps/api/src/main.ts",
+        "apps/api/src/modules/health/health.controller.ts",
+        "apps/api/src/modules/health/health.module.ts",
+        "apps/api/test/foundation.integration.spec.ts",
+        "apps/api/tsconfig.json",
+        "docker-compose.yml",
+        "eslint.config.mjs",
+        "package.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "tsconfig.base.json",
+        "turbo.json",
+        "vitest.config.ts"
+      ],
+      "score": 0,
+      "skills_used": [],
+      "summary": "quality lens over T1-foundation (37 product path(s), 30ff03b..134a399, Codex via the autoreview skill): 9 blocking, 1 non-blocking. The new manifests lack a matching lockfile in the complete diff, so the frozen install required by CI cannot pass. Startup also emits logs before the JSON logger is attached. The implementer report claims the install passed, but the empty review sandbox prevents reconciling that claim with the committed change.",
+      "task_id": "T1-foundation"
+    },
+    "security": {
+      "blocking_findings": [],
+      "branch_diff_digest": "4404de4953f2fccf6570177b3fb7b8593607364312e74d8d738cbd96bae0f8c3",
+      "brief_sha256": "5e73f9db2581d3199d19565a78dc4eb4b6fcd0ffaafe4bb043578207ac1f9843",
+      "commit": "134a3991a9c09dbe4db0846ce48102509d5ee393",
+      "generated_by": "autoreview",
+      "non_blocking_findings": [],
+      "recommendation": "approve",
+      "review_run_id": "2d92ff4d0152602499b8be65c478acaba6a8c0fbd9ac606e163a9b4fa1d97a3d",
+      "reviewed_scope": [
+        ".env.example",
+        ".github/workflows/ci.yml",
+        ".npmrc",
+        ".nvmrc",
+        ".prettierignore",
+        ".prettierrc",
+        "apps/api/nest-cli.json",
+        "apps/api/openapi.json",
+        "apps/api/package.json",
+        "apps/api/prisma/migrations/20260927000000_initial/migration.sql",
+        "apps/api/prisma/migrations/migration_lock.toml",
+        "apps/api/prisma/schema.prisma",
+        "apps/api/src/app.module.ts",
+        "apps/api/src/common/api/api-exception.filter.ts",
+        "apps/api/src/common/api/api-response.interceptor.ts",
+        "apps/api/src/common/api/api.config.ts",
+        "apps/api/src/common/api/api.dto.ts",
+        "apps/api/src/common/config/config.module.ts",
+        "apps/api/src/common/config/config.spec.ts",
+        "apps/api/src/common/database/prisma.service.ts",
+        "apps/api/src/common/logging/logging.config.ts",
+        "apps/api/src/common/logging/logging.spec.ts",
+        "apps/api/src/common/logging/request-logging.middleware.ts",
+        "apps/api/src/common/security/request-forgery.guard.ts",
+        "apps/api/src/main.ts",
+        "apps/api/src/modules/health/health.controller.ts",
+        "apps/api/src/modules/health/health.module.ts",
+        "apps/api/test/foundation.integration.spec.ts",
+        "apps/api/tsconfig.json",
+        "docker-compose.yml",
+        "eslint.config.mjs",
+        "package.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "tsconfig.base.json",
+        "turbo.json",
+        "vitest.config.ts"
+      ],
+      "score": 10,
+      "skills_used": [],
+      "summary": "security lens over T1-foundation (37 product path(s), 30ff03b..134a399, Codex via the autoreview skill): 0 blocking, 0 non-blocking. The changed guards, CORS configuration, error responses, and log redaction show no additional concrete security defect in the supplied evidence.",
+      "task_id": "T1-foundation"
+    }
+  },
+  "origin": "rejection",
+  "raw_result": {
+    "bytes": 5292,
+    "data": "ew0KICAiZmluZGluZ3MiOiBbDQogICAgew0KICAgICAgInRpdGxlIjogIltxdWFsaXR5XSBDb21taXQgYSBsb2NrZmlsZSBtYXRjaGluZyB0aGUgbmV3IHdvcmtzcGFjZSBtYW5pZmVzdHMiLA0KICAgICAgImJvZHkiOiAiT24gYSBjbGVhbiBwdWxsIHJlcXVlc3QgY2hlY2tvdXQsIENJIHJ1bnMgYHBucG0gaW5zdGFsbCAtLWZyb3plbi1sb2NrZmlsZWAsIGJ1dCB0aGUgY29tcGxldGUgYnJhbmNoIGRpZmYgYWRkcyB0aGUgcm9vdCBhbmQgQVBJIHBhY2thZ2UgbWFuaWZlc3RzIHdpdGhvdXQgYWRkaW5nIG9yIHVwZGF0aW5nIGBwbnBtLWxvY2sueWFtbGAuIFtwbnBtIDEwIHJlcXVpcmVzIGEgcHJlc2VudCwgc3luY2hyb25pemVkIGxvY2tmaWxlIGZvciB0aGlzIGNvbW1hbmRdKGh0dHBzOi8vcG5wbS5pby8xMC54L2NsaS9pbnN0YWxsKS4gSW5zdGFsbGF0aW9uIHRoZXJlZm9yZSBzdG9wcyBiZWZvcmUgdGhlIGNoZWNrcyBydW4sIGJyZWFraW5nIHRoZSBjbGVhbi1jaGVja291dCBhbmQgQ0kgY29udHJhY3RzLiBUaGUgc3VwcGxpZWQgcHJvb2YgcmVwb3J0cyBhIHBhc3NpbmcgaW5zdGFsbCwgYnV0IGRvZXMgbm90IHJlc29sdmUgdGhpcyBjb250cmFkaWN0aW9uIGluIHRoZSBjb21taXR0ZWQgZGlmZi4iLA0KICAgICAgInByaW9yaXR5IjogIlAxIiwNCiAgICAgICJjb25maWRlbmNlIjogMC45NywNCiAgICAgICJjYXRlZ29yeSI6ICJidWciLA0KICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICJmaWxlX3BhdGgiOiAiLmdpdGh1Yi93b3JrZmxvd3MvY2kueW1sIiwNCiAgICAgICAgImxpbmUiOiA0OQ0KICAgICAgfSwNCiAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgfSwNCiAgICB7DQogICAgICAidGl0bGUiOiAiW3F1YWxpdHldIEJ1ZmZlciBib290c3RyYXAgbG9ncyBiZWZvcmUgYXR0YWNoaW5nIFBpbm8iLA0KICAgICAgImJvZHkiOiAiV2hlbiB0aGUgQVBJIHN0YXJ0cywgYE5lc3RGYWN0b3J5LmNyZWF0ZShBcHBNb2R1bGUpYCBydW5zIGJlZm9yZSBgY29uZmlndXJlQXBpYCBhdHRhY2hlcyB0aGUgUGlubyBsb2dnZXIuIFtOZXN0IHVzZXMgaXRzIGRlZmF1bHQgY29uc29sZSBsb2dnZXIgZHVyaW5nIHRoaXMgcGhhc2UgdW5sZXNzIGxvZ3MgYXJlIGJ1ZmZlcmVkXShodHRwczovL2RvY3MubmVzdGpzLmNvbS90ZWNobmlxdWVzL2xvZ2dlcikuIFN0YXJ0dXAgb3V0cHV0IHRoZXJlZm9yZSB2aW9sYXRlcyB0aGUgY29udHJhY3QgdGhhdCBsb2dzIGFyZSBzdHJ1Y3R1cmVkIEpTT04sIGFuZCBib290IGZhaWx1cmVzIG1heSBieXBhc3MgdGhlIGNvbmZpZ3VyZWQgbG9nIGZvcm1hdCwgbWFraW5nIHRoZW0gaGFyZGVyIGZvciBhIEpTT04gbG9nIHBpcGVsaW5lIHRvIGluZ2VzdC4iLA0KICAgICAgInByaW9yaXR5IjogIlAyIiwNCiAgICAgICJjb25maWRlbmNlIjogMC45NCwNCiAgICAgICJjYXRlZ29yeSI6ICJidWciLA0KICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICJmaWxlX3BhdGgiOiAiYXBwcy9hcGkvc3JjL21haW4udHMiLA0KICAgICAgICAibGluZSI6IDgNCiAgICAgIH0sDQogICAgICAic291cmNlX2F0dHJpYnV0aW9uIjogbnVsbA0KICAgIH0NCiAgXSwNCiAgIm92ZXJhbGxfY29ycmVjdG5lc3MiOiAicGF0Y2ggaXMgaW5jb3JyZWN0IiwNCiAgIm92ZXJhbGxfZXhwbGFuYXRpb24iOiAiQkVHSU4gRk9SR0UgQVNTRVNTTUVOVCBxdWFsaXR5XG5UaGUgbmV3IG1hbmlmZXN0cyBsYWNrIGEgbWF0Y2hpbmcgbG9ja2ZpbGUgaW4gdGhlIGNvbXBsZXRlIGRpZmYsIHNvIHRoZSBmcm96ZW4gaW5zdGFsbCByZXF1aXJlZCBieSBDSSBjYW5ub3QgcGFzcy4gU3RhcnR1cCBhbHNvIGVtaXRzIGxvZ3MgYmVmb3JlIHRoZSBKU09OIGxvZ2dlciBpcyBhdHRhY2hlZC4gVGhlIGltcGxlbWVudGVyIHJlcG9ydCBjbGFpbXMgdGhlIGluc3RhbGwgcGFzc2VkLCBidXQgdGhlIGVtcHR5IHJldmlldyBzYW5kYm94IHByZXZlbnRzIHJlY29uY2lsaW5nIHRoYXQgY2xhaW0gd2l0aCB0aGUgY29tbWl0dGVkIGNoYW5nZS5cbkVORCBGT1JHRSBBU1NFU1NNRU5UIHF1YWxpdHlcbkJFR0lOIEZPUkdFIEFTU0VTU01FTlQgcGVyZm9ybWFuY2Vcbk5vIGFjdGlvbmFibGUgcGVyZm9ybWFuY2UgZGVmZWN0IGlzIGV2aWRlbnQgaW4gdGhlIHN1cHBsaWVkIGNoYW5nZS5cbkVORCBGT1JHRSBBU1NFU1NNRU5UIHBlcmZvcm1hbmNlXG5CRUdJTiBGT1JHRSBBU1NFU1NNRU5UIHNlY3VyaXR5XG5UaGUgY2hhbmdlZCBndWFyZHMsIENPUlMgY29uZmlndXJhdGlvbiwgZXJyb3IgcmVzcG9uc2VzLCBhbmQgbG9nIHJlZGFjdGlvbiBzaG93IG5vIGFkZGl0aW9uYWwgY29uY3JldGUgc2VjdXJpdHkgZGVmZWN0IGluIHRoZSBzdXBwbGllZCBldmlkZW5jZS5cbkVORCBGT1JHRSBBU1NFU1NNRU5UIHNlY3VyaXR5IiwNCiAgIm92ZXJhbGxfY29uZmlkZW5jZSI6IDAuOTUsDQogICJwcm92aWRlcl9yZXBvcnQiOiB7DQogICAgImZpbmRpbmdzIjogWw0KICAgICAgew0KICAgICAgICAidGl0bGUiOiAiW3F1YWxpdHldIENvbW1pdCBhIGxvY2tmaWxlIG1hdGNoaW5nIHRoZSBuZXcgd29ya3NwYWNlIG1hbmlmZXN0cyIsDQogICAgICAgICJib2R5IjogIk9uIGEgY2xlYW4gcHVsbCByZXF1ZXN0IGNoZWNrb3V0LCBDSSBydW5zIGBwbnBtIGluc3RhbGwgLS1mcm96ZW4tbG9ja2ZpbGVgLCBidXQgdGhlIGNvbXBsZXRlIGJyYW5jaCBkaWZmIGFkZHMgdGhlIHJvb3QgYW5kIEFQSSBwYWNrYWdlIG1hbmlmZXN0cyB3aXRob3V0IGFkZGluZyBvciB1cGRhdGluZyBgcG5wbS1sb2NrLnlhbWxgLiBbcG5wbSAxMCByZXF1aXJlcyBhIHByZXNlbnQsIHN5bmNocm9uaXplZCBsb2NrZmlsZSBmb3IgdGhpcyBjb21tYW5kXShodHRwczovL3BucG0uaW8vMTAueC9jbGkvaW5zdGFsbCkuIEluc3RhbGxhdGlvbiB0aGVyZWZvcmUgc3RvcHMgYmVmb3JlIHRoZSBjaGVja3MgcnVuLCBicmVha2luZyB0aGUgY2xlYW4tY2hlY2tvdXQgYW5kIENJIGNvbnRyYWN0cy4gVGhlIHN1cHBsaWVkIHByb29mIHJlcG9ydHMgYSBwYXNzaW5nIGluc3RhbGwsIGJ1dCBkb2VzIG5vdCByZXNvbHZlIHRoaXMgY29udHJhZGljdGlvbiBpbiB0aGUgY29tbWl0dGVkIGRpZmYuIiwNCiAgICAgICAgInByaW9yaXR5IjogIlAxIiwNCiAgICAgICAgImNvbmZpZGVuY2UiOiAwLjk3LA0KICAgICAgICAiY2F0ZWdvcnkiOiAiYnVnIiwNCiAgICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICAgImZpbGVfcGF0aCI6ICIuZ2l0aHViL3dvcmtmbG93cy9jaS55bWwiLA0KICAgICAgICAgICJsaW5lIjogNDkNCiAgICAgICAgfSwNCiAgICAgICAgInNvdXJjZV9hdHRyaWJ1dGlvbiI6IG51bGwNCiAgICAgIH0sDQogICAgICB7DQogICAgICAgICJ0aXRsZSI6ICJbcXVhbGl0eV0gQnVmZmVyIGJvb3RzdHJhcCBsb2dzIGJlZm9yZSBhdHRhY2hpbmcgUGlubyIsDQogICAgICAgICJib2R5IjogIldoZW4gdGhlIEFQSSBzdGFydHMsIGBOZXN0RmFjdG9yeS5jcmVhdGUoQXBwTW9kdWxlKWAgcnVucyBiZWZvcmUgYGNvbmZpZ3VyZUFwaWAgYXR0YWNoZXMgdGhlIFBpbm8gbG9nZ2VyLiBbTmVzdCB1c2VzIGl0cyBkZWZhdWx0IGNvbnNvbGUgbG9nZ2VyIGR1cmluZyB0aGlzIHBoYXNlIHVubGVzcyBsb2dzIGFyZSBidWZmZXJlZF0oaHR0cHM6Ly9kb2NzLm5lc3Rqcy5jb20vdGVjaG5pcXVlcy9sb2dnZXIpLiBTdGFydHVwIG91dHB1dCB0aGVyZWZvcmUgdmlvbGF0ZXMgdGhlIGNvbnRyYWN0IHRoYXQgbG9ncyBhcmUgc3RydWN0dXJlZCBKU09OLCBhbmQgYm9vdCBmYWlsdXJlcyBtYXkgYnlwYXNzIHRoZSBjb25maWd1cmVkIGxvZyBmb3JtYXQsIG1ha2luZyB0aGVtIGhhcmRlciBmb3IgYSBKU09OIGxvZyBwaXBlbGluZSB0byBpbmdlc3QuIiwNCiAgICAgICAgInByaW9yaXR5IjogIlAyIiwNCiAgICAgICAgImNvbmZpZGVuY2UiOiAwLjk0LA0KICAgICAgICAiY2F0ZWdvcnkiOiAiYnVnIiwNCiAgICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICAgImZpbGVfcGF0aCI6ICJhcHBzL2FwaS9zcmMvbWFpbi50cyIsDQogICAgICAgICAgImxpbmUiOiA4DQogICAgICAgIH0sDQogICAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgICB9DQogICAgXSwNCiAgICAib3ZlcmFsbF9jb3JyZWN0bmVzcyI6ICJwYXRjaCBpcyBpbmNvcnJlY3QiLA0KICAgICJvdmVyYWxsX2V4cGxhbmF0aW9uIjogIkJFR0lOIEZPUkdFIEFTU0VTU01FTlQgcXVhbGl0eVxuVGhlIG5ldyBtYW5pZmVzdHMgbGFjayBhIG1hdGNoaW5nIGxvY2tmaWxlIGluIHRoZSBjb21wbGV0ZSBkaWZmLCBzbyB0aGUgZnJvemVuIGluc3RhbGwgcmVxdWlyZWQgYnkgQ0kgY2Fubm90IHBhc3MuIFN0YXJ0dXAgYWxzbyBlbWl0cyBsb2dzIGJlZm9yZSB0aGUgSlNPTiBsb2dnZXIgaXMgYXR0YWNoZWQuIFRoZSBpbXBsZW1lbnRlciByZXBvcnQgY2xhaW1zIHRoZSBpbnN0YWxsIHBhc3NlZCwgYnV0IHRoZSBlbXB0eSByZXZpZXcgc2FuZGJveCBwcmV2ZW50cyByZWNvbmNpbGluZyB0aGF0IGNsYWltIHdpdGggdGhlIGNvbW1pdHRlZCBjaGFuZ2UuXG5FTkQgRk9SR0UgQVNTRVNTTUVOVCBxdWFsaXR5XG5CRUdJTiBGT1JHRSBBU1NFU1NNRU5UIHBlcmZvcm1hbmNlXG5ObyBhY3Rpb25hYmxlIHBlcmZvcm1hbmNlIGRlZmVjdCBpcyBldmlkZW50IGluIHRoZSBzdXBwbGllZCBjaGFuZ2UuXG5FTkQgRk9SR0UgQVNTRVNTTUVOVCBwZXJmb3JtYW5jZVxuQkVHSU4gRk9SR0UgQVNTRVNTTUVOVCBzZWN1cml0eVxuVGhlIGNoYW5nZWQgZ3VhcmRzLCBDT1JTIGNvbmZpZ3VyYXRpb24sIGVycm9yIHJlc3BvbnNlcywgYW5kIGxvZyByZWRhY3Rpb24gc2hvdyBubyBhZGRpdGlvbmFsIGNvbmNyZXRlIHNlY3VyaXR5IGRlZmVjdCBpbiB0aGUgc3VwcGxpZWQgZXZpZGVuY2UuXG5FTkQgRk9SR0UgQVNTRVNTTUVOVCBzZWN1cml0eSIsDQogICAgIm92ZXJhbGxfY29uZmlkZW5jZSI6IDAuOTUNCiAgfSwNCiAgInVzYWdlIjogew0KICAgICJhdHRlbXB0cyI6IDEsDQogICAgInJlcG9ydGVkX2F0dGVtcHRzIjogMSwNCiAgICAidW5rbm93bl9hdHRlbXB0cyI6IDAsDQogICAgInBhcnRpYWxfYXR0ZW1wdHMiOiAwLA0KICAgICJjb21wbGV0ZSI6IHRydWUsDQogICAgInRva2VucyI6IHsNCiAgICAgICJpbnB1dF90b2tlbnMiOiAyNzQ0NjgsDQogICAgICAiY2FjaGVkX2lucHV0X3Rva2VucyI6IDIwOTI4MCwNCiAgICAgICJvdXRwdXRfdG9rZW5zIjogNjA5MywNCiAgICAgICJyZWFzb25pbmdfb3V0cHV0X3Rva2VucyI6IDUxODkNCiAgICB9DQogIH0sDQogICJyZXZpZXdfc3RhdHVzIjogImZpbmRpbmdzIg0KfQ0K",
+    "encoding": "base64",
+    "sha256": "0b41415fed9b8eade1161164d1b97a74d726abc9388b308892e1646026f63074"
+  },
+  "recorded_at": "2026-09-27T16:05:50+00:00",
+  "rejection": {
+    "history": [
+      {
+        "actor": "claude-coordinator",
+        "citation": "evidence pnpm-lock.yaml:1",
+        "finding_fingerprint": "a7b2041ce0fd8d15ce5b877c938fc2fa9bbe8a19a66a84d6fa4efad154649317",
+        "lesson_path": "plans/lessons/review-rejection-95f31647b32df51c1203e22051cd9080eee8c594258447f272084b0f126c1b34.json",
+        "lesson_sha256": "95f31647b32df51c1203e22051cd9080eee8c594258447f272084b0f126c1b34",
+        "reason": "pnpm-lock.yaml (lockfileVersion 9.0) is committed in 33ffb29 alongside the manifests; the review bundle deliberately excluded its bytes ('review tip excludes 1 lock/generated path(s)... pnpm-lock.yaml'), so the reviewer could not see it, and the task proof ran pnpm install --frozen-lockfile successfully."
+      }
+    ],
+    "root_generation_id": "27376b299f3d01d541f32085f7d48a4b95086f440d552375458fd289e4390d49",
+    "source_generation_id": "27376b299f3d01d541f32085f7d48a4b95086f440d552375458fd289e4390d49",
+    "source_generation_sha256": "014ee1556131c3b052105a2602716192fa524d4c6279e47a4669d394e569f0b5"
+  },
+  "review_run_id": "2d92ff4d0152602499b8be65c478acaba6a8c0fbd9ac606e163a9b4fa1d97a3d",
+  "story": "CWF-1",
+  "task_id": "T1-foundation"
+}

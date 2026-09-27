@@ -1,0 +1,280 @@
+{
+  "brief_sha256": "b887bb2fefdbe4234fa77c4364d831bf4fde3c96d3da4744a326a9e828ddda6e",
+  "delta_id": "e1f326eb005d711022c0528a189df0d5339c690416c0e1913bee4fcf27ca541d",
+  "format": "forge-review-generation/v1",
+  "generated_by": "autoreview",
+  "generation_id": "2e7b6664b389a2be9a1f1e12001072bcca2e1c0f955318b7e3371336a1635d8b",
+  "helper": {
+    "path": "C:\\Users\\caw-d\\.codex\\skills\\autoreview\\scripts\\autoreview",
+    "sha256": "3eaef2b638a3c9abc49c42feaa4eedd1a4973011b3156f9b654df25462192588",
+    "version": "ce14dcca09b3affb922ddcca11465619e67f5114"
+  },
+  "input": {
+    "bytes": 7454,
+    "sha256": "4b1b76a03849efe2ac004686d5b43da666d45de6a5052404a1da8ab8c880f06a"
+  },
+  "inspected_commit": "f4e46b5e85fd25092c9c9ec84e2cc81e79fcaf84",
+  "lenses": {
+    "performance": {
+      "blocking_findings": [],
+      "branch_diff_digest": "e1f326eb005d711022c0528a189df0d5339c690416c0e1913bee4fcf27ca541d",
+      "brief_sha256": "b887bb2fefdbe4234fa77c4364d831bf4fde3c96d3da4744a326a9e828ddda6e",
+      "commit": "f4e46b5e85fd25092c9c9ec84e2cc81e79fcaf84",
+      "generated_by": "autoreview",
+      "non_blocking_findings": [],
+      "recommendation": "approve",
+      "review_run_id": "db28f7040d5ea9de853c62994335b64a51fd83a5182ed0c3bafe7a8b8fc6de4d",
+      "reviewed_scope": [
+        ".env.example",
+        ".github/workflows/ci.yml",
+        ".npmrc",
+        ".nvmrc",
+        ".prettierignore",
+        ".prettierrc",
+        "apps/api/nest-cli.json",
+        "apps/api/openapi.json",
+        "apps/api/package.json",
+        "apps/api/prisma/migrations/20260927000000_initial/migration.sql",
+        "apps/api/prisma/migrations/migration_lock.toml",
+        "apps/api/prisma/schema.prisma",
+        "apps/api/src/app.module.ts",
+        "apps/api/src/common/api/api-exception.filter.ts",
+        "apps/api/src/common/api/api-response.interceptor.ts",
+        "apps/api/src/common/api/api.config.ts",
+        "apps/api/src/common/api/api.dto.ts",
+        "apps/api/src/common/config/config.module.ts",
+        "apps/api/src/common/config/config.spec.ts",
+        "apps/api/src/common/database/prisma.service.ts",
+        "apps/api/src/common/logging/logging.config.ts",
+        "apps/api/src/common/logging/logging.spec.ts",
+        "apps/api/src/common/logging/request-logging.middleware.ts",
+        "apps/api/src/common/security/request-forgery.guard.ts",
+        "apps/api/src/main.ts",
+        "apps/api/src/modules/health/health.controller.ts",
+        "apps/api/src/modules/health/health.module.ts",
+        "apps/api/test/foundation.integration.spec.ts",
+        "apps/api/tsconfig.json",
+        "docker-compose.yml",
+        "eslint.config.mjs",
+        "package.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "tsconfig.base.json",
+        "turbo.json",
+        "vitest.config.ts"
+      ],
+      "score": 10,
+      "skills_used": [],
+      "summary": "performance lens over T1-foundation (37 product path(s), 30ff03b..f4e46b5, Codex via the autoreview skill): 0 blocking, 0 non-blocking. The supplied code shows no actionable production performance defect. The in-memory rate limit matches the approved foundation scope.",
+      "task_id": "T1-foundation"
+    },
+    "quality": {
+      "blocking_findings": [
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": ".github/workflows/ci.yml",
+          "line": 49,
+          "summary": "T1-C1: pnpm install, typecheck, lint and build pass from a clean checkout, and Forge's existing root files (AGENTS.md, WORKFLOW.md, CLAUDE.md, docs/, factory/, constitution/, harness/) are unchanged. — partial: .github/workflows/ci.yml:49 requires a frozen install, while the change bundle has no lockfile for the newly added package manifests; the clean-checkout requirement is therefore unmet.",
+          "title": "VERDICT T1-C1: partial"
+        },
+        {
+          "area": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach",
+          "category": "plan-contract-partial",
+          "file_path": ".github/workflows/ci.yml",
+          "line": 49,
+          "summary": "T1-C8: CI on every pull request runs lint, typecheck, unit tests, integration tests against PostgreSQL 18, build, a production dependency audit that fails on high or critical advisories, and an OpenAPI diff check. — partial: .github/workflows/ci.yml:49 precedes all other CI checks and requires the missing lockfile, so the workflow cannot complete the listed checks from this change on a clean checkout.",
+          "title": "VERDICT T1-C8: partial"
+        }
+      ],
+      "branch_diff_digest": "e1f326eb005d711022c0528a189df0d5339c690416c0e1913bee4fcf27ca541d",
+      "brief_sha256": "b887bb2fefdbe4234fa77c4364d831bf4fde3c96d3da4744a326a9e828ddda6e",
+      "commit": "f4e46b5e85fd25092c9c9ec84e2cc81e79fcaf84",
+      "contract_verdicts": [
+        {
+          "contract_id": "T1-C1",
+          "evidence": ".github/workflows/ci.yml:49 requires a frozen install, while the change bundle has no lockfile for the newly added package manifests; the clean-checkout requirement is therefore unmet.",
+          "verdict": "partial"
+        },
+        {
+          "contract_id": "T1-C2",
+          "evidence": "apps/api/src/main.ts:10 listens on the validated port; apps/api/src/common/config/config.module.ts validates required settings and permits an absent owner Google account ID.",
+          "verdict": "implemented"
+        },
+        {
+          "contract_id": "T1-C3",
+          "evidence": "apps/api/src/app.module.ts:35 registers the global exception filter; the adjacent interceptor registration, health controller and validation pipe supply the specified response shapes.",
+          "verdict": "implemented"
+        },
+        {
+          "contract_id": "T1-C4",
+          "evidence": "apps/api/src/common/security/request-forgery.guard.ts:14 rejects the specified state-changing requests; API configuration installs Helmet and restricted credentialed CORS, and AppModule registers throttling.",
+          "verdict": "implemented"
+        },
+        {
+          "contract_id": "T1-C5",
+          "evidence": "apps/api/prisma/schema.prisma:7 configures PostgreSQL; the bundle also includes PostgreSQL 18 Compose configuration, a baseline migration and an integration test that queries `uuidv7()`.",
+          "verdict": "implemented"
+        },
+        {
+          "contract_id": "T1-C6",
+          "evidence": "apps/api/src/common/logging/request-logging.middleware.ts:29 logs method, route pattern, status and duration; the Pino configuration supplies JSON fields and redaction.",
+          "verdict": "implemented"
+        },
+        {
+          "contract_id": "T1-C7",
+          "evidence": "apps/api/src/common/api/api.config.ts:42 returns before Swagger setup in production; the committed document is compared with the running API by the integration test.",
+          "verdict": "implemented"
+        },
+        {
+          "contract_id": "T1-C8",
+          "evidence": ".github/workflows/ci.yml:49 precedes all other CI checks and requires the missing lockfile, so the workflow cannot complete the listed checks from this change on a clean checkout.",
+          "verdict": "partial"
+        }
+      ],
+      "generated_by": "autoreview",
+      "non_blocking_findings": [],
+      "recommendation": "request-changes",
+      "rejected_findings": [
+        {
+          "cite": "evidence pnpm-lock.yaml:1",
+          "finding": {
+            "area": ".github/workflows",
+            "category": "bug",
+            "file_path": ".github/workflows/ci.yml",
+            "line": 49,
+            "summary": "Commit the lockfile required by the frozen install (.github/workflows/ci.yml:49): On a clean checkout, CI reaches `pnpm install --frozen-lockfile` after this change adds root and API package manifests, but the selected diff contains no `pnpm-lock.yaml`.",
+            "title": "Commit the lockfile required by the frozen install"
+          },
+          "reason": "pnpm-lock.yaml (lockfileVersion 9.0) is committed on this branch in 33ffb29 and matches the manifests; the review bundle deliberately excludes lock/generated bytes ('review tip excludes 1 lock/generated path(s): pnpm-lock.yaml'), so the reviewer never opened it; the task proof ran pnpm install --frozen-lockfile successfully on this tree.",
+          "rejected_at": "2026-09-27T18:14:57+00:00",
+          "rejected_by": "claude-coordinator",
+          "task_id": "T1-foundation"
+        }
+      ],
+      "review_run_id": "db28f7040d5ea9de853c62994335b64a51fd83a5182ed0c3bafe7a8b8fc6de4d",
+      "reviewed_scope": [
+        ".env.example",
+        ".github/workflows/ci.yml",
+        ".npmrc",
+        ".nvmrc",
+        ".prettierignore",
+        ".prettierrc",
+        "apps/api/nest-cli.json",
+        "apps/api/openapi.json",
+        "apps/api/package.json",
+        "apps/api/prisma/migrations/20260927000000_initial/migration.sql",
+        "apps/api/prisma/migrations/migration_lock.toml",
+        "apps/api/prisma/schema.prisma",
+        "apps/api/src/app.module.ts",
+        "apps/api/src/common/api/api-exception.filter.ts",
+        "apps/api/src/common/api/api-response.interceptor.ts",
+        "apps/api/src/common/api/api.config.ts",
+        "apps/api/src/common/api/api.dto.ts",
+        "apps/api/src/common/config/config.module.ts",
+        "apps/api/src/common/config/config.spec.ts",
+        "apps/api/src/common/database/prisma.service.ts",
+        "apps/api/src/common/logging/logging.config.ts",
+        "apps/api/src/common/logging/logging.spec.ts",
+        "apps/api/src/common/logging/request-logging.middleware.ts",
+        "apps/api/src/common/security/request-forgery.guard.ts",
+        "apps/api/src/main.ts",
+        "apps/api/src/modules/health/health.controller.ts",
+        "apps/api/src/modules/health/health.module.ts",
+        "apps/api/test/foundation.integration.spec.ts",
+        "apps/api/tsconfig.json",
+        "docker-compose.yml",
+        "eslint.config.mjs",
+        "package.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "tsconfig.base.json",
+        "turbo.json",
+        "vitest.config.ts"
+      ],
+      "score": 4,
+      "skills_used": [],
+      "summary": "quality lens over T1-foundation (37 product path(s), 30ff03b..f4e46b5, Codex via the autoreview skill): 3 blocking, 0 non-blocking. The frozen install has no accompanying lockfile in the selected change, blocking a reproducible clean checkout and CI run. This conflicts with the implementer-authored pass report. The other foundation contracts have implementation evidence in the supplied diff, though the empty sandbox prevents independent execution.",
+      "task_id": "T1-foundation"
+    },
+    "security": {
+      "blocking_findings": [],
+      "branch_diff_digest": "e1f326eb005d711022c0528a189df0d5339c690416c0e1913bee4fcf27ca541d",
+      "brief_sha256": "b887bb2fefdbe4234fa77c4364d831bf4fde3c96d3da4744a326a9e828ddda6e",
+      "commit": "f4e46b5e85fd25092c9c9ec84e2cc81e79fcaf84",
+      "generated_by": "autoreview",
+      "non_blocking_findings": [],
+      "recommendation": "approve",
+      "review_run_id": "db28f7040d5ea9de853c62994335b64a51fd83a5182ed0c3bafe7a8b8fc6de4d",
+      "reviewed_scope": [
+        ".env.example",
+        ".github/workflows/ci.yml",
+        ".npmrc",
+        ".nvmrc",
+        ".prettierignore",
+        ".prettierrc",
+        "apps/api/nest-cli.json",
+        "apps/api/openapi.json",
+        "apps/api/package.json",
+        "apps/api/prisma/migrations/20260927000000_initial/migration.sql",
+        "apps/api/prisma/migrations/migration_lock.toml",
+        "apps/api/prisma/schema.prisma",
+        "apps/api/src/app.module.ts",
+        "apps/api/src/common/api/api-exception.filter.ts",
+        "apps/api/src/common/api/api-response.interceptor.ts",
+        "apps/api/src/common/api/api.config.ts",
+        "apps/api/src/common/api/api.dto.ts",
+        "apps/api/src/common/config/config.module.ts",
+        "apps/api/src/common/config/config.spec.ts",
+        "apps/api/src/common/database/prisma.service.ts",
+        "apps/api/src/common/logging/logging.config.ts",
+        "apps/api/src/common/logging/logging.spec.ts",
+        "apps/api/src/common/logging/request-logging.middleware.ts",
+        "apps/api/src/common/security/request-forgery.guard.ts",
+        "apps/api/src/main.ts",
+        "apps/api/src/modules/health/health.controller.ts",
+        "apps/api/src/modules/health/health.module.ts",
+        "apps/api/test/foundation.integration.spec.ts",
+        "apps/api/tsconfig.json",
+        "docker-compose.yml",
+        "eslint.config.mjs",
+        "package.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "tsconfig.base.json",
+        "turbo.json",
+        "vitest.config.ts"
+      ],
+      "score": 10,
+      "skills_used": [],
+      "summary": "security lens over T1-foundation (37 product path(s), 30ff03b..f4e46b5, Codex via the autoreview skill): 0 blocking, 0 non-blocking. The supplied diff shows no concrete credential exposure or actionable security defect. The example secret and CI secret are placeholders; the forgery guard, restricted CORS and sanitized exception payload are present.",
+      "task_id": "T1-foundation"
+    }
+  },
+  "origin": "rejection",
+  "raw_result": {
+    "bytes": 12408,
+    "data": "ew0KICAiZmluZGluZ3MiOiBbDQogICAgew0KICAgICAgInRpdGxlIjogIltxdWFsaXR5XSBDb21taXQgdGhlIGxvY2tmaWxlIHJlcXVpcmVkIGJ5IHRoZSBmcm96ZW4gaW5zdGFsbCIsDQogICAgICAiYm9keSI6ICJPbiBhIGNsZWFuIGNoZWNrb3V0LCBDSSByZWFjaGVzIGBwbnBtIGluc3RhbGwgLS1mcm96ZW4tbG9ja2ZpbGVgIGFmdGVyIHRoaXMgY2hhbmdlIGFkZHMgcm9vdCBhbmQgQVBJIHBhY2thZ2UgbWFuaWZlc3RzLCBidXQgdGhlIHNlbGVjdGVkIGRpZmYgY29udGFpbnMgbm8gYHBucG0tbG9jay55YW1sYC4gW3BucG0gMTAgZG9jdW1lbnRzXShodHRwczovL3BucG0uaW8vMTAueC9jbGkvaW5zdGFsbCkgdGhhdCBhIGZyb3plbiBpbnN0YWxsIGZhaWxzIHdoZW4gdGhlIGxvY2tmaWxlIGlzIGFic2VudCBvciBvdXQgb2Ygc3luYy4gVGhpcyBicmVha3MgVDEtQzEgYW5kIFQxLUM4OiBDSSBzdG9wcyBiZWZvcmUgaXRzIHJlbWFpbmluZyBjaGVja3MuIFRoZSBpbXBsZW1lbnRlciByZXBvcnQgc2F5cyB0aGUgY29tbWFuZCBwYXNzZWQsIGJ1dCB0aGUgc3VwcGxpZWQgY2hhbmdlIGRvZXMgbm90IGNvbnRhaW4gdGhlIGxvY2tmaWxlIG5lZWRlZCB0byByZXByb2R1Y2UgdGhhdCByZXN1bHQuIiwNCiAgICAgICJwcmlvcml0eSI6ICJQMSIsDQogICAgICAiY29uZmlkZW5jZSI6IDAuOTQsDQogICAgICAiY2F0ZWdvcnkiOiAiYnVnIiwNCiAgICAgICJjb2RlX2xvY2F0aW9uIjogew0KICAgICAgICAiZmlsZV9wYXRoIjogIi5naXRodWIvd29ya2Zsb3dzL2NpLnltbCIsDQogICAgICAgICJsaW5lIjogNDkNCiAgICAgIH0sDQogICAgICAic291cmNlX2F0dHJpYnV0aW9uIjogbnVsbA0KICAgIH0sDQogICAgew0KICAgICAgInRpdGxlIjogIltxdWFsaXR5XSBWRVJESUNUIFQxLUMxOiBwYXJ0aWFsIiwNCiAgICAgICJib2R5IjogIi5naXRodWIvd29ya2Zsb3dzL2NpLnltbDo0OSByZXF1aXJlcyBhIGZyb3plbiBpbnN0YWxsLCB3aGlsZSB0aGUgY2hhbmdlIGJ1bmRsZSBoYXMgbm8gbG9ja2ZpbGUgZm9yIHRoZSBuZXdseSBhZGRlZCBwYWNrYWdlIG1hbmlmZXN0czsgdGhlIGNsZWFuLWNoZWNrb3V0IHJlcXVpcmVtZW50IGlzIHRoZXJlZm9yZSB1bm1ldC4iLA0KICAgICAgInByaW9yaXR5IjogIlAzIiwNCiAgICAgICJjb25maWRlbmNlIjogMC45NCwNCiAgICAgICJjYXRlZ29yeSI6ICJtYWludGFpbmFiaWxpdHkiLA0KICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICJmaWxlX3BhdGgiOiAiLmdpdGh1Yi93b3JrZmxvd3MvY2kueW1sIiwNCiAgICAgICAgImxpbmUiOiA0OQ0KICAgICAgfSwNCiAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgfSwNCiAgICB7DQogICAgICAidGl0bGUiOiAiW3F1YWxpdHldIFZFUkRJQ1QgVDEtQzI6IGltcGxlbWVudGVkIiwNCiAgICAgICJib2R5IjogImFwcHMvYXBpL3NyYy9tYWluLnRzOjEwIGxpc3RlbnMgb24gdGhlIHZhbGlkYXRlZCBwb3J0OyBhcHBzL2FwaS9zcmMvY29tbW9uL2NvbmZpZy9jb25maWcubW9kdWxlLnRzIHZhbGlkYXRlcyByZXF1aXJlZCBzZXR0aW5ncyBhbmQgcGVybWl0cyBhbiBhYnNlbnQgb3duZXIgR29vZ2xlIGFjY291bnQgSUQuIiwNCiAgICAgICJwcmlvcml0eSI6ICJQMyIsDQogICAgICAiY29uZmlkZW5jZSI6IDAuOSwNCiAgICAgICJjYXRlZ29yeSI6ICJtYWludGFpbmFiaWxpdHkiLA0KICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICJmaWxlX3BhdGgiOiAiYXBwcy9hcGkvc3JjL21haW4udHMiLA0KICAgICAgICAibGluZSI6IDEwDQogICAgICB9LA0KICAgICAgInNvdXJjZV9hdHRyaWJ1dGlvbiI6IG51bGwNCiAgICB9LA0KICAgIHsNCiAgICAgICJ0aXRsZSI6ICJbcXVhbGl0eV0gVkVSRElDVCBUMS1DMzogaW1wbGVtZW50ZWQiLA0KICAgICAgImJvZHkiOiAiYXBwcy9hcGkvc3JjL2FwcC5tb2R1bGUudHM6MzUgcmVnaXN0ZXJzIHRoZSBnbG9iYWwgZXhjZXB0aW9uIGZpbHRlcjsgdGhlIGFkamFjZW50IGludGVyY2VwdG9yIHJlZ2lzdHJhdGlvbiwgaGVhbHRoIGNvbnRyb2xsZXIgYW5kIHZhbGlkYXRpb24gcGlwZSBzdXBwbHkgdGhlIHNwZWNpZmllZCByZXNwb25zZSBzaGFwZXMuIiwNCiAgICAgICJwcmlvcml0eSI6ICJQMyIsDQogICAgICAiY29uZmlkZW5jZSI6IDAuODgsDQogICAgICAiY2F0ZWdvcnkiOiAibWFpbnRhaW5hYmlsaXR5IiwNCiAgICAgICJjb2RlX2xvY2F0aW9uIjogew0KICAgICAgICAiZmlsZV9wYXRoIjogImFwcHMvYXBpL3NyYy9hcHAubW9kdWxlLnRzIiwNCiAgICAgICAgImxpbmUiOiAzNQ0KICAgICAgfSwNCiAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgfSwNCiAgICB7DQogICAgICAidGl0bGUiOiAiW3F1YWxpdHldIFZFUkRJQ1QgVDEtQzQ6IGltcGxlbWVudGVkIiwNCiAgICAgICJib2R5IjogImFwcHMvYXBpL3NyYy9jb21tb24vc2VjdXJpdHkvcmVxdWVzdC1mb3JnZXJ5Lmd1YXJkLnRzOjE0IHJlamVjdHMgdGhlIHNwZWNpZmllZCBzdGF0ZS1jaGFuZ2luZyByZXF1ZXN0czsgQVBJIGNvbmZpZ3VyYXRpb24gaW5zdGFsbHMgSGVsbWV0IGFuZCByZXN0cmljdGVkIGNyZWRlbnRpYWxlZCBDT1JTLCBhbmQgQXBwTW9kdWxlIHJlZ2lzdGVycyB0aHJvdHRsaW5nLiIsDQogICAgICAicHJpb3JpdHkiOiAiUDMiLA0KICAgICAgImNvbmZpZGVuY2UiOiAwLjg5LA0KICAgICAgImNhdGVnb3J5IjogIm1haW50YWluYWJpbGl0eSIsDQogICAgICAiY29kZV9sb2NhdGlvbiI6IHsNCiAgICAgICAgImZpbGVfcGF0aCI6ICJhcHBzL2FwaS9zcmMvY29tbW9uL3NlY3VyaXR5L3JlcXVlc3QtZm9yZ2VyeS5ndWFyZC50cyIsDQogICAgICAgICJsaW5lIjogMTQNCiAgICAgIH0sDQogICAgICAic291cmNlX2F0dHJpYnV0aW9uIjogbnVsbA0KICAgIH0sDQogICAgew0KICAgICAgInRpdGxlIjogIltxdWFsaXR5XSBWRVJESUNUIFQxLUM1OiBpbXBsZW1lbnRlZCIsDQogICAgICAiYm9keSI6ICJhcHBzL2FwaS9wcmlzbWEvc2NoZW1hLnByaXNtYTo3IGNvbmZpZ3VyZXMgUG9zdGdyZVNRTDsgdGhlIGJ1bmRsZSBhbHNvIGluY2x1ZGVzIFBvc3RncmVTUUwgMTggQ29tcG9zZSBjb25maWd1cmF0aW9uLCBhIGJhc2VsaW5lIG1pZ3JhdGlvbiBhbmQgYW4gaW50ZWdyYXRpb24gdGVzdCB0aGF0IHF1ZXJpZXMgYHV1aWR2NygpYC4iLA0KICAgICAgInByaW9yaXR5IjogIlAzIiwNCiAgICAgICJjb25maWRlbmNlIjogMC44NSwNCiAgICAgICJjYXRlZ29yeSI6ICJtYWludGFpbmFiaWxpdHkiLA0KICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICJmaWxlX3BhdGgiOiAiYXBwcy9hcGkvcHJpc21hL3NjaGVtYS5wcmlzbWEiLA0KICAgICAgICAibGluZSI6IDcNCiAgICAgIH0sDQogICAgICAic291cmNlX2F0dHJpYnV0aW9uIjogbnVsbA0KICAgIH0sDQogICAgew0KICAgICAgInRpdGxlIjogIltxdWFsaXR5XSBWRVJESUNUIFQxLUM2OiBpbXBsZW1lbnRlZCIsDQogICAgICAiYm9keSI6ICJhcHBzL2FwaS9zcmMvY29tbW9uL2xvZ2dpbmcvcmVxdWVzdC1sb2dnaW5nLm1pZGRsZXdhcmUudHM6MjkgbG9ncyBtZXRob2QsIHJvdXRlIHBhdHRlcm4sIHN0YXR1cyBhbmQgZHVyYXRpb247IHRoZSBQaW5vIGNvbmZpZ3VyYXRpb24gc3VwcGxpZXMgSlNPTiBmaWVsZHMgYW5kIHJlZGFjdGlvbi4iLA0KICAgICAgInByaW9yaXR5IjogIlAzIiwNCiAgICAgICJjb25maWRlbmNlIjogMC44NiwNCiAgICAgICJjYXRlZ29yeSI6ICJtYWludGFpbmFiaWxpdHkiLA0KICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICJmaWxlX3BhdGgiOiAiYXBwcy9hcGkvc3JjL2NvbW1vbi9sb2dnaW5nL3JlcXVlc3QtbG9nZ2luZy5taWRkbGV3YXJlLnRzIiwNCiAgICAgICAgImxpbmUiOiAyOQ0KICAgICAgfSwNCiAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgfSwNCiAgICB7DQogICAgICAidGl0bGUiOiAiW3F1YWxpdHldIFZFUkRJQ1QgVDEtQzc6IGltcGxlbWVudGVkIiwNCiAgICAgICJib2R5IjogImFwcHMvYXBpL3NyYy9jb21tb24vYXBpL2FwaS5jb25maWcudHM6NDIgcmV0dXJucyBiZWZvcmUgU3dhZ2dlciBzZXR1cCBpbiBwcm9kdWN0aW9uOyB0aGUgY29tbWl0dGVkIGRvY3VtZW50IGlzIGNvbXBhcmVkIHdpdGggdGhlIHJ1bm5pbmcgQVBJIGJ5IHRoZSBpbnRlZ3JhdGlvbiB0ZXN0LiIsDQogICAgICAicHJpb3JpdHkiOiAiUDMiLA0KICAgICAgImNvbmZpZGVuY2UiOiAwLjg4LA0KICAgICAgImNhdGVnb3J5IjogIm1haW50YWluYWJpbGl0eSIsDQogICAgICAiY29kZV9sb2NhdGlvbiI6IHsNCiAgICAgICAgImZpbGVfcGF0aCI6ICJhcHBzL2FwaS9zcmMvY29tbW9uL2FwaS9hcGkuY29uZmlnLnRzIiwNCiAgICAgICAgImxpbmUiOiA0Mg0KICAgICAgfSwNCiAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgfSwNCiAgICB7DQogICAgICAidGl0bGUiOiAiW3F1YWxpdHldIFZFUkRJQ1QgVDEtQzg6IHBhcnRpYWwiLA0KICAgICAgImJvZHkiOiAiLmdpdGh1Yi93b3JrZmxvd3MvY2kueW1sOjQ5IHByZWNlZGVzIGFsbCBvdGhlciBDSSBjaGVja3MgYW5kIHJlcXVpcmVzIHRoZSBtaXNzaW5nIGxvY2tmaWxlLCBzbyB0aGUgd29ya2Zsb3cgY2Fubm90IGNvbXBsZXRlIHRoZSBsaXN0ZWQgY2hlY2tzIGZyb20gdGhpcyBjaGFuZ2Ugb24gYSBjbGVhbiBjaGVja291dC4iLA0KICAgICAgInByaW9yaXR5IjogIlAzIiwNCiAgICAgICJjb25maWRlbmNlIjogMC45NCwNCiAgICAgICJjYXRlZ29yeSI6ICJtYWludGFpbmFiaWxpdHkiLA0KICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICJmaWxlX3BhdGgiOiAiLmdpdGh1Yi93b3JrZmxvd3MvY2kueW1sIiwNCiAgICAgICAgImxpbmUiOiA0OQ0KICAgICAgfSwNCiAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgfQ0KICBdLA0KICAib3ZlcmFsbF9jb3JyZWN0bmVzcyI6ICJwYXRjaCBpcyBpbmNvcnJlY3QiLA0KICAib3ZlcmFsbF9leHBsYW5hdGlvbiI6ICJCRUdJTiBGT1JHRSBBU1NFU1NNRU5UIHF1YWxpdHlcblRoZSBmcm96ZW4gaW5zdGFsbCBoYXMgbm8gYWNjb21wYW55aW5nIGxvY2tmaWxlIGluIHRoZSBzZWxlY3RlZCBjaGFuZ2UsIGJsb2NraW5nIGEgcmVwcm9kdWNpYmxlIGNsZWFuIGNoZWNrb3V0IGFuZCBDSSBydW4uIFRoaXMgY29uZmxpY3RzIHdpdGggdGhlIGltcGxlbWVudGVyLWF1dGhvcmVkIHBhc3MgcmVwb3J0LiBUaGUgb3RoZXIgZm91bmRhdGlvbiBjb250cmFjdHMgaGF2ZSBpbXBsZW1lbnRhdGlvbiBldmlkZW5jZSBpbiB0aGUgc3VwcGxpZWQgZGlmZiwgdGhvdWdoIHRoZSBlbXB0eSBzYW5kYm94IHByZXZlbnRzIGluZGVwZW5kZW50IGV4ZWN1dGlvbi5cbkVORCBGT1JHRSBBU1NFU1NNRU5UIHF1YWxpdHlcbkJFR0lOIEZPUkdFIEFTU0VTU01FTlQgcGVyZm9ybWFuY2VcblRoZSBzdXBwbGllZCBjb2RlIHNob3dzIG5vIGFjdGlvbmFibGUgcHJvZHVjdGlvbiBwZXJmb3JtYW5jZSBkZWZlY3QuIFRoZSBpbi1tZW1vcnkgcmF0ZSBsaW1pdCBtYXRjaGVzIHRoZSBhcHByb3ZlZCBmb3VuZGF0aW9uIHNjb3BlLlxuRU5EIEZPUkdFIEFTU0VTU01FTlQgcGVyZm9ybWFuY2VcbkJFR0lOIEZPUkdFIEFTU0VTU01FTlQgc2VjdXJpdHlcblRoZSBzdXBwbGllZCBkaWZmIHNob3dzIG5vIGNvbmNyZXRlIGNyZWRlbnRpYWwgZXhwb3N1cmUgb3IgYWN0aW9uYWJsZSBzZWN1cml0eSBkZWZlY3QuIFRoZSBleGFtcGxlIHNlY3JldCBhbmQgQ0kgc2VjcmV0IGFyZSBwbGFjZWhvbGRlcnM7IHRoZSBmb3JnZXJ5IGd1YXJkLCByZXN0cmljdGVkIENPUlMgYW5kIHNhbml0aXplZCBleGNlcHRpb24gcGF5bG9hZCBhcmUgcHJlc2VudC5cbkVORCBGT1JHRSBBU1NFU1NNRU5UIHNlY3VyaXR5IiwNCiAgIm92ZXJhbGxfY29uZmlkZW5jZSI6IDAuOTEsDQogICJwcm92aWRlcl9yZXBvcnQiOiB7DQogICAgImZpbmRpbmdzIjogWw0KICAgICAgew0KICAgICAgICAidGl0bGUiOiAiW3F1YWxpdHldIENvbW1pdCB0aGUgbG9ja2ZpbGUgcmVxdWlyZWQgYnkgdGhlIGZyb3plbiBpbnN0YWxsIiwNCiAgICAgICAgImJvZHkiOiAiT24gYSBjbGVhbiBjaGVja291dCwgQ0kgcmVhY2hlcyBgcG5wbSBpbnN0YWxsIC0tZnJvemVuLWxvY2tmaWxlYCBhZnRlciB0aGlzIGNoYW5nZSBhZGRzIHJvb3QgYW5kIEFQSSBwYWNrYWdlIG1hbmlmZXN0cywgYnV0IHRoZSBzZWxlY3RlZCBkaWZmIGNvbnRhaW5zIG5vIGBwbnBtLWxvY2sueWFtbGAuIFtwbnBtIDEwIGRvY3VtZW50c10oaHR0cHM6Ly9wbnBtLmlvLzEwLngvY2xpL2luc3RhbGwpIHRoYXQgYSBmcm96ZW4gaW5zdGFsbCBmYWlscyB3aGVuIHRoZSBsb2NrZmlsZSBpcyBhYnNlbnQgb3Igb3V0IG9mIHN5bmMuIFRoaXMgYnJlYWtzIFQxLUMxIGFuZCBUMS1DODogQ0kgc3RvcHMgYmVmb3JlIGl0cyByZW1haW5pbmcgY2hlY2tzLiBUaGUgaW1wbGVtZW50ZXIgcmVwb3J0IHNheXMgdGhlIGNvbW1hbmQgcGFzc2VkLCBidXQgdGhlIHN1cHBsaWVkIGNoYW5nZSBkb2VzIG5vdCBjb250YWluIHRoZSBsb2NrZmlsZSBuZWVkZWQgdG8gcmVwcm9kdWNlIHRoYXQgcmVzdWx0LiIsDQogICAgICAgICJwcmlvcml0eSI6ICJQMSIsDQogICAgICAgICJjb25maWRlbmNlIjogMC45NCwNCiAgICAgICAgImNhdGVnb3J5IjogImJ1ZyIsDQogICAgICAgICJjb2RlX2xvY2F0aW9uIjogew0KICAgICAgICAgICJmaWxlX3BhdGgiOiAiLmdpdGh1Yi93b3JrZmxvd3MvY2kueW1sIiwNCiAgICAgICAgICAibGluZSI6IDQ5DQogICAgICAgIH0sDQogICAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgICB9LA0KICAgICAgew0KICAgICAgICAidGl0bGUiOiAiW3F1YWxpdHldIFZFUkRJQ1QgVDEtQzE6IHBhcnRpYWwiLA0KICAgICAgICAiYm9keSI6ICIuZ2l0aHViL3dvcmtmbG93cy9jaS55bWw6NDkgcmVxdWlyZXMgYSBmcm96ZW4gaW5zdGFsbCwgd2hpbGUgdGhlIGNoYW5nZSBidW5kbGUgaGFzIG5vIGxvY2tmaWxlIGZvciB0aGUgbmV3bHkgYWRkZWQgcGFja2FnZSBtYW5pZmVzdHM7IHRoZSBjbGVhbi1jaGVja291dCByZXF1aXJlbWVudCBpcyB0aGVyZWZvcmUgdW5tZXQuIiwNCiAgICAgICAgInByaW9yaXR5IjogIlAzIiwNCiAgICAgICAgImNvbmZpZGVuY2UiOiAwLjk0LA0KICAgICAgICAiY2F0ZWdvcnkiOiAibWFpbnRhaW5hYmlsaXR5IiwNCiAgICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICAgImZpbGVfcGF0aCI6ICIuZ2l0aHViL3dvcmtmbG93cy9jaS55bWwiLA0KICAgICAgICAgICJsaW5lIjogNDkNCiAgICAgICAgfSwNCiAgICAgICAgInNvdXJjZV9hdHRyaWJ1dGlvbiI6IG51bGwNCiAgICAgIH0sDQogICAgICB7DQogICAgICAgICJ0aXRsZSI6ICJbcXVhbGl0eV0gVkVSRElDVCBUMS1DMjogaW1wbGVtZW50ZWQiLA0KICAgICAgICAiYm9keSI6ICJhcHBzL2FwaS9zcmMvbWFpbi50czoxMCBsaXN0ZW5zIG9uIHRoZSB2YWxpZGF0ZWQgcG9ydDsgYXBwcy9hcGkvc3JjL2NvbW1vbi9jb25maWcvY29uZmlnLm1vZHVsZS50cyB2YWxpZGF0ZXMgcmVxdWlyZWQgc2V0dGluZ3MgYW5kIHBlcm1pdHMgYW4gYWJzZW50IG93bmVyIEdvb2dsZSBhY2NvdW50IElELiIsDQogICAgICAgICJwcmlvcml0eSI6ICJQMyIsDQogICAgICAgICJjb25maWRlbmNlIjogMC45LA0KICAgICAgICAiY2F0ZWdvcnkiOiAibWFpbnRhaW5hYmlsaXR5IiwNCiAgICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICAgImZpbGVfcGF0aCI6ICJhcHBzL2FwaS9zcmMvbWFpbi50cyIsDQogICAgICAgICAgImxpbmUiOiAxMA0KICAgICAgICB9LA0KICAgICAgICAic291cmNlX2F0dHJpYnV0aW9uIjogbnVsbA0KICAgICAgfSwNCiAgICAgIHsNCiAgICAgICAgInRpdGxlIjogIltxdWFsaXR5XSBWRVJESUNUIFQxLUMzOiBpbXBsZW1lbnRlZCIsDQogICAgICAgICJib2R5IjogImFwcHMvYXBpL3NyYy9hcHAubW9kdWxlLnRzOjM1IHJlZ2lzdGVycyB0aGUgZ2xvYmFsIGV4Y2VwdGlvbiBmaWx0ZXI7IHRoZSBhZGphY2VudCBpbnRlcmNlcHRvciByZWdpc3RyYXRpb24sIGhlYWx0aCBjb250cm9sbGVyIGFuZCB2YWxpZGF0aW9uIHBpcGUgc3VwcGx5IHRoZSBzcGVjaWZpZWQgcmVzcG9uc2Ugc2hhcGVzLiIsDQogICAgICAgICJwcmlvcml0eSI6ICJQMyIsDQogICAgICAgICJjb25maWRlbmNlIjogMC44OCwNCiAgICAgICAgImNhdGVnb3J5IjogIm1haW50YWluYWJpbGl0eSIsDQogICAgICAgICJjb2RlX2xvY2F0aW9uIjogew0KICAgICAgICAgICJmaWxlX3BhdGgiOiAiYXBwcy9hcGkvc3JjL2FwcC5tb2R1bGUudHMiLA0KICAgICAgICAgICJsaW5lIjogMzUNCiAgICAgICAgfSwNCiAgICAgICAgInNvdXJjZV9hdHRyaWJ1dGlvbiI6IG51bGwNCiAgICAgIH0sDQogICAgICB7DQogICAgICAgICJ0aXRsZSI6ICJbcXVhbGl0eV0gVkVSRElDVCBUMS1DNDogaW1wbGVtZW50ZWQiLA0KICAgICAgICAiYm9keSI6ICJhcHBzL2FwaS9zcmMvY29tbW9uL3NlY3VyaXR5L3JlcXVlc3QtZm9yZ2VyeS5ndWFyZC50czoxNCByZWplY3RzIHRoZSBzcGVjaWZpZWQgc3RhdGUtY2hhbmdpbmcgcmVxdWVzdHM7IEFQSSBjb25maWd1cmF0aW9uIGluc3RhbGxzIEhlbG1ldCBhbmQgcmVzdHJpY3RlZCBjcmVkZW50aWFsZWQgQ09SUywgYW5kIEFwcE1vZHVsZSByZWdpc3RlcnMgdGhyb3R0bGluZy4iLA0KICAgICAgICAicHJpb3JpdHkiOiAiUDMiLA0KICAgICAgICAiY29uZmlkZW5jZSI6IDAuODksDQogICAgICAgICJjYXRlZ29yeSI6ICJtYWludGFpbmFiaWxpdHkiLA0KICAgICAgICAiY29kZV9sb2NhdGlvbiI6IHsNCiAgICAgICAgICAiZmlsZV9wYXRoIjogImFwcHMvYXBpL3NyYy9jb21tb24vc2VjdXJpdHkvcmVxdWVzdC1mb3JnZXJ5Lmd1YXJkLnRzIiwNCiAgICAgICAgICAibGluZSI6IDE0DQogICAgICAgIH0sDQogICAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgICB9LA0KICAgICAgew0KICAgICAgICAidGl0bGUiOiAiW3F1YWxpdHldIFZFUkRJQ1QgVDEtQzU6IGltcGxlbWVudGVkIiwNCiAgICAgICAgImJvZHkiOiAiYXBwcy9hcGkvcHJpc21hL3NjaGVtYS5wcmlzbWE6NyBjb25maWd1cmVzIFBvc3RncmVTUUw7IHRoZSBidW5kbGUgYWxzbyBpbmNsdWRlcyBQb3N0Z3JlU1FMIDE4IENvbXBvc2UgY29uZmlndXJhdGlvbiwgYSBiYXNlbGluZSBtaWdyYXRpb24gYW5kIGFuIGludGVncmF0aW9uIHRlc3QgdGhhdCBxdWVyaWVzIGB1dWlkdjcoKWAuIiwNCiAgICAgICAgInByaW9yaXR5IjogIlAzIiwNCiAgICAgICAgImNvbmZpZGVuY2UiOiAwLjg1LA0KICAgICAgICAiY2F0ZWdvcnkiOiAibWFpbnRhaW5hYmlsaXR5IiwNCiAgICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICAgImZpbGVfcGF0aCI6ICJhcHBzL2FwaS9wcmlzbWEvc2NoZW1hLnByaXNtYSIsDQogICAgICAgICAgImxpbmUiOiA3DQogICAgICAgIH0sDQogICAgICAgICJzb3VyY2VfYXR0cmlidXRpb24iOiBudWxsDQogICAgICB9LA0KICAgICAgew0KICAgICAgICAidGl0bGUiOiAiW3F1YWxpdHldIFZFUkRJQ1QgVDEtQzY6IGltcGxlbWVudGVkIiwNCiAgICAgICAgImJvZHkiOiAiYXBwcy9hcGkvc3JjL2NvbW1vbi9sb2dnaW5nL3JlcXVlc3QtbG9nZ2luZy5taWRkbGV3YXJlLnRzOjI5IGxvZ3MgbWV0aG9kLCByb3V0ZSBwYXR0ZXJuLCBzdGF0dXMgYW5kIGR1cmF0aW9uOyB0aGUgUGlubyBjb25maWd1cmF0aW9uIHN1cHBsaWVzIEpTT04gZmllbGRzIGFuZCByZWRhY3Rpb24uIiwNCiAgICAgICAgInByaW9yaXR5IjogIlAzIiwNCiAgICAgICAgImNvbmZpZGVuY2UiOiAwLjg2LA0KICAgICAgICAiY2F0ZWdvcnkiOiAibWFpbnRhaW5hYmlsaXR5IiwNCiAgICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICAgImZpbGVfcGF0aCI6ICJhcHBzL2FwaS9zcmMvY29tbW9uL2xvZ2dpbmcvcmVxdWVzdC1sb2dnaW5nLm1pZGRsZXdhcmUudHMiLA0KICAgICAgICAgICJsaW5lIjogMjkNCiAgICAgICAgfSwNCiAgICAgICAgInNvdXJjZV9hdHRyaWJ1dGlvbiI6IG51bGwNCiAgICAgIH0sDQogICAgICB7DQogICAgICAgICJ0aXRsZSI6ICJbcXVhbGl0eV0gVkVSRElDVCBUMS1DNzogaW1wbGVtZW50ZWQiLA0KICAgICAgICAiYm9keSI6ICJhcHBzL2FwaS9zcmMvY29tbW9uL2FwaS9hcGkuY29uZmlnLnRzOjQyIHJldHVybnMgYmVmb3JlIFN3YWdnZXIgc2V0dXAgaW4gcHJvZHVjdGlvbjsgdGhlIGNvbW1pdHRlZCBkb2N1bWVudCBpcyBjb21wYXJlZCB3aXRoIHRoZSBydW5uaW5nIEFQSSBieSB0aGUgaW50ZWdyYXRpb24gdGVzdC4iLA0KICAgICAgICAicHJpb3JpdHkiOiAiUDMiLA0KICAgICAgICAiY29uZmlkZW5jZSI6IDAuODgsDQogICAgICAgICJjYXRlZ29yeSI6ICJtYWludGFpbmFiaWxpdHkiLA0KICAgICAgICAiY29kZV9sb2NhdGlvbiI6IHsNCiAgICAgICAgICAiZmlsZV9wYXRoIjogImFwcHMvYXBpL3NyYy9jb21tb24vYXBpL2FwaS5jb25maWcudHMiLA0KICAgICAgICAgICJsaW5lIjogNDINCiAgICAgICAgfSwNCiAgICAgICAgInNvdXJjZV9hdHRyaWJ1dGlvbiI6IG51bGwNCiAgICAgIH0sDQogICAgICB7DQogICAgICAgICJ0aXRsZSI6ICJbcXVhbGl0eV0gVkVSRElDVCBUMS1DODogcGFydGlhbCIsDQogICAgICAgICJib2R5IjogIi5naXRodWIvd29ya2Zsb3dzL2NpLnltbDo0OSBwcmVjZWRlcyBhbGwgb3RoZXIgQ0kgY2hlY2tzIGFuZCByZXF1aXJlcyB0aGUgbWlzc2luZyBsb2NrZmlsZSwgc28gdGhlIHdvcmtmbG93IGNhbm5vdCBjb21wbGV0ZSB0aGUgbGlzdGVkIGNoZWNrcyBmcm9tIHRoaXMgY2hhbmdlIG9uIGEgY2xlYW4gY2hlY2tvdXQuIiwNCiAgICAgICAgInByaW9yaXR5IjogIlAzIiwNCiAgICAgICAgImNvbmZpZGVuY2UiOiAwLjk0LA0KICAgICAgICAiY2F0ZWdvcnkiOiAibWFpbnRhaW5hYmlsaXR5IiwNCiAgICAgICAgImNvZGVfbG9jYXRpb24iOiB7DQogICAgICAgICAgImZpbGVfcGF0aCI6ICIuZ2l0aHViL3dvcmtmbG93cy9jaS55bWwiLA0KICAgICAgICAgICJsaW5lIjogNDkNCiAgICAgICAgfSwNCiAgICAgICAgInNvdXJjZV9hdHRyaWJ1dGlvbiI6IG51bGwNCiAgICAgIH0NCiAgICBdLA0KICAgICJvdmVyYWxsX2NvcnJlY3RuZXNzIjogInBhdGNoIGlzIGluY29ycmVjdCIsDQogICAgIm92ZXJhbGxfZXhwbGFuYXRpb24iOiAiQkVHSU4gRk9SR0UgQVNTRVNTTUVOVCBxdWFsaXR5XG5UaGUgZnJvemVuIGluc3RhbGwgaGFzIG5vIGFjY29tcGFueWluZyBsb2NrZmlsZSBpbiB0aGUgc2VsZWN0ZWQgY2hhbmdlLCBibG9ja2luZyBhIHJlcHJvZHVjaWJsZSBjbGVhbiBjaGVja291dCBhbmQgQ0kgcnVuLiBUaGlzIGNvbmZsaWN0cyB3aXRoIHRoZSBpbXBsZW1lbnRlci1hdXRob3JlZCBwYXNzIHJlcG9ydC4gVGhlIG90aGVyIGZvdW5kYXRpb24gY29udHJhY3RzIGhhdmUgaW1wbGVtZW50YXRpb24gZXZpZGVuY2UgaW4gdGhlIHN1cHBsaWVkIGRpZmYsIHRob3VnaCB0aGUgZW1wdHkgc2FuZGJveCBwcmV2ZW50cyBpbmRlcGVuZGVudCBleGVjdXRpb24uXG5FTkQgRk9SR0UgQVNTRVNTTUVOVCBxdWFsaXR5XG5CRUdJTiBGT1JHRSBBU1NFU1NNRU5UIHBlcmZvcm1hbmNlXG5UaGUgc3VwcGxpZWQgY29kZSBzaG93cyBubyBhY3Rpb25hYmxlIHByb2R1Y3Rpb24gcGVyZm9ybWFuY2UgZGVmZWN0LiBUaGUgaW4tbWVtb3J5IHJhdGUgbGltaXQgbWF0Y2hlcyB0aGUgYXBwcm92ZWQgZm91bmRhdGlvbiBzY29wZS5cbkVORCBGT1JHRSBBU1NFU1NNRU5UIHBlcmZvcm1hbmNlXG5CRUdJTiBGT1JHRSBBU1NFU1NNRU5UIHNlY3VyaXR5XG5UaGUgc3VwcGxpZWQgZGlmZiBzaG93cyBubyBjb25jcmV0ZSBjcmVkZW50aWFsIGV4cG9zdXJlIG9yIGFjdGlvbmFibGUgc2VjdXJpdHkgZGVmZWN0LiBUaGUgZXhhbXBsZSBzZWNyZXQgYW5kIENJIHNlY3JldCBhcmUgcGxhY2Vob2xkZXJzOyB0aGUgZm9yZ2VyeSBndWFyZCwgcmVzdHJpY3RlZCBDT1JTIGFuZCBzYW5pdGl6ZWQgZXhjZXB0aW9uIHBheWxvYWQgYXJlIHByZXNlbnQuXG5FTkQgRk9SR0UgQVNTRVNTTUVOVCBzZWN1cml0eSIsDQogICAgIm92ZXJhbGxfY29uZmlkZW5jZSI6IDAuOTENCiAgfSwNCiAgInVzYWdlIjogew0KICAgICJhdHRlbXB0cyI6IDEsDQogICAgInJlcG9ydGVkX2F0dGVtcHRzIjogMSwNCiAgICAidW5rbm93bl9hdHRlbXB0cyI6IDAsDQogICAgInBhcnRpYWxfYXR0ZW1wdHMiOiAwLA0KICAgICJjb21wbGV0ZSI6IHRydWUsDQogICAgInRva2VucyI6IHsNCiAgICAgICJpbnB1dF90b2tlbnMiOiA0NDc4MTYsDQogICAgICAiY2FjaGVkX2lucHV0X3Rva2VucyI6IDM2ODI1NiwNCiAgICAgICJvdXRwdXRfdG9rZW5zIjogOTg2NCwNCiAgICAgICJyZWFzb25pbmdfb3V0cHV0X3Rva2VucyI6IDc4MTMNCiAgICB9DQogIH0sDQogICJyZXZpZXdfc3RhdHVzIjogImZpbmRpbmdzIg0KfQ0K",
+    "encoding": "base64",
+    "sha256": "7119e8b54cc86592d612865600adb941fcf0599732660521e28dfaa08484bc71"
+  },
+  "recorded_at": "2026-09-27T18:14:57+00:00",
+  "rejection": {
+    "history": [
+      {
+        "actor": "claude-coordinator",
+        "citation": "evidence pnpm-lock.yaml:1",
+        "finding_fingerprint": "719f6f79c80d5667ce3277b07c2f45b0b1ea6fcaf7136136abd86eb187e9056e",
+        "lesson_path": "plans/lessons/review-rejection-dcfcb088a19f1c124dbac5f58a8503c51fe8199d6418db59245d09b9fe4a26e8.json",
+        "lesson_sha256": "dcfcb088a19f1c124dbac5f58a8503c51fe8199d6418db59245d09b9fe4a26e8",
+        "reason": "pnpm-lock.yaml (lockfileVersion 9.0) is committed on this branch in 33ffb29 and matches the manifests; the review bundle deliberately excludes lock/generated bytes ('review tip excludes 1 lock/generated path(s): pnpm-lock.yaml'), so the reviewer never opened it; the task proof ran pnpm install --frozen-lockfile successfully on this tree."
+      }
+    ],
+    "root_generation_id": "ab89539b77df6e734bb08cbe810cbaa92c1806dd96de52d9c1fd56edab6420d3",
+    "source_generation_id": "ab89539b77df6e734bb08cbe810cbaa92c1806dd96de52d9c1fd56edab6420d3",
+    "source_generation_sha256": "f523e522f50a4e27f0a9add2b18058b568d9be288b9fd40da35e3726dcfef40f"
+  },
+  "review_run_id": "db28f7040d5ea9de853c62994335b64a51fd83a5182ed0c3bafe7a8b8fc6de4d",
+  "story": "CWF-1",
+  "task_id": "T1-foundation"
+}

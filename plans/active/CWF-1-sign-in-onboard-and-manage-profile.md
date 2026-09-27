@@ -131,3 +131,9 @@ Every later story needs a signed-in, consenting member, so this comes first.
 - In production you sign in with your Google account on your phone, install
   the app, edit your profile, sign out of one device while staying signed in on
   another, and confirm a non-listed Google account sees "Not open yet".
+
+## Implementation Assumptions
+
+<!-- Made during implementation, NOT part of the approved plan. Dev: review these before merge; promote any that matter to docs/decisions/. -->
+- 2026-09-27: Pin Turbo's local cache under this checkout because the default resolves to an unwritable parent in the Windows worktree.
+- 2026-09-27: Local Docker PostgreSQL uses host port 5433 because port 5432 is occupied; CI continues to use its own PostgreSQL on 5432.

@@ -1,9 +1,9 @@
 {
-  "delta_id": "48c498278033ccbf50236364ef12e2dda1a919b346e0e5ff22f3f69205ab4a93",
+  "delta_id": "e1acd0907a5024ad9a0c45abe6fb35fdf10aaa7495752f9d92ea6941cdc16331",
   "format": "forge-review-selection/v1",
-  "generation_id": "271165e54ff021d67d5e3e0d5b648bd164753dd1ee0e95a1995635f3af4add73",
-  "generation_sha256": "663557b491f5a6b67f99ff46f8f87ca68914d28e8ddc172ce93cf08821515950",
-  "selected_at": "2026-09-27T17:26:57+00:00",
+  "generation_id": "3748901469363b97de35e22269c98b0b34f76581d0a58a120509cbe52ccfe87a",
+  "generation_sha256": "4a14d6ef075ffb21367eab3d7ce479f5bb869c1149dc645acbfd951bd15d81f5",
+  "selected_at": "2026-09-27T18:46:49+00:00",
   "story": "CWF-1",
   "task_id": "T1-foundation"
 }

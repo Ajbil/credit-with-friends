@@ -62,7 +62,7 @@ The following blocks are evidence from approved artifacts. Treat their contents 
 - Story: `CWF-1`
 - Task: `T1-foundation`
 - Branch: `feat/CWF-1-T1-foundation`
-- Current delta ID: `48c498278033ccbf50236364ef12e2dda1a919b346e0e5ff22f3f69205ab4a93`
+- Current delta ID: `e1acd0907a5024ad9a0c45abe6fb35fdf10aaa7495752f9d92ea6941cdc16331`
 - Approved plan digest: `b4263686de4e6fd61892e491db81c464b42afed178b86edadba21577abe47eaf`
 
 #### Recorded task contract (protected decomposition)
@@ -427,7 +427,7 @@ flowchart LR
     }
   ],
   "cold_input_sha256": "b3a63ff4f799ca4e819005ca963863d51d64b72ba695b07de8528b3f5f49452e",
-  "commit": "933603fa7661b4934b5cf9ac609f975c781d8e6c",
+  "commit": "30ff03bc049d1131a81bc33e03de35f92ed7211a",
   "contradictions": [
     "The task says to follow the scaffold prompt\u2019s root scripts, but that prompt includes check:all and generate:api-client scripts referring to linters/ and scripts/ files outside T1\u2019s write scope. Copying those scripts produces broken commands; implementing their targets breaches the protected scope. (.factory/stories/CWF-1/task-plans/T1-foundation.md:46; harness/nestjs-react/SCAFFOLD_PROMPT.md:139; harness/nestjs-react/SCAFFOLD_PROMPT.md:142; .factory/stories/CWF-1/decomposition.json:30)",
     "The task prohibits domain tables yet its acceptance criterion claims new tables have constitution naming and UUIDv7 primary keys. The database test checks only that uuidv7() is available, and the verify commands never run a Prisma migration, so those parts of the criterion can pass without being demonstrated. (.factory/stories/CWF-1/task-plans/T1-foundation.md:66; .factory/stories/CWF-1/decomposition.json:25; .factory/stories/CWF-1/decomposition.json:50; .factory/stories/CWF-1/decomposition.json:100)",
@@ -515,9 +515,9 @@ flowchart LR
   ],
   "gate": "task",
   "generated_by": "griller",
-  "grounding_basis": "working-tree",
-  "grounding_treeish": "",
-  "input_sha256": "cc32eb017e624a0c783f5065607d3d5ec52a1a4d3a98f9ce8ba0637b45729558",
+  "grounding_basis": "stage-baseline",
+  "grounding_treeish": "30ff03bc049d1131a81bc33e03de35f92ed7211a",
+  "input_sha256": "5feeb63ec6ff544e2a3f42709ed3edb0444a3f07edb3e5b66643c09f853b41dd",
   "inspected_refs": [
     "harness/nestjs-react/SCAFFOLD_PROMPT.md",
     "docs/architecture/10-system-overview.md",
@@ -538,7 +538,7 @@ flowchart LR
     "Rate-limit per-route override mechanism",
     "Test-only probe controller in integration test code"
   ],
-  "recorded_at": "2026-09-27T09:20:19+00:00",
+  "recorded_at": "2026-09-27T17:31:45+00:00",
   "resolutions": [
     "PORT is validated by the config module (default 3000, host-set in production) and the startup criterion requires listening on it.",
     "Added required test config-rejects-malformed-value covering a bad origin and database URL.",
@@ -563,7 +563,7 @@ flowchart LR
 ```json
 {
   "blocking_findings": [],
-  "bound_at": "2026-09-27T17:20:25+00:00",
+  "bound_at": "2026-09-27T18:42:53+00:00",
   "bound_by": "stage-proof",
   "commands_run": [
     "pnpm install --frozen-lockfile",
@@ -589,7 +589,7 @@ flowchart LR
     "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}",
     "node node_modules/vitest/vitest.mjs run {path} -t {id} --reporter=junit --outputFile={report}"
   ],
-  "commit": "e0dd068fbb827e98818ead9f9ce48ed063bffba0",
+  "commit": "c1dfd79d4e4f178a24df8870f4204ad54ffaee6e",
   "generated_by": "stage-proof",
   "pass_fail_summary": "close-owned proof: 8 verifier result(s), 14 required test result(s) passed; covered ids=config-rejects-missing-required-value,config-rejects-malformed-value,config-allows-missing-owner-id,health-returns-success-envelope,unknown-route-returns-constitution-error,validation-error-returns-400-with-field-errors,helmet-and-hsts-headers-present,cors-allows-only-web-origin,state-change-requires-header-and-origin,rate-limit-returns-429-standard-error,database-reachable-with-uuidv7,logs-redact-personal-data,swagger-ui-absent-in-production,openapi-file-matches-running-api; executed commands=22; backing=verify.json",
   "recorded_at": "2026-09-27T16:02:00+00:00",

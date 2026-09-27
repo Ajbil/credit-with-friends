@@ -1,0 +1,1 @@
+{"event": "signal-resolved", "generated_by": "orchestrator", "at": "2026-09-27T14:33:52+00:00", "story": "CWF-1", "detail": "S-0002-2c50: Done: the coordinator ran the package install on the host (WORKFLOW.md host-exception, sandbox has no registry or Docker). pnpm-lock.yaml and node_modules now exist for the declared dependencies."}
