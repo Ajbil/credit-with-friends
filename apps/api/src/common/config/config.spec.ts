@@ -27,6 +27,7 @@ describe('validateConfig', () => {
     for (const [name, value] of [
       ['API_ORIGIN', 'https://example.com/path'],
       ['DATABASE_URL', 'https://example.com/database'],
+      ['DATABASE_URL', 'postgresql://user:password@localhost:5432'],
       ['OWNER_CONTACT_EMAIL', 'not-an-email'],
       ['PORT', '70000'],
       ['TRUST_PROXY', '-1'],

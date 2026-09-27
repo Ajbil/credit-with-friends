@@ -51,7 +51,8 @@ function databaseUrl(env: Record<string, unknown>): string {
   const value = required(env, 'DATABASE_URL');
   try {
     const parsed = new URL(value);
-    if (!['postgres:', 'postgresql:'].includes(parsed.protocol) || !parsed.hostname) throw new Error();
+    const databaseName = parsed.pathname.split('/')[1];
+    if (!['postgres:', 'postgresql:'].includes(parsed.protocol) || !parsed.hostname || !databaseName) throw new Error();
     return value;
   } catch {
     throw new Error('DATABASE_URL must be a PostgreSQL URL');
