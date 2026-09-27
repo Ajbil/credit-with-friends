@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
+import { STATUS_CODES } from 'node:http';
 import { PinoLogger } from 'nestjs-pino';
 import { ApiConfig } from '../config/config.module';
 
@@ -20,7 +21,9 @@ function errorCode(status: number, response: string | object): string {
   if (status === 403) return 'FORBIDDEN';
   if (status === 404) return 'NOT_FOUND';
   if (status === 429) return 'RATE_LIMIT_EXCEEDED';
-  return status >= 500 ? 'INTERNAL_SERVER_ERROR' : 'REQUEST_FAILED';
+  if (status >= 500) return 'INTERNAL_SERVER_ERROR';
+  if (status < 400) return 'REQUEST_FAILED';
+  return STATUS_CODES[status]?.toUpperCase().replace(/[^A-Z0-9]+/g, '_') ?? 'REQUEST_FAILED';
 }
 
 function errorMessage(code: string): string {
@@ -31,7 +34,16 @@ function errorMessage(code: string): string {
     RATE_LIMIT_EXCEEDED: 'Too many requests.',
     REQUEST_FAILED: 'The request could not be completed.',
     VALIDATION_ERROR: 'Input validation failed.',
-  } as Record<string, string>)[code];
+  } as Record<string, string>)[code] ?? 'The request could not be completed.';
+}
+
+function exceptionStatus(exception: unknown): number {
+  if (exception instanceof HttpException) return exception.getStatus();
+  if (typeof exception !== 'object' || exception === null) return 500;
+  const { status, statusCode } = exception as { status?: unknown; statusCode?: unknown };
+  return [status, statusCode].find((value): value is number =>
+    typeof value === 'number' && Number.isInteger(value) && value >= 400 && value < 500,
+  ) ?? 500;
 }
 
 @Catch()
@@ -45,7 +57,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const http = host.switchToHttp();
     const request = http.getRequest<RequestContext>();
     const response = exception instanceof HttpException ? exception.getResponse() : {};
-    const statusCode = exception instanceof HttpException ? exception.getStatus() : 500;
+    const statusCode = exceptionStatus(exception);
     const code = errorCode(statusCode, typeof response === 'object' ? response : {});
     const errorId = randomUUID();
     const correlationId = request.correlationId ?? randomUUID();

@@ -2,13 +2,10 @@ import type { AddressInfo } from 'node:net';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { All, Body, Controller, Get, Post } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ApiExcludeController } from '@nestjs/swagger';
-import { Test } from '@nestjs/testing';
 import { IsEmail } from 'class-validator';
 import 'reflect-metadata';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
-import { configureApi } from '../src/common/api/api.config';
 import type { ApiConfig } from '../src/common/config/config.module';
 import { PrismaService } from '../src/common/database/prisma.service';
 
@@ -63,11 +60,17 @@ function configureEnvironment(nodeEnv = 'test'): void {
 
 async function createApplication(nodeEnv = 'test') {
   configureEnvironment(nodeEnv);
-  const { AppModule } = await import('../src/app.module');
+  if (nodeEnv === 'production') vi.resetModules();
+  const [{ AppModule }, { ConfigService }, { Test }, { configureApi }] = await Promise.all([
+    import('../src/app.module'),
+    import('@nestjs/config'),
+    import('@nestjs/testing'),
+    import('../src/common/api/api.config'),
+  ]);
   const module = await Test.createTestingModule({ imports: [AppModule], controllers: [ProbeController] }).compile();
   const application = module.createNestApplication();
   const config = application.get(ConfigService<ApiConfig, true>);
-  if (nodeEnv === 'production') config.set('environment', 'Production');
+  if (nodeEnv === 'production') expect(config.getOrThrow('environment')).toBe('Production');
   configureApi(application, config);
   await application.listen(0, '127.0.0.1');
   return application;
@@ -116,6 +119,16 @@ describe('API foundation', () => {
     expect(response.status).toBe(400);
     expect(payload).toMatchObject({ success: false, data: null, error: { code: 'VALIDATION_ERROR', statusCode: 400 } });
     expect(payload.error.details.fieldErrors).toEqual(expect.arrayContaining([expect.objectContaining({ field: 'email', reason: expect.any(String) })]));
+
+    const malformed = await fetch(`${baseUrl}/api/v1/test-probe/validate`, {
+      method: 'POST',
+      headers: { origin: WEB_ORIGIN, 'x-requested-with': 'cwf', 'content-type': 'application/json' },
+      body: '{',
+    });
+    const malformedBody = await malformed.text();
+    expect(malformed.status).toBe(400);
+    expect(JSON.parse(malformedBody)).toMatchObject({ success: false, data: null, error: { code: 'BAD_REQUEST', statusCode: 400 } });
+    expect(malformedBody).not.toMatch(/syntaxerror|unexpected end/i);
   });
 
   test('helmet-and-hsts-headers-present', async () => {
@@ -164,13 +177,22 @@ describe('API foundation', () => {
     const localDocs = await request('/api/docs');
     expect(localDocs.status).toBe(200);
     await localDocs.arrayBuffer();
-    const productionApp = await createApplication('production');
+    const originalNodeEnv = process.env.NODE_ENV;
+    let productionApp: typeof app | undefined;
     try {
+      productionApp = await createApplication('production');
       const response = await fetch(`${serverUrl(productionApp)}/api/docs`);
       expect(response.status).toBe(404);
     } finally {
-      await productionApp.get(PrismaService).$disconnect();
-      await productionApp.close();
+      try {
+        if (productionApp) {
+          const { PrismaService: ProductionPrismaService } = await import('../src/common/database/prisma.service');
+          await productionApp.get(ProductionPrismaService).$disconnect();
+          await productionApp.close();
+        }
+      } finally {
+        vi.stubEnv('NODE_ENV', originalNodeEnv);
+      }
     }
   });
 
