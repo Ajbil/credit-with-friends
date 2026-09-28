@@ -1,7 +1,7 @@
 {
   "task_id": "T1-foundation",
-  "review_run_id": "ccbaa0d9502d2709fbe5eb18eb6eb29155accd69a8b5b02e9b422076a9b3c035",
-  "brief_sha256": "3c234c38ef16f3dc8abef3d9831e32a4f3246100eb3f73855590e65ef7b10fe6",
-  "branch_diff_digest": "e1acd0907a5024ad9a0c45abe6fb35fdf10aaa7495752f9d92ea6941cdc16331",
-  "minted_at": "2026-09-27T18:42:58+00:00"
+  "review_run_id": "82e888996e0b0c2800460b50bbe6090a935cdc505d60907782252e1859a15490",
+  "brief_sha256": "5a6dd6a8f0a7597fa93ebc6ede3e8015c19e47d96bdfc3c570d770e29b08434f",
+  "branch_diff_digest": "9ed01c7b28abc51ea7ad3bf2f6dc5622fc25e5bf0a484a1d61fe5ad74bc381e2",
+  "minted_at": "2026-09-28T11:12:14+00:00"
 }
