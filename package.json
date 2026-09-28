@@ -15,6 +15,11 @@
     "lint": "turbo run lint --cache-dir .turbo/cache",
     "db:migrate:deploy": "pnpm --filter @symphony/api db:migrate:deploy"
   },
+  "pnpm": {
+    "overrides": {
+      "deepmerge-ts": "^8.0.0"
+    }
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "eslint": "^9.39.1",
