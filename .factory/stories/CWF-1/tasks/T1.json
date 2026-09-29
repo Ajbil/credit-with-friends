@@ -12,6 +12,11 @@
         "because": "apps/api/src/common/config/config.spec.ts:1 already on main, added in 33ffb29 by merged PR #1; T1 is recorded as shipped, not rebuilt",
         "finding": 2,
         "from_base": false
+      },
+      {
+        "because": "apps/api/src/common/logging/logging.spec.ts:1 already on main, added in 33ffb29 by merged PR #1; T1 is recorded as shipped, not rebuilt",
+        "finding": 3,
+        "from_base": false
       }
     ],
     "findings": [
