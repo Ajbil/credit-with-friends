@@ -1,46 +1,32 @@
 {
   "branch": "task/CWF-1-T2",
   "review": {
-    "commit": "cb60d92fc93a8b745009a1f2a6ce40d23fcda6fc",
+    "commit": "5f0692b40283eefe15470199b21b8b78f9085484",
     "dismissals": [],
     "findings": [
       {
-        "body": "The integration tests sign in only through /test-auth/sign-in. They never exercise Google start or callback, so the state cookie, token verification, prelaunch rejection redirect, and saved return path could break while the suite passes. Add a test through the Google endpoints with Google faked at its external boundary.",
+        "body": "Each authenticated request extends the database expiry, but this cookie is issued with a 30-day Max-Age only at sign-in. An active browser therefore loses its cookie 30 days after sign-in even when the session has been used continuously. Renew the cookie as activity extends the session, and cover that behavior with an HTTP test.",
+        "file": "apps/api/src/modules/sessions/sessions.service.ts",
+        "line": 16,
+        "priority": "P1",
+        "title": "Refresh the session cookie when extending idle expiry"
+      },
+      {
+        "body": "The changed-email assertion signs in through `/test-auth/sign-in`, which supplies an identity directly to AccountsService. The Google HTTP test covers a new account but never signs that account in again after its email changes. Exercise the second sign-in through Google start and callback, with Google faked at its external edge, and assert that it opens the same member.",
         "file": "apps/api/test/accounts.integration.spec.ts",
-        "line": 41,
+        "line": 175,
         "priority": "P1",
-        "title": "Not done: Google sign-in end-to-end test"
+        "title": "Not done: Google account continuity end-to-end test"
       },
       {
-        "body": "The test calls the cleanup service directly. Removing or misconfiguring its daily Cron registration would leave this test green while unfinished sign-ins linger. Exercise the scheduled job through the running application and check the 30-day cutoff.",
-        "file": "apps/api/test/accounts.integration.spec.ts",
-        "line": 128,
-        "priority": "P1",
-        "title": "Not done: daily 30-day cleanup schedule test"
-      },
-      {
-        "body": "The suite enables the identity-spoofing test route but never starts the application with production settings to verify that the route is absent. A regression in this conditional registration could expose sign-in without Google verification in production. Add a production-configuration HTTP test that expects the route to be unavailable.",
-        "file": "apps/api/src/app.module.ts",
-        "line": 39,
-        "priority": "P1",
-        "title": "Not done: production test-auth exclusion test"
-      },
-      {
-        "body": "The generated OpenAPI document defines a security scheme named `cookie`, but the protected operations reference `cwf_session`. That reference cannot resolve, so clients and validators cannot interpret the advertised authentication contract. Give the scheme and operation references the same name.",
-        "file": "apps/api/src/common/api/api.config.ts",
-        "line": 48,
-        "priority": "P2",
-        "title": "Fix the OpenAPI cookie security scheme reference"
-      },
-      {
-        "body": "Onboarding rejects requests unless a published notice exists, while this branch creates only the table and explicitly defers publication to T3. Until T3 supplies the approved notice, a real new sign-in cannot finish onboarding. The integration test succeeds because it inserts a test notice.",
+        "body": "Onboarding rejects every version unless a published notice exists. This change creates the table but publishes no notice; the integration test inserts one as a fixture. A real new sign-in cannot become a member until T3 supplies the approved notice.",
         "file": "apps/api/src/modules/accounts/accounts.service.ts",
-        "line": 73,
+        "line": 70,
         "priority": "P2",
         "title": "Later: T3 must publish a privacy notice before onboarding can complete"
       },
       {
-        "body": "This new Forge task-status record is outside the permitted paths and is not needed for the sign-in API, contract, or account-setup checklist.",
+        "body": "This new review and task-status record is outside the permitted paths and is not needed to deliver the sign-in API, its contract, or the account-setup checklist.",
         "file": ".factory/stories/CWF-1/tasks/T2.json",
         "line": 2,
         "priority": "P2",
@@ -48,7 +34,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "05912be7fae3a729f6b1be7941c42571d6991c3107017fcfc6f91d35ddc3181a"
+    "tree": "e653991b5f32b6ea3b63f4ee34d3955317ec75a6376dfe934e1c7a4da11d2105"
   },
   "status": "fixing",
   "steps": [
@@ -58,6 +44,10 @@
     },
     {
       "at": "2026-09-29T19:46:41+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-29T19:57:04+00:00",
       "step": "review"
     }
   ]
