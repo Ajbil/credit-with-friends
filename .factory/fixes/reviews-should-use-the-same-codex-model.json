@@ -3,11 +3,30 @@
   "branch": "fix/reviews-should-use-the-same-codex-model",
   "done_when": "forge.toml sets the review model to gpt-6-sol and no gpt-6-astra remains",
   "kind": "fix",
-  "status": "started",
+  "review": {
+    "commit": "255a487878fa870a8b5163dbf8559ae5f85f2c26",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The branch changes the review model but adds no test that invokes Forge\u2019s own command and verifies reviews use `gpt-6-sol`. Add a repository-suite test that fails if the review command selects the old model.",
+        "file": "forge.toml",
+        "line": 31,
+        "priority": "P1",
+        "title": "Not done: an end-to-end test verifies the review model"
+      }
+    ],
+    "status": "blocked",
+    "tree": "6b0b844257b42a22f893a5e0f7ab18747810aea1bce15452b1f70b52a00af680"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-09-29T13:42:00+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-09-29T18:05:34+00:00",
+      "step": "review"
     }
   ],
   "why": "Reviews should use the same Codex model as every other role"
