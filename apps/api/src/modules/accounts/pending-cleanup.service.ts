@@ -9,7 +9,7 @@ const IDLE_DAYS = 30;
 export class PendingCleanupService {
   constructor(@Inject(PrismaService) private readonly db: PrismaService, @Inject(PinoLogger) private readonly logger: PinoLogger) {}
 
-  @Cron('0 0 3 * * *', { timeZone: 'Asia/Kolkata' })
+  @Cron('0 0 3 * * *', { timeZone: 'Asia/Kolkata', waitForCompletion: true })
   async run(): Promise<void> {
     try {
       this.logger.info('Sign-in cleanup started');
