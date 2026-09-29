@@ -1,0 +1,28 @@
+import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
+import { SessionsService, Caller } from './sessions.service';
+import { ConfigService } from '@nestjs/config';
+import { ApiConfig } from '../../common/config/config.module';
+
+export const PUBLIC_ROUTE = 'publicRoute';
+export const PENDING_ROUTE = 'pendingRoute';
+export type AuthenticatedRequest = Request & { caller: Caller };
+
+@Injectable()
+export class SessionGuard implements CanActivate {
+  constructor(@Inject(SessionsService) private readonly sessions: SessionsService, @Inject(Reflector) private readonly reflector: Reflector, @Inject(ConfigService) private readonly config: ConfigService<ApiConfig, true>) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    if (this.reflector.getAllAndOverride<boolean>(PUBLIC_ROUTE, [context.getHandler(), context.getClass()])) return true;
+    // Foundation probes and API docs exist only in local/test application wiring.
+    if (request.path === '/api/v1/health' || request.path.startsWith('/api/docs') ||
+        (this.config.getOrThrow('environment') === 'Local' && request.path.startsWith('/api/v1/test-probe/'))) return true;
+    request.caller = await this.sessions.resolve(request.headers.cookie);
+    if (!request.caller.memberId && !this.reflector.getAllAndOverride<boolean>(PENDING_ROUTE, [context.getHandler(), context.getClass()])) {
+      throw new ForbiddenException();
+    }
+    return true;
+  }
+}

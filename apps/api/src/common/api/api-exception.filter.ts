@@ -17,6 +17,7 @@ function validationDetails(response: string | object): { fieldErrors: Array<{ fi
 }
 
 function errorCode(status: number, response: string | object): string {
+  if ((response as ValidationResponse)?.code === 'NOT_OPEN_YET') return 'NOT_OPEN_YET';
   if ((response as ValidationResponse)?.code === 'VALIDATION_ERROR') return 'VALIDATION_ERROR';
   if (status === 403) return 'FORBIDDEN';
   if (status === 404) return 'NOT_FOUND';
@@ -29,6 +30,7 @@ function errorCode(status: number, response: string | object): string {
 function errorMessage(code: string): string {
   return ({
     FORBIDDEN: 'This request is not allowed.',
+    NOT_OPEN_YET: 'Not open yet',
     INTERNAL_SERVER_ERROR: 'The request could not be completed.',
     NOT_FOUND: 'The requested resource was not found.',
     RATE_LIMIT_EXCEEDED: 'Too many requests.',
@@ -74,7 +76,8 @@ export class ApiExceptionFilter implements ExceptionFilter {
     };
     const context = { errorId, statusCode, code, correlationId, requestId };
     if (code === 'VALIDATION_ERROR') this.logger.debug({ context }, 'Request validation failed');
-    else this.logger.error({ context }, statusCode >= 500 ? 'Unhandled request error' : 'Request failed');
+    else if (statusCode < 500) this.logger.debug({ context }, 'Request refused');
+    else this.logger.error({ context }, 'Unhandled request error');
     http.getResponse().status(statusCode).json(payload);
   }
 }

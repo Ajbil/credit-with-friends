@@ -8,3 +8,74 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model PendingSignIn {
+  id                String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  googleAccountId   String    @unique
+  googleName        String
+  googleEmail       String
+  lastActivityAtUtc DateTime  @default(now())
+  createdAtUtc      DateTime  @default(now())
+  updatedAtUtc      DateTime  @updatedAt
+  sessions          Session[]
+
+  @@index([lastActivityAtUtc], map: "idx_PendingSignIn_lastActivityAtUtc")
+}
+
+model Member {
+  id                 String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  googleAccountId    String    @unique
+  googleEmail        String
+  displayName        String
+  whatsappE164       String
+  isAdultConfirmed   Boolean
+  createdAtUtc       DateTime  @default(now())
+  updatedAtUtc       DateTime  @updatedAt
+  sessions           Session[]
+  consents           Consent[]
+}
+
+model Session {
+  id              String         @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  memberId        String?        @db.Uuid
+  pendingSignInId String?        @db.Uuid
+  tokenHash       String         @unique
+  lastSeenAtUtc   DateTime       @default(now())
+  expiresAtUtc    DateTime
+  userAgentLabel  String?
+  returnPath      String         @default("/")
+  createdAtUtc    DateTime       @default(now())
+  updatedAtUtc    DateTime       @updatedAt
+  member          Member?        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  pendingSignIn   PendingSignIn? @relation(fields: [pendingSignInId], references: [id], onDelete: Cascade)
+
+  @@index([memberId], map: "idx_Session_memberId")
+  @@index([pendingSignInId], map: "idx_Session_pendingSignInId")
+  @@index([expiresAtUtc], map: "idx_Session_expiresAtUtc")
+}
+
+model PrivacyNoticeVersion {
+  id              String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  version         Int       @unique
+  text            String
+  isMaterialChange Boolean
+  publishedAtUtc  DateTime?
+  createdAtUtc    DateTime  @default(now())
+  updatedAtUtc    DateTime  @updatedAt
+  consents        Consent[]
+}
+
+model Consent {
+  id                     String               @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  memberId               String               @db.Uuid
+  privacyNoticeVersionId String               @db.Uuid
+  acceptedAtUtc          DateTime             @default(now())
+  createdAtUtc           DateTime             @default(now())
+  updatedAtUtc           DateTime             @updatedAt
+  member                 Member               @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  privacyNoticeVersion   PrivacyNoticeVersion @relation(fields: [privacyNoticeVersionId], references: [id])
+
+  @@unique([memberId, privacyNoticeVersionId])
+  @@index([memberId], map: "idx_Consent_memberId")
+  @@index([privacyNoticeVersionId], map: "idx_Consent_privacyNoticeVersionId")
+}

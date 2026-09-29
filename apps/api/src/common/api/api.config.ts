@@ -45,6 +45,7 @@ export function configureApi(app: INestApplication, config: ConfigService<ApiCon
     .setTitle('CreditWithFriends API')
     .setDescription('Versioned API for CreditWithFriends.')
     .setVersion('1.0.0')
+    .addCookieAuth('cwf_session')
     .addServer(config.getOrThrow('apiOrigin'))
     .build());
   SwaggerModule.setup('api/docs', app, document);
