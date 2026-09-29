@@ -1,1 +1,0 @@
-{"event": "signal-host-exception", "generated_by": "implementer", "at": "2026-09-27T14:56:24+00:00", "story": "CWF-1", "detail": "Raised by the Claude coordinator: the implementer sandbox cannot download the Prisma engine or use Docker, so the coordinator generates the Prisma client, starts local PostgreSQL 18, and runs the inte"}

@@ -1,1 +1,0 @@
-{"event": "signal-resolved", "generated_by": "orchestrator", "at": "2026-09-27T14:58:47+00:00", "story": "CWF-1", "detail": "S-0003-cc8a: Prisma Client is now generated on the host (node_modules), so typecheck and build can run in your sandbox. Changes needed: (1) the developer machine already runs PostgreSQL on 5432, so map the Compose"}

@@ -1,0 +1,17 @@
+{
+  "allow_large": "Moving to Forge v1 replaces the copied-in Forge in one change; Ajbil allowed it by running forge migrate.",
+  "base": "41e75a4213da2cfee77ad3ea91fad224a284eed5",
+  "branch": "forge/migrate-v1",
+  "done_when": "Forge v1 runs this repo: forge doctor passes, every active plan is a story doc or a draft, and every Forge file you changed is set aside for you.",
+  "kind": "migrate",
+  "notes": "Deletes the copied-in Forge, these paths and nothing else (git history keeps them):\n- factory/ (162 files)\n- forge\n- forge.cmd\n- harness.yaml\n- harness/ (24 files)\n- constitution/ (20 files)\n- WORKFLOW.md\n- docs/ROLES.md\n- docs/harness-philosophy.md\n- docs/degraded-mode.md\n- docs/windows.md\n- docs/memory/factory-entry-contract.md\n- .codex/agents/ (17 files)\n- .codex/explore.config.toml\n- .codex/skills/forge/ (1 file)\n- .claude/skills/forge/ (1 file)\n- .claude/CLAUDE.md\n- .envrc\n- .github/workflows/factory-scaffold.yml\n- .github/workflows/gardener.yml\n- .github/workflows/harness-health.yml\n- .github/workflows/roadmap-gate.yml\nDeletes 92 old Forge records under .factory/; git history keeps them.\nDeletes 4 old ledger records under plans/ (quickfixes, lessons, deferrals and briefs); git history keeps them.\nSets nothing aside.\nLeaves 14 files referenced by tracked client files at their original paths:\n- constitution/03-modular-monolith-structure.md\n- constitution/07-exception-handling.md\n- constitution/README.md\n- constitution/pnp-database-standards.md\n- docs/FACTORY.md\n- docs/QUALITY.md\n- factory/prompts/harvester.md\n- factory/scripts/forge.py\n- factory/scripts/intake.py\n- factory/scripts/pr_ready.py\n- factory/scripts/record_decomposition_from_json.py\n- factory/scripts/record_grill_from_json.py\n- factory/scripts/update_run.py\n- factory/skills/forge.md\nConverts 1 active plan into story docs:\n- CWF-1-SIGN-IN-ONBOARD-AND-MANAGE-PROFILE (CWF-1-SIGN-IN-ONBOARD-AND-MANAGE-PROFILE): not carried over, because its plan on main says \"nothing\", not \"approved\". Its draft is .forge-migrate/replan/CWF-1-SIGN-IN-ONBOARD-AND-MANAGE-PROFILE.md; re-plan it with forge story new CWF-1-SIGN-IN-ONBOARD-AND-MANAGE-PROFILE.\n  Needs you in .forge-migrate/replan/CWF-1-SIGN-IN-ONBOARD-AND-MANAGE-PROFILE.md: the old plan has no tasks to carry over.\nNeeds you in AGENTS.md: it differs from the old Forge's, so its text stays above the Forge block; take the old Forge instructions out of it.\nDrops CLAUDE.md's import of .claude/CLAUDE.md, the old Claude adapter.\nPins your sign-off record, docs/decisions/0010-client-signoff.md, in forge.toml's signoff, as harness.yaml did: a story is approved only once that record is accepted.\nWrites forge.toml pinned to Forge v1.1.0, and the adapters for Claude Code and Codex with forge sync.\nAfter this pull request merges, forge close migrate-v1 turns on branch protection for main: changes arrive only through a pull request whose tests and forge-pr-check checks pass, and nobody can push to it directly.",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-09-29T12:34:20+00:00",
+      "step": "start"
+    }
+  ],
+  "touches": 0,
+  "why": "Move this repo from its copied-in Forge to the installed Forge v1."
+}
