@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
-      - run: "[ ! -f package.json ] || (npm ci && npm test)"
+      - run: "[ ! -f package.json ] || ((command -v pnpm >/dev/null 2>&1 || corepack enable) && pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm test && pnpm build)"
 
   forge-pr-check:
     if: github.event_name == 'pull_request_target'
