@@ -206,7 +206,17 @@ describe('sign-in and onboarding API', () => {
     expect(sessionCookie).toMatch(/^cwf_session=/);
     expect((await call('/sign-ins', 'GET', sessionCookie)).payload.data.returnPath).toBe('/circles/join/google');
     expect((await call('/onboarding', 'POST', sessionCookie, { displayName: 'Google Listed', whatsappNumber: '9876543210', isAdultConfirmed: true, isConsentGiven: true, privacyNoticeVersion: 1 })).response.status).toBe(200);
-    expect((await call('/members/me', 'GET', sessionCookie)).payload.data.googleAccountId).toBe('google-listed');
+    const member = await call('/members/me', 'GET', sessionCookie);
+    expect(member.payload.data.googleAccountId).toBe('google-listed');
+
+    const returning = await googleStart('/circles/join/returning');
+    const returned = await googleCallback(returning, { sub: 'google-listed', email: 'new-email@example.in', name: 'Google Listed' });
+    expect(returned.status).toBe(302);
+    expect(returned.headers.get('location')).toBe(`${origin}/circles/join/returning`);
+    const returningCookie = returned.headers.get('set-cookie')?.split(';')[0] ?? '';
+    const returnedMember = await call('/members/me', 'GET', returningCookie);
+    expect(returnedMember.payload.data).toMatchObject({ id: member.payload.data.id, googleAccountId: 'google-listed', googleEmail: 'new-email@example.in' });
+    expect(await db.member.count({ where: { googleAccountId: 'google-listed' } })).toBe(1);
 
     const outsider = await googleStart('/circles/join/outsider');
     const refused = await googleCallback(outsider, { sub: 'google-outsider', email: 'outside@example.in', name: 'Outsider' });
@@ -253,15 +263,23 @@ describe('sign-in and onboarding API', () => {
     expect((await call('/sign-ins', 'GET', recent.cookie)).response.status).toBe(200);
   });
 
-  test('sessions expire independently and a later sign-in keeps member data', async () => {
+  test('sessions renew the active browser cookie, expire independently, and retain member data', async () => {
     const person = { googleAccountId: 'account-test-sessions', email: identity.email, name: 'Device Person' };
     const pending = await signIn(person);
     expect((await call('/onboarding', 'POST', pending.cookie, { displayName: 'Device Person', whatsappNumber: '9876543210', isAdultConfirmed: true, isConsentGiven: true, privacyNoticeVersion: 1 })).response.status).toBe(200);
     const deviceTwo = await signIn(person);
-    expect((await call('/sessions/sign-out', 'POST', pending.cookie)).response.status).toBe(201);
+    const signedOut = await call('/sessions/sign-out', 'POST', pending.cookie);
+    expect(signedOut.response.status).toBe(201);
+    expect(signedOut.response.headers.get('set-cookie')).toContain('Max-Age=0');
     expect((await call('/members/me', 'GET', pending.cookie)).response.status).toBe(401);
     expect((await call('/members/me', 'GET', deviceTwo.cookie)).response.status).toBe(200);
     const tokenHash = createHash('sha256').update(deviceTwo.cookie.split('=')[1]).digest('hex');
+    await db.session.update({ where: { tokenHash }, data: { expiresAtUtc: new Date(Date.now() + 86_400_000) } });
+    const active = await call('/members/me', 'GET', deviceTwo.cookie);
+    expect(active.response.status).toBe(200);
+    expect(active.response.headers.get('set-cookie')).toContain(`${deviceTwo.cookie};`);
+    expect(active.response.headers.get('set-cookie')).toContain('Max-Age=2592000');
+    expect((await db.session.findUniqueOrThrow({ where: { tokenHash } })).expiresAtUtc.getTime()).toBeGreaterThan(Date.now() + 29 * 86_400_000);
     await db.session.update({ where: { tokenHash }, data: { expiresAtUtc: new Date(Date.now() - 1) } });
     expect((await call('/members/me', 'GET', deviceTwo.cookie)).response.status).toBe(401);
     const restored = await signIn(person);

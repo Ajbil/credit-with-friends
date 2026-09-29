@@ -35,7 +35,7 @@ export class SessionsService {
     return token;
   }
 
-  async resolve(cookieHeader?: string): Promise<Caller> {
+  async resolve(cookieHeader?: string): Promise<{ caller: Caller; token: string }> {
     const token = cookieHeader?.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${COOKIE_NAME}=`))?.slice(COOKIE_NAME.length + 1);
     if (!token) throw new UnauthorizedException();
     const session = await this.db.session.findUnique({ where: { tokenHash: this.hash(token) } });
@@ -47,10 +47,10 @@ export class SessionsService {
       if (!refreshed.count) {
         const current = await this.db.session.findUnique({ where: { id: session.id } });
         if (!current) throw new UnauthorizedException();
-        return { sessionId: current.id, memberId: current.memberId, pendingSignInId: current.pendingSignInId };
+        return { caller: { sessionId: current.id, memberId: current.memberId, pendingSignInId: current.pendingSignInId }, token };
       }
     }
-    return { sessionId: session.id, memberId: session.memberId, pendingSignInId: session.pendingSignInId };
+    return { caller: { sessionId: session.id, memberId: session.memberId, pendingSignInId: session.pendingSignInId }, token };
   }
 
   async signOut(sessionId: string): Promise<void> {

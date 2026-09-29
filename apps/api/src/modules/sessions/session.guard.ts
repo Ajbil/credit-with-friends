@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { SessionsService, Caller } from './sessions.service';
 import { ConfigService } from '@nestjs/config';
 import { ApiConfig } from '../../common/config/config.module';
@@ -19,7 +19,9 @@ export class SessionGuard implements CanActivate {
     // Foundation probes and API docs exist only in local/test application wiring.
     if (request.path === '/api/v1/health' || request.path.startsWith('/api/docs') ||
         (this.config.getOrThrow('environment') === 'Local' && request.path.startsWith('/api/v1/test-probe/'))) return true;
-    request.caller = await this.sessions.resolve(request.headers.cookie);
+    const { caller, token } = await this.sessions.resolve(request.headers.cookie);
+    request.caller = caller;
+    context.switchToHttp().getResponse<Response>().setHeader('Set-Cookie', this.sessions.cookie(token, this.config.getOrThrow('environment') === 'Production'));
     if (!request.caller.memberId && !this.reflector.getAllAndOverride<boolean>(PENDING_ROUTE, [context.getHandler(), context.getClass()])) {
       throw new ForbiddenException();
     }
