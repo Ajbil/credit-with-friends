@@ -1,1 +1,0 @@
-{"event": "signal-blocked", "generated_by": "implementer", "at": "2026-09-27T14:55:03+00:00", "detail": "Prisma Client cannot be generated in this sandbox because its Windows schema engine is absent and binaries.prisma.sh is unreachable, which blocks API integration tests and the running OpenAPI snapshot"}

@@ -1,1 +1,0 @@
-{"event": "signal-resolved", "generated_by": "orchestrator", "at": "2026-09-27T14:33:53+00:00", "story": "CWF-1", "detail": "S-0001-87f1: Resolved by host install (signal S-0002): pnpm-lock.yaml and node_modules exist, so continue implementing and run lint, typecheck, build and unit tests offline. Add a root package.json pnpm.onlyBuiltD"}

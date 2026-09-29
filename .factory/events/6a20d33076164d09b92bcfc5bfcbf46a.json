@@ -1,1 +1,0 @@
-{"event": "signal-host-exception", "generated_by": "implementer", "at": "2026-09-27T14:32:37+00:00", "story": "CWF-1", "detail": "Raised by the Claude coordinator: the implementer sandbox cannot reach the npm registry (EACCES) or Docker, so the coordinator runs the package install on the host to produce pnpm-lock.yaml and node_m"}
