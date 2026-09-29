@@ -1,0 +1,10 @@
+// Constitution naming: singular PascalCase models, camelCase fields, UUID ids,
+// and datetime fields suffixed with AtUtc. Domain tables belong to their task.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

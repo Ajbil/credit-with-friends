@@ -1,0 +1,9 @@
+{
+  "delta_id": "9ed01c7b28abc51ea7ad3bf2f6dc5622fc25e5bf0a484a1d61fe5ad74bc381e2",
+  "format": "forge-review-selection/v1",
+  "generation_id": "e08d926e2775ba3eb92aeef9b89162f28945029b0e7e70c78c7b0dcc60d8d3cc",
+  "generation_sha256": "403452659e99492d44054cedc19155bd5817b9f7759bffcfba5b442273a24bce",
+  "selected_at": "2026-09-28T11:15:54+00:00",
+  "story": "CWF-1",
+  "task_id": "T1-foundation"
+}

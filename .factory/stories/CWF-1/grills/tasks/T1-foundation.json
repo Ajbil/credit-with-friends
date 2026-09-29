@@ -304,12 +304,12 @@
     "Test-only probe controller in integration test code"
   ],
   "task_id": "T1-foundation",
-  "input_sha256": "cc32eb017e624a0c783f5065607d3d5ec52a1a4d3a98f9ce8ba0637b45729558",
-  "grounding_basis": "working-tree",
-  "grounding_treeish": "",
+  "input_sha256": "5feeb63ec6ff544e2a3f42709ed3edb0444a3f07edb3e5b66643c09f853b41dd",
+  "grounding_basis": "stage-baseline",
+  "grounding_treeish": "30ff03bc049d1131a81bc33e03de35f92ed7211a",
   "task_plan_sha256": "b4263686de4e6fd61892e491db81c464b42afed178b86edadba21577abe47eaf",
-  "recorded_at": "2026-09-27T09:20:19+00:00",
-  "commit": "933603fa7661b4934b5cf9ac609f975c781d8e6c",
+  "recorded_at": "2026-09-27T17:31:45+00:00",
+  "commit": "30ff03bc049d1131a81bc33e03de35f92ed7211a",
   "launch_id": "launch-da0557d55b49433681a86f5a931d8493",
   "cold_input_sha256": "b3a63ff4f799ca4e819005ca963863d51d64b72ba695b07de8528b3f5f49452e",
   "final_artifact_sha256": "3dd67c3a94546d79d4dcb6e7f8c1053e007664ac7f33d344a40c3ea3a6aa0696"

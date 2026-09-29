@@ -1,0 +1,1 @@
+{"event": "signal-resolved", "generated_by": "orchestrator", "at": "2026-09-27T14:58:46+00:00", "story": "CWF-1", "detail": "S-0004-af29: Done on the host: Prisma Client generated into node_modules; PostgreSQL 18 started via docker compose. Integration tests could not run yet because a native Windows PostgreSQL service already listens o"}

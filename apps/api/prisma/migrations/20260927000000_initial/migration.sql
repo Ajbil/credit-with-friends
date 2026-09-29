@@ -1,0 +1,1 @@
+-- Baseline migration; domain tables are added by their owning tasks.

@@ -1,0 +1,8 @@
+{
+  "task_id": "T1-foundation",
+  "branch": "feat/CWF-1-T1-foundation",
+  "base_main_sha": "30ff03bc049d1131a81bc33e03de35f92ed7211a",
+  "review_base_sha": "30ff03bc049d1131a81bc33e03de35f92ed7211a",
+  "commit": "a8b7a6be18a334c86d073b51d292bde99d601e0e",
+  "sealed_at": "2026-09-27T17:28:14+00:00"
+}

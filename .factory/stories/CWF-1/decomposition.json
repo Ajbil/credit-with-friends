@@ -171,7 +171,12 @@
           "statement": "CI on every pull request runs lint, typecheck, unit tests, integration tests against PostgreSQL 18, build, a production dependency audit that fails on high or critical advisories, and an OpenAPI diff check.",
           "source": "plans/active/CWF-1-sign-in-onboard-and-manage-profile.md#technical-approach"
         }
-      ]
+      ],
+      "review_budget": {
+        "max_changed_files": 45,
+        "max_changed_lines": 6300,
+        "reason": "Greenfield scaffold: the generated pnpm-lock.yaml alone is 5,089 added lines; hand-written code is about 1,022 lines across 37 files (config, error format, security, logging, Prisma, health, tests, CI). The overage is mechanical, not scope."
+      }
     },
     {
       "id": "T2-accounts-api",
@@ -237,5 +242,5 @@
     }
   ],
   "plan_sha256": "5e6382e575a5be35b0abf3d771ed11bbb0875d674fed2f6bf4fe0f14906b715f",
-  "commit": "933603fa7661b4934b5cf9ac609f975c781d8e6c"
+  "commit": "33ffb29d994c6b87196258ff82359550f993cd7d"
 }

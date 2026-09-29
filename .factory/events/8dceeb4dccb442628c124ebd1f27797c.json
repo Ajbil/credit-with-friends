@@ -1,0 +1,1 @@
+{"event": "signal-blocked", "generated_by": "implementer", "at": "2026-09-27T14:31:09+00:00", "detail": "Package registry access fails with EACCES and the offline pnpm cache lacks @nestjs/cli metadata, so pnpm-lock.yaml and executable dependency checks cannot be produced in this environment."}
