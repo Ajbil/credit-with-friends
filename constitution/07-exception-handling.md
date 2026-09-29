@@ -48,7 +48,7 @@ External errors must be mapped into **internal application error codes**, not le
 A global handler **MUST**:
 - Catch all uncaught exceptions
 - Log a structured error record including:
-  - `errorId`, `correlationId`, `environment`, `serviceName`, `module` . Refer to the [Logging Playbook](/2c577dd3e50c808487e3e3ca897b98a1?pvs=25). 
+  - `errorId`, `correlationId`, `environment`, `serviceName`, `module`
   - Sanitized stack trace (unless dev environment)
 - Return a standardized API error payload
 - Ensure no sensitive values leak to clients

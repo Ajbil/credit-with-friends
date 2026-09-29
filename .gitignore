@@ -57,6 +57,12 @@ pino-*.log
 .factory/scratchpad.md
 .worktrees/
 
+# gstack keeps reusable project notes; local session data stays out of git.
+.gstack/*
+!.gstack/projects/
+brain-cache/
+timeline.jsonl
 
-# transitional: machinery moved to factory/; on-disk copy only serves already-running sessions' hooks
+
+# Local agent files
 .agents/
