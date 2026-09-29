@@ -2,7 +2,13 @@
   "branch": "task/CWF-1-T1",
   "review": {
     "commit": "0b52df5739d5b076365434cfc83dfb920a7e8372",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": ".github/workflows/ci.yml:50 T1 shipped in merged PR #1 (14e428b): ci.yml on main runs lint, typecheck, test, integration on postgres:18-alpine (line 27), build, audit and openapi:check (lines 50-57); this task only lands the re-plan and T1's shipped record",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "The plan says this CI gate shipped, but the selected branch changes no workflow, workspace, or API files. It therefore does not deliver the required pull-request checks for lint, types, unit tests, PostgreSQL 18 integration tests, build, production dependency audit, and API description consistency. Add and verify those checks as part of this deliverable.",
