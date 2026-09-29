@@ -1,0 +1,7 @@
+{
+  "branch": "feat/CWF-1-T1-foundation",
+  "kind": "task",
+  "note": "Shipped before the move to Forge v1, in pull request 1 (merged 2026-09-29).",
+  "pr": 1,
+  "status": "merged"
+}
