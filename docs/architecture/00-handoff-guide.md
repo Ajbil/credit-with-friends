@@ -15,8 +15,8 @@ for shipping the confirmed specs safely, not for scale.
    rate limits, input validation, logging.
 4. `13-privacy-deletion-jobs.md` — visibility enforcement, account deletion
    transaction, usage events, the daily cleanup job.
-5. `90-constitution-deviations.md` — every deliberate departure from
-   `constitution/` and the `harness/nestjs-react` conventions, with reasons.
+5. `90-constitution-deviations.md` — deliberate departures from
+   `constitution/` and the current Forge guidance, with reasons.
 
 ## Binding inputs
 
