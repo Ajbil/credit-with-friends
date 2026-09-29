@@ -1,4 +1,5 @@
 {
+  "allow_large": "Owner allowed it: the 8 files are dead old-Forge scripts being deleted; the fix adds no code",
   "base": "ce7b9ffc7532d23ea40f5d6cf6bd8fe61f6b6798",
   "branch": "fix/finish-the-forge-v1-migration-cleanup-re",
   "done_when": ".gitignore again ignores .gstack/* except .gstack/projects/, plus brain-cache/ and timeline.jsonl, and .gitattributes again has '.gstack/**/*.jsonl merge=union'; no link in README, AGENTS.md, docs/ or constitution/ points at a file that does not exist (checked by a link scan); constitution/ is kept as the coding standards; the 8 old factory/ files are deleted and anything linking to them is repointed to the Forge v1 equivalent or the link removed; .forge-migrate/ is left untouched (the CWF-1 re-plan removes it); no product code under apps/ or packages/ changes",
