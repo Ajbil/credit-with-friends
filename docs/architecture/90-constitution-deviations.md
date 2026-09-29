@@ -2,8 +2,7 @@
 
 The constitution allows deliberate, stated deviations (`constitution/README.md`).
 These apply to this validation MVP and are backed by the accepted decision on
-MVP deviations. Everything not listed follows `constitution/` and, below it,
-`harness/nestjs-react/conventions/`.
+MVP deviations. Current guidance is in `constitution/` and `AGENTS.md`.
 
 | Standard | Deviation | Reason |
 |---|---|---|
