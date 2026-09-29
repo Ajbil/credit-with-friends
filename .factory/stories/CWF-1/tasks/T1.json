@@ -1,0 +1,83 @@
+{
+  "branch": "task/CWF-1-T1",
+  "review": {
+    "commit": "0b52df5739d5b076365434cfc83dfb920a7e8372",
+    "dismissals": [
+      {
+        "because": ".github/workflows/ci.yml:50 T1 shipped in merged PR #1 (14e428b): ci.yml on main runs lint, typecheck, test, integration on postgres:18-alpine (line 27), build, audit and openapi:check (lines 50-57); this task only lands the re-plan and T1's shipped record",
+        "finding": 1,
+        "from_base": false
+      },
+      {
+        "because": "apps/api/src/common/config/config.spec.ts:1 already on main, added in 33ffb29 by merged PR #1; T1 is recorded as shipped, not rebuilt",
+        "finding": 2,
+        "from_base": false
+      },
+      {
+        "because": "apps/api/src/common/logging/logging.spec.ts:1 already on main, added in 33ffb29 by merged PR #1; T1 is recorded as shipped, not rebuilt",
+        "finding": 3,
+        "from_base": false
+      },
+      {
+        "because": "apps/api/test/foundation.integration.spec.ts:1 already on main, added in 33ffb29 by merged PR #1 and run by ci.yml test:integration; T1 is recorded as shipped, not rebuilt",
+        "finding": 4,
+        "from_base": false
+      },
+      {
+        "because": "plans/CWF-1.md:1 Forge lands a story doc with its first merged task (task.py start), and T1 is that task; the owner approved this plan, so the story records belong on this branch",
+        "finding": 5,
+        "from_base": false
+      }
+    ],
+    "findings": [
+      {
+        "body": "The plan says this CI gate shipped, but the selected branch changes no workflow, workspace, or API files. It therefore does not deliver the required pull-request checks for lint, types, unit tests, PostgreSQL 18 integration tests, build, production dependency audit, and API description consistency. Add and verify those checks as part of this deliverable.",
+        "file": "plans/CWF-1.md",
+        "line": 57,
+        "priority": "P1",
+        "title": "Not done: Every change is checked automatically before it merges"
+      },
+      {
+        "body": "The T1 task names this as a required test, but the selected change does not add or modify it. Add a suite that runs in the repository test command and fails when configuration validation breaks.",
+        "file": "plans/CWF-1.md",
+        "line": 128,
+        "priority": "P1",
+        "title": "Not done: apps/api/src/common/config/config.spec.ts"
+      },
+      {
+        "body": "The T1 task names this as a required test, but the selected change does not add or modify it. Add a suite that runs in the repository test command and fails when the promised logging behavior breaks.",
+        "file": "plans/CWF-1.md",
+        "line": 128,
+        "priority": "P1",
+        "title": "Not done: apps/api/src/common/logging/logging.spec.ts"
+      },
+      {
+        "body": "The T1 task names this as a required integration test, but the selected change does not add or modify it. Add a test through the running API and PostgreSQL 18 that exercises the foundation behavior and runs in CI.",
+        "file": "plans/CWF-1.md",
+        "line": 128,
+        "priority": "P1",
+        "title": "Not done: apps/api/test/foundation.integration.spec.ts"
+      },
+      {
+        "body": "T1 permits changes only to the listed workspace, CI, and apps/api paths. This branch instead adds plans/CWF-1.md and .factory story records and deletes the replan document. These story-planning changes do not implement the T1 foundation and should be reviewed separately from it.",
+        "file": "plans/CWF-1.md",
+        "line": 1,
+        "priority": "P2",
+        "title": "Move story planning changes outside the foundation task"
+      }
+    ],
+    "status": "clean",
+    "tree": "a3fa95aedf18bef1b939c0d0a05c9893da95de7c968e14d4bcfcb3c0a3ed5408"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-09-29T19:08:42+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-09-29T19:10:27+00:00",
+      "step": "review"
+    }
+  ]
+}

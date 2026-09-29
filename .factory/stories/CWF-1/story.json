@@ -1,0 +1,28 @@
+{
+  "approval": {
+    "at": "2026-09-29T19:07:52+00:00",
+    "by": "human-via-Claude",
+    "event": "toolu_01S9VZ1YAfKT5NL5mJrpTd6q",
+    "hash": "67a848e6b7ae95abead25d28653f9ebc8c0428383b56a1fd2a6b30cbafddf624",
+    "runtime": "claude",
+    "session": "a63f68e8-a558-49cf-9fac-cfa8b0ff293c"
+  },
+  "doc": "plans/CWF-1.md",
+  "status": "approved",
+  "steps": [
+    {
+      "at": "2026-09-29T18:17:54+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-09-29T18:23:37+00:00",
+      "step": "read"
+    },
+    {
+      "at": "2026-09-29T19:07:52+00:00",
+      "step": "approved"
+    }
+  ],
+  "title": "Sign in, onboard and manage profile",
+  "touches": 1
+}
