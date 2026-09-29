@@ -22,6 +22,11 @@
         "because": "apps/api/test/foundation.integration.spec.ts:1 already on main, added in 33ffb29 by merged PR #1 and run by ci.yml test:integration; T1 is recorded as shipped, not rebuilt",
         "finding": 4,
         "from_base": false
+      },
+      {
+        "because": "plans/CWF-1.md:1 Forge lands a story doc with its first merged task (task.py start), and T1 is that task; the owner approved this plan, so the story records belong on this branch",
+        "finding": 5,
+        "from_base": false
       }
     ],
     "findings": [
