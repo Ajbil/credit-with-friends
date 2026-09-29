@@ -1,0 +1,1 @@
+{"event": "stage-reconciled", "generated_by": "orchestrator", "at": "2026-09-29T12:02:02+00:00", "story": "CWF-1", "detail": "T1-foundation re-adopted: PR merged manually; re-review blocked by review-bundle lockfile false positive (knacklabs/symphony-forge#470), so no marker-bound sealed upgrade could be recorded (trunk marker re-marked reconciled, no PR)"}
