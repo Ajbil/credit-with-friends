@@ -17,6 +17,11 @@
         "because": "apps/api/src/common/logging/logging.spec.ts:1 already on main, added in 33ffb29 by merged PR #1; T1 is recorded as shipped, not rebuilt",
         "finding": 3,
         "from_base": false
+      },
+      {
+        "because": "apps/api/test/foundation.integration.spec.ts:1 already on main, added in 33ffb29 by merged PR #1 and run by ci.yml test:integration; T1 is recorded as shipped, not rebuilt",
+        "finding": 4,
+        "from_base": false
       }
     ],
     "findings": [
@@ -56,10 +61,10 @@
         "title": "Move story planning changes outside the foundation task"
       }
     ],
-    "status": "blocked",
+    "status": "clean",
     "tree": "a3fa95aedf18bef1b939c0d0a05c9893da95de7c968e14d4bcfcb3c0a3ed5408"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-09-29T19:08:42+00:00",
