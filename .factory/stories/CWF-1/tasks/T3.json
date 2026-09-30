@@ -7,6 +7,11 @@
         "because": "apps/api/src/modules/accounts/accounts.service.ts:53 the owner decided on 2026-09-30, when asked this exact trade-off, to keep the contact address from deployment configuration as approved in Done-when 3; the version template is immutable and each consent saves the address shown; the address changes only by redeploy, so a read-then-accept straddling a change is not a real path",
         "finding": 1,
         "from_base": false
+      },
+      {
+        "because": "apps/api/prisma/migrations/20260930110000_privacy_notice_v1/migration.sql:18 publishing by migration is the approved design; the gate is this pull request, which merges only after the owner approves the text; the owner verified the backup periods against Render's docs on 2026-10-01 (decision 0017, accepted) and the text matches them",
+        "finding": 2,
+        "from_base": false
       }
     ],
     "findings": [
@@ -32,10 +37,10 @@
         "title": "Remove the unrelated Factory review record"
       }
     ],
-    "status": "blocked",
+    "status": "clean",
     "tree": "de1c0f7e50fb9a8b272c98137804c049685482bf646d1e00eb3c29d99dc547b4"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-09-30T09:58:42+00:00",
