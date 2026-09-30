@@ -1,46 +1,26 @@
 {
   "branch": "task/CWF-1-T3",
   "review": {
-    "commit": "703894ac752b51142a405cf0bfaa226477d9ef74",
-    "dismissals": [
-      {
-        "because": "apps/api/src/modules/accounts/accounts.service.ts:53 the owner chose (2026-09-30) to keep the contact address from deployment configuration, as approved in Done-when 3; the version template is immutable and each consent saves the address shown, which together reproduce exactly what each member accepted",
-        "finding": 1,
-        "from_base": false
-      }
-    ],
+    "commit": "2deec457164ba1166ec47a588aa1bd30d502cb60",
+    "dismissals": [],
     "findings": [
       {
-        "body": "Version 1 stores a contact-address placeholder, and this line substitutes the current configuration when serving it. Changing that configuration changes the text served for version 1 without publishing a new version. Consent records keep the address used at acceptance, but the version itself does not retain the complete text the member accepted.",
+        "body": "This renders version 1 with the current configured contact address on every request. Changing that address changes the text served for the same published version without creating a new version or requiring existing members to accept the changed text. Saving an address with each consent can reconstruct what a member accepted, but it does not retain one exact published text for the version. Publish a new version when the rendered text changes, or store the rendered text with the version.",
         "file": "apps/api/src/modules/accounts/accounts.service.ts",
         "line": 53,
         "priority": "P1",
-        "title": "Not done: retain each published notice's exact text"
+        "title": "Not done: retain each published notice version's exact text"
       },
       {
-        "body": "Adding a NOT NULL column without a default or backfill makes this migration fail if Consent already has rows. The branch's integration tests migrate an empty schema, so they do not exercise an upgrade with existing members.",
-        "file": "apps/api/prisma/migrations/20260930120000_consent_contact_email/migration.sql",
-        "line": 1,
-        "priority": "P1",
-        "title": "Backfill existing consents before requiring a contact email"
-      },
-      {
-        "body": "The branch adds the integration spec but no spec under either required module test path. Add meaningful behavior tests for the profile rules and notice acceptance rules in the specified locations.",
-        "file": "apps/api/src/modules/profile/profile.service.ts",
-        "line": 10,
-        "priority": "P1",
-        "title": "Not done: required profile and privacy-notice module specs"
-      },
-      {
-        "body": "This Factory review record is outside the allowed paths and is not needed to deliver the profile or privacy-notice API.",
+        "body": "This task status and prior review record is outside the allowed paths and is not needed to deliver the profile or privacy-notice API.",
         "file": ".factory/stories/CWF-1/tasks/T3.json",
         "line": 1,
         "priority": "P2",
-        "title": "Remove the out-of-scope task status file"
+        "title": "Remove the unrelated Factory review record"
       }
     ],
     "status": "blocked",
-    "tree": "65c242896ac7a079542bbdefa19317b935a07153cf64784e21d4f7aad6e1ea53"
+    "tree": "560bb3d1e9db392af394af01ef1ad56fb9c88f4a5ec0fbe2d11def41327c259f"
   },
   "status": "fixing",
   "steps": [
@@ -58,6 +38,10 @@
     },
     {
       "at": "2026-09-30T15:04:15+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T15:26:42+00:00",
       "step": "review"
     }
   ]
