@@ -1,34 +1,35 @@
 {
   "branch": "task/CWF-1-T3",
   "review": {
-    "commit": "2deec457164ba1166ec47a588aa1bd30d502cb60",
-    "dismissals": [
-      {
-        "because": "apps/api/src/modules/accounts/accounts.service.ts:53 the owner decided on 2026-09-30, when asked this exact trade-off, to keep the contact address from deployment configuration as approved in Done-when 3; the version template is immutable and each consent saves the address shown, reproducing exactly what each member accepted",
-        "finding": 1,
-        "from_base": false
-      }
-    ],
+    "commit": "ec07be8d031099fc76639a0961dde1d10c884268",
+    "dismissals": [],
     "findings": [
       {
-        "body": "This renders version 1 with the current configured contact address on every request. Changing that address changes the text served for the same published version without creating a new version or requiring existing members to accept the changed text. Saving an address with each consent can reconstruct what a member accepted, but it does not retain one exact published text for the version. Publish a new version when the rendered text changes, or store the rendered text with the version.",
+        "body": "The response renders the configured contact address into version 1 on every read. If that address changes, the same published version serves different text without a new version. The acceptance endpoint also records the address at acceptance time, which can differ from what the member just read. Store the rendered text with the published version, or publish a new version when its text changes.",
         "file": "apps/api/src/modules/accounts/accounts.service.ts",
         "line": 53,
         "priority": "P1",
-        "title": "Not done: retain each published notice version's exact text"
+        "title": "Not done: retain each notice version's exact published text"
       },
       {
-        "body": "This task status and prior review record is outside the allowed paths and is not needed to deliver the profile or privacy-notice API.",
+        "body": "The test helper signs in every member with `listed@example.in`. Consequently, the assertion on the second member's email still passes if the API accidentally returns the first member's email. Use distinct allowed emails and assert that each member receives only their own Google email.",
+        "file": "apps/api/test/profile-notice.integration.spec.ts",
+        "line": 42,
+        "priority": "P1",
+        "title": "Not done: test cross-member email isolation"
+      },
+      {
+        "body": "This new task and review record is outside the allowed paths and is not needed to deliver the profile or privacy-notice API.",
         "file": ".factory/stories/CWF-1/tasks/T3.json",
         "line": 1,
         "priority": "P2",
         "title": "Remove the unrelated Factory review record"
       }
     ],
-    "status": "clean",
-    "tree": "560bb3d1e9db392af394af01ef1ad56fb9c88f4a5ec0fbe2d11def41327c259f"
+    "status": "blocked",
+    "tree": "5e969fbf1a767afb7da65ee556ad720b76e5f8ac3f27a31c80ac3526f7e585c3"
   },
-  "status": "waiting for checks",
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-09-30T09:58:42+00:00",
@@ -48,6 +49,10 @@
     },
     {
       "at": "2026-09-30T15:26:42+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T19:39:31+00:00",
       "step": "review"
     }
   ]
