@@ -1,6 +1,6 @@
 ---
-status: proposed
-confirmed_by: ""
+status: accepted
+confirmed_by: "Arihant"
 date: 2026-10-01
 stories: [CWF-1]
 supersedes: ""
