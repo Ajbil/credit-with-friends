@@ -5,16 +5,22 @@ import { LoggerModule } from 'nestjs-pino';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ApiExceptionFilter } from './common/api/api-exception.filter';
 import { ApiResponseInterceptor } from './common/api/api-response.interceptor';
-import { ApiConfig, ApiConfigModule } from './common/config/config.module';
-import { PrismaService } from './common/database/prisma.service';
+import { ApiConfig, ApiConfigModule, TEST_AUTH_ROUTES_ENABLED } from './common/config/config.module';
+import { DatabaseModule } from './common/database/database.module';
 import { apiPinoOptions } from './common/logging/logging.config';
 import { RequestLoggingMiddleware } from './common/logging/request-logging.middleware';
 import { RequestForgeryGuard } from './common/security/request-forgery.guard';
 import { HealthModule } from './modules/health/health.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AccountsModule } from './modules/accounts/accounts.module';
+import { SessionsModule } from './modules/sessions/sessions.module';
+import { SessionGuard } from './modules/sessions/session.guard';
+import { TestAuthModule } from './modules/accounts/test-auth.module';
 
 @Module({
   imports: [
     ApiConfigModule,
+    DatabaseModule,
     LoggerModule.forRootAsync({
       imports: [ApiConfigModule],
       inject: [ConfigService],
@@ -26,11 +32,15 @@ import { HealthModule } from './modules/health/health.module';
       }),
     }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
+    ScheduleModule.forRoot(),
+    SessionsModule,
+    AccountsModule,
+    ...(TEST_AUTH_ROUTES_ENABLED ? [TestAuthModule] : []),
     HealthModule,
   ],
   providers: [
-    PrismaService,
     { provide: APP_GUARD, useClass: RequestForgeryGuard },
+    { provide: APP_GUARD, useClass: SessionGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
     { provide: APP_INTERCEPTOR, useClass: ApiResponseInterceptor },

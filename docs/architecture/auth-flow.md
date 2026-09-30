@@ -1,0 +1,13 @@
+# Sign-in and onboarding API
+
+The browser starts at `GET /api/v1/auth/google/start?returnTo=/path`. The API keeps a ten-minute signed, HttpOnly OAuth cookie with state, nonce, PKCE verifier and the relative return path, then redirects to Google. The Google callback verifies state, nonce, PKCE, the ID token subject and a verified email. An unknown Google ID is admitted only if `LAUNCH_OPEN=true` or its verified email is in `PRELAUNCH_ALLOWED_EMAILS`. A refused identity is never written; the callback sends the browser to `/not-open-yet`.
+
+The callback creates a 30-day idle session and redirects an existing member to the saved path. A new person goes to `/onboarding?returnTo=...`. The `cwf_session` cookie is HttpOnly, SameSite=Lax and Secure in production, scoped to `/api/v1`. PostgreSQL keeps only SHA-256 of its 32-byte random token. Each valid request refreshes both the browser cookie and database idle expiry. Missing or expired sessions get 401; a pending session can only read its sign-in and the published notice, submit onboarding, cancel, or sign out. Every other new API route is member-only by default.
+
+The web app reads `GET /api/v1/sign-ins` for the Google name, email and saved return path, and `GET /api/v1/privacy-notice` for the current published version. `POST /api/v1/onboarding` sends `displayName`, `whatsappNumber`, `isAdultConfirmed`, `isConsentGiven` and `privacyNoticeVersion`. The API checks the current published version, normalises the number with India as default country, and creates Member and Consent in one transaction. Pending sessions become member sessions in that transaction, then the pending identity is erased. A repeated submission returns the same member. The web app then navigates to the saved return path.
+
+`POST /api/v1/sign-ins/cancel` erases the pending identity and all its sessions. `POST /api/v1/sessions/sign-out` erases only the current session. The daily 03:00 Asia/Kolkata job deletes pending identities inactive for more than 30 days and expired sessions. The frontend sends credentials on API requests and `X-Requested-With: cwf` plus its exact `Origin` on mutations. It treats 401 as a prompt to sign in again.
+
+In local and CI only, `TEST_AUTH_ENABLED=true` adds `POST /api/v1/test-auth/sign-in` with `{googleAccountId, email, name, returnPath?}`. It enters the same admission and session path after the Google edge. The route is absent in production and excluded from OpenAPI.
+
+Version 1 cannot be accepted until its exact notice text is approved and published in `PrivacyNoticeVersion` by T3. This task creates the table and the consent transaction but ships no notice text.

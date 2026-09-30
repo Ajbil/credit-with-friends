@@ -18,6 +18,8 @@ export interface ApiConfig {
   webOrigin: string;
 }
 
+export const TEST_AUTH_ROUTES_ENABLED = process.env.NODE_ENV !== 'production' && process.env.TEST_AUTH_ENABLED === 'true';
+
 function required(env: Record<string, unknown>, name: string): string {
   const value = env[name];
   if (typeof value !== 'string' || value.trim() === '') {

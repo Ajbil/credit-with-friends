@@ -1,0 +1,51 @@
+{
+  "branch": "task/CWF-1-T2",
+  "review": {
+    "commit": "0fa14fe38ddd3d2d1587cc952b46bd56066e0bdf",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "If a second Google sign-in reads `member` before onboarding commits, its pending-sign-in upsert can wait until onboarding deletes that pending row, then create a new one. The second sign-in receives a pending session even though the member now exists. A later onboarding attempt for that session can hit the unique Google account constraint. Recheck for an existing member after this race before issuing a pending session.",
+        "file": "apps/api/src/modules/accounts/accounts.service.ts",
+        "line": 32,
+        "priority": "P2",
+        "title": "A concurrent sign-in can leave an existing member with a pending session"
+      },
+      {
+        "body": "Onboarding rejects every submission until a published notice exists. This branch creates the notice table but publishes no version; the integration test supplies one as a fixture. T3 must publish the approved text before a real pending sign-in can become a member.",
+        "file": "apps/api/src/modules/accounts/accounts.service.ts",
+        "line": 70,
+        "priority": "P2",
+        "title": "Later: T3 must publish a privacy notice before onboarding can complete"
+      },
+      {
+        "body": "The branch adds `.factory/stories/CWF-1/tasks/T2.json` outside the permitted paths. This review and task-status record is not needed to deliver the sign-in API, contract, auth-flow document, or account-setup checklist.",
+        "file": ".factory/stories/CWF-1/tasks/T2.json",
+        "line": 2,
+        "priority": "P2",
+        "title": "Remove the unrelated task-state file"
+      }
+    ],
+    "status": "clean",
+    "tree": "481324f65e6051f63a5701976ceed15e91f2e593e0bc4194ee1229b9978f0f1c"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-09-29T19:18:30+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-09-29T19:46:41+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-29T19:57:04+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-29T20:02:34+00:00",
+      "step": "review"
+    }
+  ]
+}
