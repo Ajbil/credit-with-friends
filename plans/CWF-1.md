@@ -110,7 +110,7 @@ in decision 0015, the pre-launch list in decision 0016, and the stack in decisio
 - **Privacy notice versions** are published by a database migration. A material-change version
   blocks every member route except reading and accepting the notice and signing out. Version 1
   states that data is stored in Singapore and gives the backup periods: 3-day point-in-time
-  restore and 7-day daily backups.
+  restore, and 7 days for any manual copy (no automatic daily backups; decision 0017).
 - **Owner ID:** the API starts without it. You sign in, copy your ID from the profile, and set it
   before any circle exists.
 - **Web app:** built with TanStack Router and Query, Tailwind and shadcn/ui, and an orval client
