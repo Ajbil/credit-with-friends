@@ -2,7 +2,13 @@
   "branch": "task/CWF-1-T4",
   "review": {
     "commit": "fae35420b6c41b913da19c1a2b56124956249371",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": "apps/api/test/accounts.integration.spec.ts:167 (merged T2) proves simultaneous onboarding creates one member (Promise.all) and a changed-email sign-in opens the same member; :187 proves the real Google start and callback, including a returning account with a new email (:213); the coordinator assigned these to T2's API tests, and T4's browser tests use the test sign-in route that exists for this and cover the screens",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "This browser test starts with the test-auth endpoint and covers one successful onboarding submission. It does not exercise the Google callback, repeat sign-in after a Google email change, or two simultaneous onboarding submissions. Those required account identity and exactly-once behaviors have no end-to-end proof through the real sign-in entry point.",
