@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { PrismaClient } from '@prisma/client';
 
 test('done-when-2: an unlisted person sees Not open yet and a pending person can remove sign-in', async ({ page }) => {
   await page.goto('/?returnTo=/circles/join/example');
@@ -27,4 +28,10 @@ test('done-when-2: an unlisted person sees Not open yet and a pending person can
   await expect(page.getByRole('link', { name: 'Continue with Google' })).toBeVisible();
   const pending = await page.request.get('http://localhost:3104/api/v1/sign-ins');
   expect(pending.status()).toBe(401);
+  const db = new PrismaClient({ datasources: { db: { url: process.env.CWF_WEB_TEST_DATABASE_URL } } });
+  try {
+    expect(await db.pendingSignIn.count({ where: { googleAccountId: 'web-pending-cancel' } })).toBe(0);
+  } finally {
+    await db.$disconnect();
+  }
 });

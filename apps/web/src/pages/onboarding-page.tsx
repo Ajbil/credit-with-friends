@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { accountsControllerCancel, accountsControllerNotice, accountsControllerOnboard, accountsControllerPending } from '../api/generated';
 import { ApiError } from '../api/fetcher';
 import { Button } from '../components/ui/button';
@@ -21,8 +22,17 @@ export function OnboardingPage() {
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setFieldErrors({});
     if (!notice.data) return;
+    const trimmedName = name.trim();
+    const phone = parsePhoneNumberFromString(whatsappNumber, 'IN');
+    const errors = {
+      ...(!trimmedName || trimmedName.length > 50 ? { displayName: 'Use 1 to 50 characters.' } : {}),
+      ...(!phone?.isValid() ? { whatsappNumber: 'Enter a valid phone number with a country code.' } : {}),
+      ...(!isAdultConfirmed ? { isAdultConfirmed: 'Confirm you are 18 or older.' } : {}),
+      ...(!isConsentGiven ? { isConsentGiven: 'Accept the privacy notice to continue.' } : {}),
+    };
+    setFieldErrors(errors);
+    if (Object.keys(errors).length) return;
     onboard.mutate({ displayName: name, whatsappNumber, isAdultConfirmed, isConsentGiven, privacyNoticeVersion: notice.data.version });
   }
 
@@ -31,7 +41,7 @@ export function OnboardingPage() {
   if (pending.isError) return <PageFrame><section className="narrow-page"><h1>We couldn't load your sign-in</h1><p>Please try again.</p><Button onClick={() => pending.refetch()}>Try again</Button></section></PageFrame>;
 
   return <PageFrame><section className="onboarding-layout"><div className="intro"><h1>Finish your account</h1><p>One quick step before you can connect with your circle.</p><p className="signed-in-as">Signed in as <strong>{pending.data.email}</strong></p></div><form className="onboarding-form" onSubmit={submit} noValidate>
-    <label htmlFor="display-name">Name</label><p className="field-help">Use the name your friends know.</p><input id="display-name" autoComplete="name" value={name} onChange={(event) => setDisplayName(event.target.value)} maxLength={50} required aria-invalid={!!fieldErrors.displayName} aria-describedby={fieldErrors.displayName ? 'name-error' : undefined}/>{fieldErrors.displayName && <p id="name-error" className="field-error">{fieldErrors.displayName}</p>}
+    <label htmlFor="display-name">Name</label><p className="field-help">Use the name your friends know.</p><input id="display-name" autoComplete="name" value={name} onChange={(event) => setDisplayName(event.target.value)} required aria-invalid={!!fieldErrors.displayName} aria-describedby={fieldErrors.displayName ? 'name-error' : undefined}/>{fieldErrors.displayName && <p id="name-error" className="field-error">{fieldErrors.displayName}</p>}
     <label htmlFor="whatsapp">WhatsApp number</label><p className="field-help">Include a country code. India starts with +91.</p><input id="whatsapp" type="tel" autoComplete="tel" inputMode="tel" value={whatsappNumber} onChange={(event) => setWhatsappNumber(event.target.value)} required aria-invalid={!!fieldErrors.whatsappNumber} aria-describedby={fieldErrors.whatsappNumber ? 'phone-error' : undefined}/>{fieldErrors.whatsappNumber && <p id="phone-error" className="field-error">{fieldErrors.whatsappNumber}</p>}
     <label className="check-row"><input type="checkbox" checked={isAdultConfirmed} onChange={(event) => setAdult(event.target.checked)}/><span>I confirm I am 18 or older.</span></label>{fieldErrors.isAdultConfirmed && <p className="field-error">{fieldErrors.isAdultConfirmed}</p>}
     <section className="privacy-section" aria-labelledby="privacy-heading"><h2 id="privacy-heading">Your privacy</h2>{notice.isPending ? <p role="status">Loading the privacy notice…</p> : notice.isError ? <p role="alert" className="notice-error">The privacy notice is not available yet. Please try again later.</p> : <><div className="notice-text">{notice.data?.text}</div><label className="check-row"><input type="checkbox" checked={isConsentGiven} onChange={(event) => setConsent(event.target.checked)}/><span>I agree to the privacy notice.</span></label>{fieldErrors.isConsentGiven && <p className="field-error">{fieldErrors.isConsentGiven}</p>}</>}</section>

@@ -23,8 +23,23 @@ test('done-when-1: onboarding creates a member only after explicit consent', asy
   }
   await page.reload();
   await expect(page.getByText('Test privacy notice for browser onboarding.')).toBeVisible();
-  await page.getByLabel('Name').fill('  Listed Person  ');
-  await page.getByLabel('WhatsApp number').fill('9876543210');
+  const name = page.getByLabel('Name');
+  const phone = page.getByLabel('WhatsApp number');
+  await name.fill('');
+  await phone.fill('+447911123456');
+  await page.getByRole('button', { name: 'Create my account' }).click();
+  await expect(page.getByText('Use 1 to 50 characters.')).toBeVisible();
+  expect((await page.request.get('http://localhost:3104/api/v1/members/me')).status()).toBe(403);
+  await name.fill('x'.repeat(51));
+  await page.getByRole('button', { name: 'Create my account' }).click();
+  await expect(page.getByText('Use 1 to 50 characters.')).toBeVisible();
+  expect((await page.request.get('http://localhost:3104/api/v1/members/me')).status()).toBe(403);
+  await name.fill('  Listed Person  ');
+  await phone.fill('12');
+  await page.getByRole('button', { name: 'Create my account' }).click();
+  await expect(page.getByText('Enter a valid phone number with a country code.')).toBeVisible();
+  expect((await page.request.get('http://localhost:3104/api/v1/members/me')).status()).toBe(403);
+  await phone.fill('+447911123456');
   await page.getByRole('button', { name: 'Create my account' }).click();
   await expect(page.getByText('Confirm you are 18 or older.')).toBeVisible();
   await expect(page.getByText('Accept the privacy notice to continue.')).toBeVisible();
@@ -38,5 +53,5 @@ test('done-when-1: onboarding creates a member only after explicit consent', asy
   await expect(page.getByText('Your account is ready.')).toBeVisible();
   const profile = await page.request.get('http://localhost:3104/api/v1/members/me');
   expect(profile.ok()).toBeTruthy();
-  expect((await profile.json()).data).toMatchObject({ displayName: 'Listed Person', whatsappE164: '+919876543210' });
+  expect((await profile.json()).data).toMatchObject({ displayName: 'Listed Person', whatsappE164: '+447911123456' });
 });

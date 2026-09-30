@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 export default async function teardown(): Promise<void> {
   const schema = process.env.CWF_WEB_TEST_SCHEMA;
@@ -10,5 +12,8 @@ export default async function teardown(): Promise<void> {
     await db.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
   } finally {
     await db.$disconnect();
+    if (process.env.CWF_WEB_TEST_COMPOSE === 'true') {
+      execFileSync('docker', ['compose', '-p', 'cwf-web-tests', '-f', 'docker-compose.yml', 'down', '--volumes'], { cwd: fileURLToPath(new URL('../../../', import.meta.url)) });
+    }
   }
 }
