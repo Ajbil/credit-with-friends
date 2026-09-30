@@ -2,7 +2,13 @@
   "branch": "task/CWF-1-T3",
   "review": {
     "commit": "b5f2c48a4d2954d039e552e958573dd9fda5bd3e",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": "apps/api/prisma/migrations/20260930110000_privacy_notice_v1/migration.sql:18 publishing by migration is the approved design (plan: 'Privacy notice versions are published by a database migration'); the approval gate is this pull request, which the plan's Risks say can't merge until the owner approves the exact text and checks the backup periods, so deploy only ever happens after approval",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "The migration sets `publishedAtUtc` immediately. Deploying it makes version 1 live without a step that waits for approval of the exact text or verification of the stated backup periods against the purchased hosting plan. Keep the version unpublished until those checks are complete.",
