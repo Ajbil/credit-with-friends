@@ -39,8 +39,8 @@ async function call(path: string, method = 'GET', cookie = '', body?: unknown) {
   return { response, payload: await response.json() };
 }
 
-async function member(sub: string) {
-  const signIn = await call('/test-auth/sign-in', 'POST', '', { googleAccountId: sub, email: 'listed@example.in', name: 'Initial Name' });
+async function member(sub: string, email = 'listed@example.in') {
+  const signIn = await call('/test-auth/sign-in', 'POST', '', { googleAccountId: sub, email, name: 'Initial Name' });
   const cookie = signIn.response.headers.get('set-cookie')?.split(';')[0] ?? '';
   const onboard = await call('/onboarding', 'POST', cookie, { displayName: 'Initial Name', whatsappNumber: '9876543210', isAdultConfirmed: true, isConsentGiven: true, privacyNoticeVersion: 1 });
   expect(onboard.response.status).toBe(200);
@@ -89,7 +89,7 @@ describe('profile and privacy notice API', () => {
     vi.stubEnv('DATABASE_URL', databaseUrl.toString());
     vi.stubEnv('OWNER_CONTACT_EMAIL', 'owner@example.in');
     vi.stubEnv('SESSION_SECRET', 'integration-test-secret-with-enough-entropy');
-    vi.stubEnv('PRELAUNCH_ALLOWED_EMAILS', 'listed@example.in');
+    vi.stubEnv('PRELAUNCH_ALLOWED_EMAILS', 'listed@example.in,other@example.in');
     vi.stubEnv('LAUNCH_OPEN', 'false');
     vi.stubEnv('TEST_AUTH_ENABLED', 'true');
     vi.stubEnv('NODE_ENV', 'test');
@@ -132,7 +132,7 @@ describe('profile and privacy notice API', () => {
     // The published template is immutable; the configured address appears only in the served text.
     expect((await db.privacyNoticeVersion.findUniqueOrThrow({ where: { version: 1 } })).text).toBe(publishedVersionOneText);
     expect(publishedVersionOneText).toContain('{{OWNER_CONTACT_EMAIL}}');
-    const another = await member('profile-other');
+    const another = await member('profile-other', 'other@example.in');
     const original = (await call('/members/me', 'GET', cookie)).payload.data;
     expect(original).toMatchObject({ googleEmail: 'listed@example.in', googleAccountId: 'profile-owner' });
     for (const { body, reason } of [
@@ -151,7 +151,10 @@ describe('profile and privacy notice API', () => {
     expect(changed.response.status).toBe(200);
     expect(changed.payload.data).toMatchObject({ displayName: 'New Name', whatsappE164: '+447911123456', googleAccountId: 'profile-owner' });
     expect((await call('/members/me', 'GET', another)).payload.data.googleAccountId).toBe('profile-other');
-    expect((await call('/members/me', 'GET', another)).payload.data.googleEmail).toBe('listed@example.in');
+    expect((await call('/members/me', 'GET', another)).payload.data.googleEmail).toBe('other@example.in');
+    const ownerView = JSON.stringify((await call('/members/me', 'GET', cookie)).payload);
+    expect(ownerView).not.toContain('other@example.in');
+    expect(ownerView).not.toContain('profile-other');
   });
 
   test('done-when-3: a material notice requires explicit acceptance before member access', async () => {
