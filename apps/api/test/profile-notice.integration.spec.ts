@@ -1,7 +1,8 @@
 import 'reflect-metadata';
 import { randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { copyFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync } from 'node:fs';
+import { join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AddressInfo } from 'node:net';
 import { PrismaClient } from '@prisma/client';
@@ -47,6 +48,41 @@ async function member(sub: string) {
 }
 
 describe('profile and privacy notice API', () => {
+  test('done-when-3: an existing consent survives the contact address migration', async () => {
+    const prismaDirectory = fileURLToPath(new URL('../prisma/', import.meta.url));
+    const temporaryDirectory = mkdtempSync(join(prismaDirectory, '.consent-upgrade-'));
+    const upgradeSchema = `cwf_consent_upgrade_${randomUUID().replace(/-/g, '')}`;
+    const upgradeUrl = new URL(baseDatabaseUrl);
+    upgradeUrl.searchParams.set('schema', upgradeSchema);
+    const migrationDirectory = join(temporaryDirectory, 'migrations');
+    const migrate = () => execFileSync(process.execPath, [fileURLToPath(new URL('../node_modules/prisma/build/index.js', import.meta.url)), 'migrate', 'deploy', '--schema', join(temporaryDirectory, 'schema.prisma')], {
+      cwd: fileURLToPath(new URL('../', import.meta.url)), env: { ...process.env, DATABASE_URL: upgradeUrl.toString() },
+    });
+    const previousMigrations = ['20260927000000_initial', '20260930000000_accounts', '20260930110000_privacy_notice_v1'];
+    const oldDb = new PrismaClient({ datasources: { db: { url: upgradeUrl.toString() } } });
+    try {
+      mkdirSync(migrationDirectory);
+      copyFileSync(join(prismaDirectory, 'schema.prisma'), join(temporaryDirectory, 'schema.prisma'));
+      copyFileSync(join(prismaDirectory, 'migrations', 'migration_lock.toml'), join(migrationDirectory, 'migration_lock.toml'));
+      for (const name of previousMigrations) cpSync(join(prismaDirectory, 'migrations', name), join(migrationDirectory, name), { recursive: true });
+      migrate();
+      const member = await oldDb.member.create({ data: { googleAccountId: 'old-consent', googleEmail: 'old@example.in', displayName: 'Old Member', whatsappE164: '+919876543210', isAdultConfirmed: true } });
+      const notice = await oldDb.privacyNoticeVersion.findUniqueOrThrow({ where: { version: 1 } });
+      await oldDb.$executeRaw`INSERT INTO "Consent" ("memberId", "privacyNoticeVersionId", "updatedAtUtc") VALUES (${member.id}::uuid, ${notice.id}::uuid, CURRENT_TIMESTAMP)`;
+      cpSync(join(prismaDirectory, 'migrations', '20260930120000_consent_contact_email'), join(migrationDirectory, '20260930120000_consent_contact_email'), { recursive: true });
+      migrate();
+      const consent = await oldDb.consent.findFirstOrThrow({ where: { memberId: member.id } });
+      expect(consent.contactEmail).toBe('unknown@example.invalid');
+      expect(consent.privacyNoticeVersionId).toBe(notice.id);
+    } finally {
+      await oldDb.$disconnect();
+      const admin = new PrismaClient({ datasources: { db: { url: baseDatabaseUrl } } });
+      await admin.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${upgradeSchema}" CASCADE`);
+      await admin.$disconnect();
+      if (realpathSync(temporaryDirectory).startsWith(realpathSync(prismaDirectory) + sep)) rmSync(temporaryDirectory, { recursive: true, force: true });
+    }
+  }, 30_000);
+
   beforeAll(async () => {
     vi.stubEnv('API_ORIGIN', 'http://localhost:3000');
     vi.stubEnv('WEB_ORIGIN', origin);
