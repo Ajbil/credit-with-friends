@@ -7,6 +7,11 @@
         "because": "apps/api/test/accounts.integration.spec.ts:167 (merged T2) proves simultaneous onboarding creates one member (Promise.all) and a changed-email sign-in opens the same member; :187 proves the real Google start and callback, including a returning account with a new email (:213); the coordinator assigned these to T2's API tests, and T4's browser tests use the test sign-in route that exists for this and cover the screens",
         "finding": 1,
         "from_base": false
+      },
+      {
+        "because": "apps/api/test/accounts.integration.spec.ts:187 (merged T2) proves the Google callback refuses outsiders and keeps the return path; :238 proves prelaunch denial stores nothing and cancel and 30-day inactivity erase pending sign-ins; T4's browser test checks the Not open yet screen and that cancel removes the pending row",
+        "finding": 2,
+        "from_base": false
       }
     ],
     "findings": [
@@ -32,10 +37,10 @@
         "title": "Remove the out-of-scope task status file"
       }
     ],
-    "status": "blocked",
+    "status": "clean",
     "tree": "2899b4e6dbbfc16244a0bb728be51f94f9a5d5383629fcdcf5500517fa7e4049"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-09-30T09:58:50+00:00",
