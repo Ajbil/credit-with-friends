@@ -84,7 +84,7 @@ export class AccountsService {
           googleAccountId: pending.googleAccountId, googleEmail: pending.googleEmail,
           displayName, whatsappE164: phone!.number, isAdultConfirmed: true,
         } });
-        await tx.consent.create({ data: { memberId: created.id, privacyNoticeVersionId: notice.id } });
+        await tx.consent.create({ data: { memberId: created.id, privacyNoticeVersionId: notice.id, contactEmail: this.config.getOrThrow('ownerContactEmail') } });
         await tx.session.updateMany({ where: { pendingSignInId: pending.id }, data: { pendingSignInId: null, memberId: created.id } });
         await tx.pendingSignIn.delete({ where: { id: pending.id } });
         return created;

@@ -1,0 +1,1 @@
+ALTER TABLE "Consent" ADD COLUMN "contactEmail" TEXT NOT NULL;

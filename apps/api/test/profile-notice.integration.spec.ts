@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { AddressInfo } from 'node:net';
 import { PrismaClient } from '@prisma/client';
@@ -11,6 +12,7 @@ import { ApiConfig } from '../src/common/config/config.module';
 import { PrismaService } from '../src/common/database/prisma.service';
 
 const origin = 'http://localhost:4173';
+const expectedVersionOneText = readFileSync(fileURLToPath(new URL('../prisma/privacy-notice-v1.expected.txt', import.meta.url)), 'utf8');
 const baseDatabaseUrl = process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5433/credit_with_friends';
 const schemaName = `cwf_profile_test_${randomUUID().replace(/-/g, '')}`;
 const databaseUrl = new URL(baseDatabaseUrl);
@@ -60,6 +62,7 @@ describe('profile and privacy notice API', () => {
     });
     const beforeBoot = new PrismaClient({ datasources: { db: { url: databaseUrl.toString() } } });
     publishedVersionOneText = (await beforeBoot.privacyNoticeVersion.findUniqueOrThrow({ where: { version: 1 }, select: { text: true } })).text;
+    expect(publishedVersionOneText).toBe(expectedVersionOneText);
     await beforeBoot.$disconnect();
     app = await start();
     db = app.get(PrismaService);
@@ -85,7 +88,7 @@ describe('profile and privacy notice API', () => {
     expect(notice.response.status).toBe(401);
     const cookie = await member('profile-owner');
     const currentNotice = await call('/privacy-notice', 'GET', cookie);
-    expect(currentNotice.payload.data).toMatchObject({ version: 1, text: expect.stringContaining('owner@example.in') });
+    expect(currentNotice.payload.data).toEqual({ version: 1, text: expectedVersionOneText.replaceAll('{{OWNER_CONTACT_EMAIL}}', 'owner@example.in') });
     expect(currentNotice.payload.data.text).toContain('3 days for point-in-time restore and 7 days for daily backups');
     expect(currentNotice.payload.data.text).toContain('stored in Singapore');
     expect(currentNotice.payload.data.text).not.toContain('{{OWNER_CONTACT_EMAIL}}');
@@ -118,6 +121,7 @@ describe('profile and privacy notice API', () => {
     const cookie = await member('notice-owner');
     const versionOneConsent = await db.consent.findFirstOrThrow({ where: { member: { googleAccountId: 'notice-owner' }, privacyNoticeVersion: { version: 1 } }, include: { privacyNoticeVersion: true } });
     expect(versionOneConsent.privacyNoticeVersion.text).toBe(publishedVersionOneText);
+    expect(versionOneConsent.contactEmail).toBe('owner@example.in');
     await db.privacyNoticeVersion.create({ data: { version: 2, text: 'Material change notice', isMaterialChange: true, publishedAtUtc: new Date() } });
     const blocked = await call('/members/me', 'GET', cookie);
     expect(blocked.response.status).toBe(403);
@@ -132,10 +136,32 @@ describe('profile and privacy notice API', () => {
     expect(accepted.payload.data).toMatchObject({ version: 2, acceptedAtUtc: expect.any(String) });
     expect((await call('/members/me', 'GET', cookie)).response.status).toBe(200);
     expect(await db.consent.count({ where: { member: { googleAccountId: 'notice-owner' } } })).toBe(2);
+    expect((await db.consent.findFirstOrThrow({ where: { member: { googleAccountId: 'notice-owner' }, privacyNoticeVersion: { version: 2 } } })).contactEmail).toBe('owner@example.in');
     const retainedConsent = await db.consent.findUniqueOrThrow({ where: { id: versionOneConsent.id }, include: { privacyNoticeVersion: true } });
     expect(retainedConsent).toEqual(versionOneConsent);
     expect(retainedConsent.privacyNoticeVersion.text).toBe(publishedVersionOneText);
     await db.privacyNoticeVersion.create({ data: { version: 3, text: 'Wording only change', isMaterialChange: false, publishedAtUtc: new Date() } });
     expect((await call('/members/me', 'GET', cookie)).response.status).toBe(200);
+  });
+
+  test('done-when-3: changing the contact address preserves earlier consent and notice text', async () => {
+    const cookie = await member('contact-change-owner');
+    const original = await db.consent.findFirstOrThrow({ where: { member: { googleAccountId: 'contact-change-owner' }, privacyNoticeVersion: { version: 1 } } });
+    expect(original.contactEmail).toBe('owner@example.in');
+    const config = app.get(ConfigService<ApiConfig, true>);
+    config.set('ownerContactEmail', 'updated@example.in');
+    try {
+      const served = await call('/privacy-notice', 'GET', cookie);
+      expect(served.payload.data.text).toBe(expectedVersionOneText.replaceAll('{{OWNER_CONTACT_EMAIL}}', 'updated@example.in'));
+      expect(await db.consent.findUniqueOrThrow({ where: { id: original.id } })).toEqual(original);
+      expect((await db.privacyNoticeVersion.findUniqueOrThrow({ where: { version: 1 } })).text).toBe(expectedVersionOneText);
+      await db.privacyNoticeVersion.create({ data: { version: 2, text: 'New purpose. Contact {{OWNER_CONTACT_EMAIL}}.', isMaterialChange: true, publishedAtUtc: new Date() } });
+      expect((await call('/privacy-notice', 'GET', cookie)).payload.data.text).toBe('New purpose. Contact updated@example.in.');
+      expect((await call('/privacy-notice/accept', 'POST', cookie, { version: 2, isConsentGiven: true })).response.status).toBe(200);
+      expect((await db.consent.findFirstOrThrow({ where: { member: { googleAccountId: 'contact-change-owner' }, privacyNoticeVersion: { version: 2 } } })).contactEmail).toBe('updated@example.in');
+      expect(await db.consent.findUniqueOrThrow({ where: { id: original.id } })).toEqual(original);
+    } finally {
+      config.set('ownerContactEmail', 'owner@example.in');
+    }
   });
 });
