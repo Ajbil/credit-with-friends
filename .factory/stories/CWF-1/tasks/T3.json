@@ -2,7 +2,13 @@
   "branch": "task/CWF-1-T3",
   "review": {
     "commit": "cf2789a098d56db7c41d58e9e3a080cf4aae9679",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": "apps/api/src/modules/accounts/accounts.service.ts:53 the owner decided on 2026-09-30, when asked this exact trade-off, to keep the contact address from deployment configuration as approved in Done-when 3; the version template is immutable and each consent saves the address shown; the address changes only by redeploy, so a read-then-accept straddling a change is not a real path",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "The API renders the configured contact address into version 1 on every read. Changing that address changes the text served under the same version, without publication of a new version or re-acceptance. The address saved on consent can also differ from the text the member read if configuration changes between reading and accepting. Store the fully rendered text as the published version.",
