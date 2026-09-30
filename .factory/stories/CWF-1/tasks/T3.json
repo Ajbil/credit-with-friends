@@ -1,45 +1,25 @@
 {
   "branch": "task/CWF-1-T3",
   "review": {
-    "commit": "b5f2c48a4d2954d039e552e958573dd9fda5bd3e",
-    "dismissals": [
-      {
-        "because": "apps/api/prisma/migrations/20260930110000_privacy_notice_v1/migration.sql:18 publishing by migration is the approved design (plan: 'Privacy notice versions are published by a database migration'); the approval gate is this pull request, which the plan's Risks say can't merge until the owner approves the exact text and checks the backup periods, so deploy only ever happens after approval",
-        "finding": 1,
-        "from_base": false
-      }
-    ],
+    "commit": "86ee4f268207febeb856017dade2e193b201a5de",
+    "dismissals": [],
     "findings": [
       {
-        "body": "The migration sets `publishedAtUtc` immediately. Deploying it makes version 1 live without a step that waits for approval of the exact text or verification of the stated backup periods against the purchased hosting plan. Keep the version unpublished until those checks are complete.",
-        "file": "apps/api/prisma/migrations/20260930110000_privacy_notice_v1/migration.sql",
-        "line": 18,
-        "priority": "P1",
-        "title": "Not done: publish the notice only after approval and backup verification"
-      },
-      {
-        "body": "Version 1 is published by the migration with a contact placeholder, then startup replaces its text in the same published row. That changes the text associated with version 1 after publication while consent records refer only to the version. During a rolling deployment, an existing API instance could also serve the placeholder before the replacement. Resolve the contact address before publishing an immutable version.",
-        "file": "apps/api/src/modules/privacy-notice/privacy-notice.service.ts",
-        "line": 14,
+        "body": "Version 1 stores a contact-address placeholder, and this line substitutes the deployment address when the notice is read. Changing that configuration changes the text served for the same version, while consent records still identify only the version. Store the complete text that members actually accept as an immutable version.",
+        "file": "apps/api/src/modules/accounts/accounts.service.ts",
+        "line": 53,
         "priority": "P1",
         "title": "Not done: retain each published notice's exact text"
       },
       {
-        "body": "The test compares the current API text with the current database row and checks a few phrases, but never checks that version 1's complete text remains unchanged after version 2 is published and accepted. Mutating an older version would leave these assertions passing. Add an integration assertion against the expected complete archived text and its consent record.",
+        "body": "The test takes its expected text from the migrated database row, then checks only a few phrases in the served notice. Removing a required paragraph from the migration would leave those assertions passing. The integration test needs an independent expectation for the complete approved text.",
         "file": "apps/api/test/profile-notice.integration.spec.ts",
-        "line": 120,
+        "line": 67,
         "priority": "P1",
-        "title": "Not done: test retention of each notice version's exact text"
+        "title": "Not done: test version 1's complete notice text"
       },
       {
-        "body": "The invalid-edit loop asserts the status, field name and unchanged profile, but does not assert a message or validation reason. Removing the explanatory message would leave this test passing despite the stated requirement. Assert the returned message or field reason for each invalid value.",
-        "file": "apps/api/test/profile-notice.integration.spec.ts",
-        "line": 95,
-        "priority": "P1",
-        "title": "Not done: test the message for an invalid profile edit"
-      },
-      {
-        "body": "This new Factory status record is outside the allowed paths and does not contribute to the profile or privacy-notice API. Leave it out of this branch.",
+        "body": "This Factory status record is outside the allowed paths and is not needed to deliver the profile or privacy-notice API.",
         "file": ".factory/stories/CWF-1/tasks/T3.json",
         "line": 1,
         "priority": "P2",
@@ -47,7 +27,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "c8967ec958ce300883565800a6fe28fff545562c677b53c9f294f03106ca1f16"
+    "tree": "38ff9baf0e44098b1b7c3171c7d555cc7836b965c8a74fefd8f3e791ac1f294f"
   },
   "status": "fixing",
   "steps": [
@@ -57,6 +37,10 @@
     },
     {
       "at": "2026-09-30T10:31:49+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T10:47:29+00:00",
       "step": "review"
     }
   ]
