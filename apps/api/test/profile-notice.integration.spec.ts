@@ -18,6 +18,7 @@ databaseUrl.searchParams.set('schema', schemaName);
 let app: Awaited<ReturnType<typeof start>>;
 let db: PrismaService;
 let url: string;
+let publishedVersionOneText: string;
 
 async function start() {
   const [{ AppModule }, { configureApi }] = await Promise.all([import('../src/app.module'), import('../src/common/api/api.config')]);
@@ -57,6 +58,9 @@ describe('profile and privacy notice API', () => {
     execFileSync(process.execPath, [fileURLToPath(new URL('../node_modules/prisma/build/index.js', import.meta.url)), 'migrate', 'deploy'], {
       cwd: fileURLToPath(new URL('../', import.meta.url)), env: { ...process.env, DATABASE_URL: databaseUrl.toString() },
     });
+    const beforeBoot = new PrismaClient({ datasources: { db: { url: databaseUrl.toString() } } });
+    publishedVersionOneText = (await beforeBoot.privacyNoticeVersion.findUniqueOrThrow({ where: { version: 1 }, select: { text: true } })).text;
+    await beforeBoot.$disconnect();
     app = await start();
     db = app.get(PrismaService);
     url = `http://127.0.0.1:${(app.getHttpServer().address() as AddressInfo).port}`;
@@ -85,14 +89,22 @@ describe('profile and privacy notice API', () => {
     expect(currentNotice.payload.data.text).toContain('3 days for point-in-time restore and 7 days for daily backups');
     expect(currentNotice.payload.data.text).toContain('stored in Singapore');
     expect(currentNotice.payload.data.text).not.toContain('{{OWNER_CONTACT_EMAIL}}');
-    expect((await db.privacyNoticeVersion.findUniqueOrThrow({ where: { version: 1 } })).text).toBe(currentNotice.payload.data.text);
+    // The published template is immutable; the configured address appears only in the served text.
+    expect((await db.privacyNoticeVersion.findUniqueOrThrow({ where: { version: 1 } })).text).toBe(publishedVersionOneText);
+    expect(publishedVersionOneText).toContain('{{OWNER_CONTACT_EMAIL}}');
     const another = await member('profile-other');
     const original = (await call('/members/me', 'GET', cookie)).payload.data;
     expect(original).toMatchObject({ googleEmail: 'listed@example.in', googleAccountId: 'profile-owner' });
-    for (const body of [{ displayName: ' ' }, { displayName: 'x'.repeat(51) }, { displayName: null }, { whatsappNumber: '12' }, { whatsappNumber: null }]) {
+    for (const { body, reason } of [
+      { body: { displayName: ' ' }, reason: 'Use 1 to 50 characters.' },
+      { body: { displayName: 'x'.repeat(51) }, reason: 'Use 1 to 50 characters.' },
+      { body: { displayName: null }, reason: 'Use 1 to 50 characters.' },
+      { body: { whatsappNumber: '12' }, reason: 'Enter a valid phone number with a country code.' },
+      { body: { whatsappNumber: null }, reason: 'Enter a valid phone number with a country code.' },
+    ]) {
       const invalid = await call('/members/me', 'PATCH', cookie, body);
       expect(invalid.response.status).toBe(400);
-      expect(invalid.payload.error.details.fieldErrors).toEqual(expect.arrayContaining([expect.objectContaining({ field: Object.keys(body)[0] })]));
+      expect(invalid.payload.error.details.fieldErrors).toEqual(expect.arrayContaining([{ field: Object.keys(body)[0], reason }]));
       expect((await call('/members/me', 'GET', cookie)).payload.data).toEqual(original);
     }
     const changed = await call('/members/me', 'PATCH', cookie, { displayName: '  New Name  ', whatsappNumber: '+447911123456' });
@@ -104,6 +116,8 @@ describe('profile and privacy notice API', () => {
 
   test('done-when-3: a material notice requires explicit acceptance before member access', async () => {
     const cookie = await member('notice-owner');
+    const versionOneConsent = await db.consent.findFirstOrThrow({ where: { member: { googleAccountId: 'notice-owner' }, privacyNoticeVersion: { version: 1 } }, include: { privacyNoticeVersion: true } });
+    expect(versionOneConsent.privacyNoticeVersion.text).toBe(publishedVersionOneText);
     await db.privacyNoticeVersion.create({ data: { version: 2, text: 'Material change notice', isMaterialChange: true, publishedAtUtc: new Date() } });
     const blocked = await call('/members/me', 'GET', cookie);
     expect(blocked.response.status).toBe(403);
@@ -118,6 +132,9 @@ describe('profile and privacy notice API', () => {
     expect(accepted.payload.data).toMatchObject({ version: 2, acceptedAtUtc: expect.any(String) });
     expect((await call('/members/me', 'GET', cookie)).response.status).toBe(200);
     expect(await db.consent.count({ where: { member: { googleAccountId: 'notice-owner' } } })).toBe(2);
+    const retainedConsent = await db.consent.findUniqueOrThrow({ where: { id: versionOneConsent.id }, include: { privacyNoticeVersion: true } });
+    expect(retainedConsent).toEqual(versionOneConsent);
+    expect(retainedConsent.privacyNoticeVersion.text).toBe(publishedVersionOneText);
     await db.privacyNoticeVersion.create({ data: { version: 3, text: 'Wording only change', isMaterialChange: false, publishedAtUtc: new Date() } });
     expect((await call('/members/me', 'GET', cookie)).response.status).toBe(200);
   });

@@ -1,21 +1,14 @@
-import { BadRequestException, Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ApiConfig } from '../../common/config/config.module';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/database/prisma.service';
 import { AcceptNoticeDto } from './dto/accept-notice.dto';
 
-@Injectable()
-export class PrivacyNoticeService implements OnModuleInit {
-  constructor(@Inject(PrismaService) private readonly db: PrismaService, @Inject(ConfigService) private readonly config: ConfigService<ApiConfig, true>) {}
+export function renderPrivacyNotice(text: string, contactEmail: string): string {
+  return text.replaceAll('{{OWNER_CONTACT_EMAIL}}', contactEmail);
+}
 
-  async onModuleInit(): Promise<void> {
-    const notice = await this.db.privacyNoticeVersion.findUnique({ where: { version: 1 }, select: { id: true, text: true } });
-    if (!notice?.text.includes('{{OWNER_CONTACT_EMAIL}}')) return;
-    await this.db.privacyNoticeVersion.updateMany({
-      where: { id: notice.id, text: notice.text },
-      data: { text: notice.text.replace('{{OWNER_CONTACT_EMAIL}}', this.config.getOrThrow('ownerContactEmail')) },
-    });
-  }
+@Injectable()
+export class PrivacyNoticeService {
+  constructor(@Inject(PrismaService) private readonly db: PrismaService) {}
 
   async requiresAcceptance(memberId: string): Promise<boolean> {
     const latestMaterial = await this.db.privacyNoticeVersion.findFirst({

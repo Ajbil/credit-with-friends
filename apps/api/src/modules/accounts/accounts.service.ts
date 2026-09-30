@@ -5,6 +5,7 @@ import { ApiConfig } from '../../common/config/config.module';
 import { PrismaService } from '../../common/database/prisma.service';
 import { Caller, SessionsService } from '../sessions/sessions.service';
 import { OnboardingDto } from './dto/onboarding.dto';
+import { renderPrivacyNotice } from '../privacy-notice/privacy-notice.service';
 
 export type GoogleIdentity = { googleAccountId: string; email: string; name: string; emailVerified: boolean };
 
@@ -49,7 +50,7 @@ export class AccountsService {
   async notice() {
     const version = await this.db.privacyNoticeVersion.findFirst({ where: { publishedAtUtc: { not: null } }, orderBy: { version: 'desc' }, select: { version: true, text: true } });
     if (!version) throw new ForbiddenException('The privacy notice is not available yet.');
-    return version;
+    return { version: version.version, text: renderPrivacyNotice(version.text, this.config.getOrThrow('ownerContactEmail')) };
   }
 
   async onboard(caller: Caller, input: OnboardingDto) {
