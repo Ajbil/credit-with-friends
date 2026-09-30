@@ -1,25 +1,32 @@
 {
   "branch": "task/CWF-1-T3",
   "review": {
-    "commit": "86ee4f268207febeb856017dade2e193b201a5de",
+    "commit": "703894ac752b51142a405cf0bfaa226477d9ef74",
     "dismissals": [],
     "findings": [
       {
-        "body": "Version 1 stores a contact-address placeholder, and this line substitutes the deployment address when the notice is read. Changing that configuration changes the text served for the same version, while consent records still identify only the version. Store the complete text that members actually accept as an immutable version.",
+        "body": "Version 1 stores a contact-address placeholder, and this line substitutes the current configuration when serving it. Changing that configuration changes the text served for version 1 without publishing a new version. Consent records keep the address used at acceptance, but the version itself does not retain the complete text the member accepted.",
         "file": "apps/api/src/modules/accounts/accounts.service.ts",
         "line": 53,
         "priority": "P1",
         "title": "Not done: retain each published notice's exact text"
       },
       {
-        "body": "The test takes its expected text from the migrated database row, then checks only a few phrases in the served notice. Removing a required paragraph from the migration would leave those assertions passing. The integration test needs an independent expectation for the complete approved text.",
-        "file": "apps/api/test/profile-notice.integration.spec.ts",
-        "line": 67,
+        "body": "Adding a NOT NULL column without a default or backfill makes this migration fail if Consent already has rows. The branch's integration tests migrate an empty schema, so they do not exercise an upgrade with existing members.",
+        "file": "apps/api/prisma/migrations/20260930120000_consent_contact_email/migration.sql",
+        "line": 1,
         "priority": "P1",
-        "title": "Not done: test version 1's complete notice text"
+        "title": "Backfill existing consents before requiring a contact email"
       },
       {
-        "body": "This Factory status record is outside the allowed paths and is not needed to deliver the profile or privacy-notice API.",
+        "body": "The branch adds the integration spec but no spec under either required module test path. Add meaningful behavior tests for the profile rules and notice acceptance rules in the specified locations.",
+        "file": "apps/api/src/modules/profile/profile.service.ts",
+        "line": 10,
+        "priority": "P1",
+        "title": "Not done: required profile and privacy-notice module specs"
+      },
+      {
+        "body": "This Factory review record is outside the allowed paths and is not needed to deliver the profile or privacy-notice API.",
         "file": ".factory/stories/CWF-1/tasks/T3.json",
         "line": 1,
         "priority": "P2",
@@ -27,7 +34,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "38ff9baf0e44098b1b7c3171c7d555cc7836b965c8a74fefd8f3e791ac1f294f"
+    "tree": "65c242896ac7a079542bbdefa19317b935a07153cf64784e21d4f7aad6e1ea53"
   },
   "status": "fixing",
   "steps": [
@@ -41,6 +48,10 @@
     },
     {
       "at": "2026-09-30T10:47:29+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T15:04:15+00:00",
       "step": "review"
     }
   ]
