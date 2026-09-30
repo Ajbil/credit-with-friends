@@ -2,7 +2,13 @@
   "branch": "task/CWF-1-T3",
   "review": {
     "commit": "2deec457164ba1166ec47a588aa1bd30d502cb60",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": "apps/api/src/modules/accounts/accounts.service.ts:53 the owner decided on 2026-09-30, when asked this exact trade-off, to keep the contact address from deployment configuration as approved in Done-when 3; the version template is immutable and each consent saves the address shown, reproducing exactly what each member accepted",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "This renders version 1 with the current configured contact address on every request. Changing that address changes the text served for the same published version without creating a new version or requiring existing members to accept the changed text. Saving an address with each consent can reconstruct what a member accepted, but it does not retain one exact published text for the version. Publish a new version when the rendered text changes, or store the rendered text with the version.",
@@ -19,10 +25,10 @@
         "title": "Remove the unrelated Factory review record"
       }
     ],
-    "status": "blocked",
+    "status": "clean",
     "tree": "560bb3d1e9db392af394af01ef1ad56fb9c88f4a5ec0fbe2d11def41327c259f"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-09-30T09:58:42+00:00",
