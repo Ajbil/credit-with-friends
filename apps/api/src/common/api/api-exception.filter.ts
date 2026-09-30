@@ -18,6 +18,7 @@ function validationDetails(response: string | object): { fieldErrors: Array<{ fi
 
 function errorCode(status: number, response: string | object): string {
   if ((response as ValidationResponse)?.code === 'NOT_OPEN_YET') return 'NOT_OPEN_YET';
+  if ((response as ValidationResponse)?.code === 'PRIVACY_NOTICE_REQUIRED' && status === 403) return 'PRIVACY_NOTICE_REQUIRED';
   if ((response as ValidationResponse)?.code === 'VALIDATION_ERROR') return 'VALIDATION_ERROR';
   if (status === 403) return 'FORBIDDEN';
   if (status === 404) return 'NOT_FOUND';
@@ -31,6 +32,7 @@ function errorMessage(code: string): string {
   return ({
     FORBIDDEN: 'This request is not allowed.',
     NOT_OPEN_YET: 'Not open yet',
+    PRIVACY_NOTICE_REQUIRED: 'Accept the current privacy notice to continue.',
     INTERNAL_SERVER_ERROR: 'The request could not be completed.',
     NOT_FOUND: 'The requested resource was not found.',
     RATE_LIMIT_EXCEEDED: 'Too many requests.',

@@ -16,6 +16,9 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { SessionGuard } from './modules/sessions/session.guard';
 import { TestAuthModule } from './modules/accounts/test-auth.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import { PrivacyNoticeModule } from './modules/privacy-notice/privacy-notice.module';
+import { PrivacyNoticeGuard } from './modules/privacy-notice/privacy-notice.guard';
 
 @Module({
   imports: [
@@ -35,12 +38,15 @@ import { TestAuthModule } from './modules/accounts/test-auth.module';
     ScheduleModule.forRoot(),
     SessionsModule,
     AccountsModule,
+    ProfileModule,
+    PrivacyNoticeModule,
     ...(TEST_AUTH_ROUTES_ENABLED ? [TestAuthModule] : []),
     HealthModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: RequestForgeryGuard },
     { provide: APP_GUARD, useClass: SessionGuard },
+    { provide: APP_GUARD, useExisting: PrivacyNoticeGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
     { provide: APP_INTERCEPTOR, useClass: ApiResponseInterceptor },
