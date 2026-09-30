@@ -1,10 +1,57 @@
 {
   "branch": "task/CWF-1-T4",
-  "status": "working",
+  "review": {
+    "commit": "27608ea44633135a174be50cebdc29024d57449f",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This test signs in through the test-auth endpoint, then checks one successful onboarding submission. It never exercises the Google callback, invalid names or WhatsApp numbers, a valid number from another country, a changed Google email, or two simultaneous submissions. Those required behaviours therefore lack the specified browser flow through the running API and real database.",
+        "file": "apps/web/e2e/onboarding.spec.ts",
+        "line": 5,
+        "priority": "P1",
+        "title": "Not done: apps/web/e2e/onboarding.spec.ts"
+      },
+      {
+        "body": "The test calls test-auth instead of following the Google start and callback flow, and opens `/not-open-yet` directly instead of checking the sign-in redirect. Its final 401 check proves that the session ended, but not that the pending record was erased. It also leaves the no-storage rejection, changed-email return, 30-day cleanup and return path through Google sign-in untested by the required end-to-end flow.",
+        "file": "apps/web/e2e/sign-in.spec.ts",
+        "line": 12,
+        "priority": "P1",
+        "title": "Not done: apps/web/e2e/sign-in.spec.ts"
+      },
+      {
+        "body": "The required source test files are absent from this new web app. The configured Playwright suite searches only `./e2e`, so a source test would not run in the repository's current web test suite even if added.",
+        "file": "apps/web/playwright.config.ts",
+        "line": 10,
+        "priority": "P1",
+        "title": "Not done: apps/web/src/**/*.test.tsx"
+      },
+      {
+        "body": "The diff adds Tailwind and its Vite plugin, but the changed components use authored CSS classes and no Tailwind utilities. The plugin and import add a build dependency that neither covered outcome needs. Keep the existing stylesheet without that dependency.",
+        "file": "apps/web/vite.config.ts",
+        "line": 4,
+        "priority": "P1",
+        "title": "Simpler: remove Tailwind \u2192 keep the authored CSS"
+      },
+      {
+        "body": "This new `.factory` task-status record is outside every permitted path and is not needed to deliver the web app, lockfile or CI change.",
+        "file": ".factory/stories/CWF-1/tasks/T4.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task status file"
+      }
+    ],
+    "status": "blocked",
+    "tree": "7ae593a22bebd64d08a245a0b3f12e8a3a759ae9f66b8f619c044aba477a0064"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-09-30T09:58:50+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-09-30T10:42:37+00:00",
+      "step": "review"
     }
   ]
 }
