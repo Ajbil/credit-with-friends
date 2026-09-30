@@ -2,7 +2,13 @@
   "branch": "task/CWF-1-T3",
   "review": {
     "commit": "703894ac752b51142a405cf0bfaa226477d9ef74",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": "apps/api/src/modules/accounts/accounts.service.ts:53 the owner chose (2026-09-30) to keep the contact address from deployment configuration, as approved in Done-when 3; the version template is immutable and each consent saves the address shown, which together reproduce exactly what each member accepted",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "Version 1 stores a contact-address placeholder, and this line substitutes the current configuration when serving it. Changing that configuration changes the text served for version 1 without publishing a new version. Consent records keep the address used at acceptance, but the version itself does not retain the complete text the member accepted.",
