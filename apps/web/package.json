@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
+    "@prisma/client": "^6.19.3",
     "@tailwindcss/vite": "^4.1.0",
     "@types/node": "^22.18.10",
     "@types/react": "^19.2.0",

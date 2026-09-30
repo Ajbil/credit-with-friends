@@ -1,8 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { PrismaClient } from '@prisma/client';
 
-test('done-when-1: onboarding waits for an approved notice and protects member data', async ({ page }) => {
+test('done-when-1: onboarding creates a member only after explicit consent', async ({ page }) => {
   const admitted = await page.request.post('http://localhost:3104/api/v1/test-auth/sign-in', {
-    data: { googleAccountId: 'web-pending-notice', email: 'listed@example.in', name: 'Listed Person' },
+    data: { googleAccountId: 'web-pending-notice', email: 'listed@example.in', name: 'Listed Person', returnPath: '/circles/join/example' },
     headers: { origin: 'http://localhost:5173', 'x-requested-with': 'cwf' },
   });
   expect(admitted.ok()).toBeTruthy();
@@ -13,4 +14,29 @@ test('done-when-1: onboarding waits for an approved notice and protects member d
   await expect(page.getByText('The privacy notice is not available yet. Please try again later.')).toBeVisible();
   const member = await page.request.get('http://localhost:3104/api/v1/members/me');
   expect(member.status()).toBe(403);
+
+  const db = new PrismaClient({ datasources: { db: { url: process.env.CWF_WEB_TEST_DATABASE_URL } } });
+  try {
+    await db.privacyNoticeVersion.create({ data: { version: 1, text: 'Test privacy notice for browser onboarding.', isMaterialChange: true, publishedAtUtc: new Date() } });
+  } finally {
+    await db.$disconnect();
+  }
+  await page.reload();
+  await expect(page.getByText('Test privacy notice for browser onboarding.')).toBeVisible();
+  await page.getByLabel('Name').fill('  Listed Person  ');
+  await page.getByLabel('WhatsApp number').fill('9876543210');
+  await page.getByRole('button', { name: 'Create my account' }).click();
+  await expect(page.getByText('Confirm you are 18 or older.')).toBeVisible();
+  await expect(page.getByText('Accept the privacy notice to continue.')).toBeVisible();
+  await page.getByLabel('I confirm I am 18 or older.').check();
+  const consent = page.getByLabel('I agree to the privacy notice.');
+  await consent.focus();
+  await page.keyboard.press('Space');
+  await expect(consent).toBeChecked();
+  await page.getByRole('button', { name: 'Create my account' }).click();
+  await expect(page).toHaveURL(/\/circles\/join\/example$/);
+  await expect(page.getByText('Your account is ready.')).toBeVisible();
+  const profile = await page.request.get('http://localhost:3104/api/v1/members/me');
+  expect(profile.ok()).toBeTruthy();
+  expect((await profile.json()).data).toMatchObject({ displayName: 'Listed Person', whatsappE164: '+919876543210' });
 });
