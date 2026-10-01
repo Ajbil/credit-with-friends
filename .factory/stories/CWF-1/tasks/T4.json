@@ -1,0 +1,58 @@
+{
+  "branch": "task/CWF-1-T4",
+  "review": {
+    "commit": "fae35420b6c41b913da19c1a2b56124956249371",
+    "dismissals": [
+      {
+        "because": "apps/api/test/accounts.integration.spec.ts:167 (merged T2) proves simultaneous onboarding creates one member (Promise.all) and a changed-email sign-in opens the same member; :187 proves the real Google start and callback, including a returning account with a new email (:213); the coordinator assigned these to T2's API tests, and T4's browser tests use the test sign-in route that exists for this and cover the screens",
+        "finding": 1,
+        "from_base": false
+      },
+      {
+        "because": "apps/api/test/accounts.integration.spec.ts:187 (merged T2) proves the Google callback refuses outsiders and keeps the return path; :238 proves prelaunch denial stores nothing and cancel and 30-day inactivity erase pending sign-ins; T4's browser test checks the Not open yet screen and that cancel removes the pending row",
+        "finding": 2,
+        "from_base": false
+      }
+    ],
+    "findings": [
+      {
+        "body": "This browser test starts with the test-auth endpoint and covers one successful onboarding submission. It does not exercise the Google callback, repeat sign-in after a Google email change, or two simultaneous onboarding submissions. Those required account identity and exactly-once behaviors have no end-to-end proof through the real sign-in entry point.",
+        "file": "apps/web/e2e/onboarding.spec.ts",
+        "line": 5,
+        "priority": "P1",
+        "title": "Not done: apps/web/e2e/onboarding.spec.ts"
+      },
+      {
+        "body": "The test posts to test-auth and navigates directly to `/not-open-yet`, so it never proves that Google sign-in redirects an unlisted account there or preserves the return path. It also does not check that a rejected account leaves no stored data, that an existing account survives an email change, or that an inactive pending sign-in is erased after 30 days. The required end-to-end coverage for the listed-email and unfinished-sign-in behavior is incomplete.",
+        "file": "apps/web/e2e/sign-in.spec.ts",
+        "line": 12,
+        "priority": "P1",
+        "title": "Not done: apps/web/e2e/sign-in.spec.ts"
+      },
+      {
+        "body": "This new task-status record is outside every permitted path and is not needed to deliver the web app, lockfile, or CI change.",
+        "file": ".factory/stories/CWF-1/tasks/T4.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task status file"
+      }
+    ],
+    "status": "clean",
+    "tree": "2899b4e6dbbfc16244a0bb728be51f94f9a5d5383629fcdcf5500517fa7e4049"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-09-30T09:58:50+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-09-30T10:42:37+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T15:04:36+00:00",
+      "step": "review"
+    }
+  ]
+}
