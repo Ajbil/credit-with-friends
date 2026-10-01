@@ -132,7 +132,6 @@ describe('sign-in and onboarding API', () => {
     app = await start();
     db = app.get(PrismaService);
     url = `http://127.0.0.1:${(app.getHttpServer().address() as AddressInfo).port}`;
-    await db.privacyNoticeVersion.create({ data: { version: 1, text: 'Test notice', isMaterialChange: true, publishedAtUtc: new Date() } });
   });
 
   afterAll(async () => {
@@ -169,7 +168,8 @@ describe('sign-in and onboarding API', () => {
     expect(await db.member.count({ where: { googleAccountId: identity.googleAccountId } })).toBe(1);
     const consents = await db.consent.findMany({ where: { member: { googleAccountId: identity.googleAccountId } }, include: { privacyNoticeVersion: true } });
     expect(consents).toHaveLength(1);
-    expect(consents[0]).toMatchObject({ acceptedAtUtc: expect.any(Date), privacyNoticeVersion: { version: 1, text: 'Test notice' } });
+    // The migration stores the exact template; the notice read supplies the configured contact address.
+    expect(consents[0]).toMatchObject({ acceptedAtUtc: expect.any(Date), privacyNoticeVersion: { version: 1, text: expect.stringContaining('{{OWNER_CONTACT_EMAIL}}') } });
     const profile = await call('/members/me', 'GET', cookie);
     expect(profile.payload.data).toMatchObject({ displayName: 'Listed Person', whatsappE164: '+919876543210' });
     const changedEmail = await signIn({ ...identity, email: 'changed@example.in' });

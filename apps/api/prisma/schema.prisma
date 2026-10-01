@@ -69,6 +69,7 @@ model Consent {
   id                     String               @id @default(dbgenerated("uuidv7()")) @db.Uuid
   memberId               String               @db.Uuid
   privacyNoticeVersionId String               @db.Uuid
+  contactEmail           String
   acceptedAtUtc          DateTime             @default(now())
   createdAtUtc           DateTime             @default(now())
   updatedAtUtc           DateTime             @updatedAt

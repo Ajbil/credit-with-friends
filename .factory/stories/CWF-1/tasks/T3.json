@@ -1,0 +1,74 @@
+{
+  "branch": "task/CWF-1-T3",
+  "review": {
+    "commit": "cf2789a098d56db7c41d58e9e3a080cf4aae9679",
+    "dismissals": [
+      {
+        "because": "apps/api/src/modules/accounts/accounts.service.ts:53 the owner decided on 2026-09-30, when asked this exact trade-off, to keep the contact address from deployment configuration as approved in Done-when 3; the version template is immutable and each consent saves the address shown; the address changes only by redeploy, so a read-then-accept straddling a change is not a real path",
+        "finding": 1,
+        "from_base": false
+      },
+      {
+        "because": "apps/api/prisma/migrations/20260930110000_privacy_notice_v1/migration.sql:18 publishing by migration is the approved design; the gate is this pull request, which merges only after the owner approves the text; the owner verified the backup periods against Render's docs on 2026-10-01 (decision 0017, accepted) and the text matches them",
+        "finding": 2,
+        "from_base": false
+      }
+    ],
+    "findings": [
+      {
+        "body": "The API renders the configured contact address into version 1 on every read. Changing that address changes the text served under the same version, without publication of a new version or re-acceptance. The address saved on consent can also differ from the text the member read if configuration changes between reading and accepting. Store the fully rendered text as the published version.",
+        "file": "apps/api/src/modules/accounts/accounts.service.ts",
+        "line": 53,
+        "priority": "P1",
+        "title": "Not done: retain each notice version's exact published text"
+      },
+      {
+        "body": "This migration publishes version 1 immediately with `CURRENT_TIMESTAMP`, including claims of a 3-day restore window and 7-day manual backup retention. The supplied change has no approval or purchased-plan verification gate before that publication. Keep the notice unpublished until its exact text is approved and those periods are checked.",
+        "file": "apps/api/prisma/migrations/20260930110000_privacy_notice_v1/migration.sql",
+        "line": 18,
+        "priority": "P1",
+        "title": "Not done: approve notice text and check backup periods before publication"
+      },
+      {
+        "body": "This committed task and review record is outside the permitted paths and is not needed to deliver the profile or privacy-notice API.",
+        "file": ".factory/stories/CWF-1/tasks/T3.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the unrelated Factory review record"
+      }
+    ],
+    "status": "clean",
+    "tree": "de1c0f7e50fb9a8b272c98137804c049685482bf646d1e00eb3c29d99dc547b4"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-09-30T09:58:42+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-09-30T10:31:49+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T10:47:29+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T15:04:15+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T15:26:42+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T19:39:31+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-09-30T19:43:09+00:00",
+      "step": "review"
+    }
+  ]
+}
