@@ -1,0 +1,25 @@
+{
+  "base": "7a6bb5c0220bdf9b4683a3b28d76984db44a5dbd",
+  "branch": "fix/render-s-hobby-plan-has-3-day-point-in-t",
+  "done_when": "decision 0013, docs/architecture/13-privacy-deletion-jobs.md and the CWF-1 builders notes no longer claim automatic daily backups, and a decision records the owner-verified backup facts and when manual copies are taken",
+  "kind": "fix",
+  "review": {
+    "commit": "918e97fb36e8b6a7476852a2bca8236641d1f569",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "aee59cd902e2ee845db09099baf5bb75508307112a289330e81a40fbad65e618"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-09-30T19:36:41+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-09-30T19:40:37+00:00",
+      "step": "review"
+    }
+  ],
+  "why": "Render's Hobby plan has 3-day point-in-time restore but no automatic daily backups; 7-day backups are manual copies"
+}

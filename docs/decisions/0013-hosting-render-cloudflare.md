@@ -29,8 +29,9 @@ accepts Singapore.
   read from third-party sources and must be checked at signup.
 - Data is stored in Singapore, not India; the privacy notice should say where
   data is stored.
-- Backups: 3-day point-in-time restore and daily backups kept 7 days, which
-  the privacy notice's backup statement must match.
+- Backups: corrected by decision 0017 (3-day point-in-time restore; no
+  automatic daily backups; manual copies kept 7 days), which the privacy
+  notice's backup statement must match.
 - Render Hobby includes 5 GB of outbound bandwidth per month; the web app is
   served by Cloudflare so the API alone uses it.
 - The owner creates the Render, Cloudflare and Google Cloud accounts and buys

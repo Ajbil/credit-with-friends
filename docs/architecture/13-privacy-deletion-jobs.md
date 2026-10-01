@@ -28,9 +28,9 @@ One database transaction, all or nothing:
    cards, memberships and removal blocks.
 
 If any step fails the transaction rolls back and the member sees an error and
-can retry. Render's automatic database backups keep deleted data until they
-expire (3-day point-in-time restore, 7-day daily backups), as the privacy
-notice states.
+can retry. Render's backups keep deleted data until they expire (3-day
+point-in-time restore, and 7 days for any manual copy; there are no automatic
+daily backups, see decision 0017), as the privacy notice states.
 
 ## Usage events
 
