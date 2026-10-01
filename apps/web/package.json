@@ -8,7 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "lint": "eslint src e2e playwright.config.ts vite.config.ts vitest.config.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --config vitest.config.ts && playwright install chromium && playwright test",
+    "test": "vitest run --config vitest.config.ts && playwright install chromium && playwright test --workers=1",
     "generate:api": "orval --config orval.config.ts && prettier --write src/api/generated.ts"
   },
   "dependencies": {
@@ -28,6 +28,7 @@
     "jsdom": "^26.1.0",
     "orval": "^7.17.0",
     "vite": "^7.1.0",
+    "vite-plugin-pwa": "^1.3.0",
     "vitest": "^3.2.7"
   }
 }

@@ -1,0 +1,5 @@
+.notice-layout{width:min(680px,calc(100% - 40px));margin:56px auto 90px}
+.notice-layout h1{font-size:clamp(2.8rem,7vw,4.4rem)}
+.notice-layout>p{color:#3b594c}
+.notice-full-text{white-space:pre-wrap;line-height:1.7;background:#fffdf7;border:1px solid #dbe4d9;border-radius:12px;padding:24px;margin:26px 0;max-height:50svh;overflow:auto}
+.notice-layout .button{width:100%;margin-top:24px}

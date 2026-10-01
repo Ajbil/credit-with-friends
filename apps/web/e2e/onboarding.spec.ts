@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import { PrismaClient } from '@prisma/client';
 
 test('done-when-1: onboarding creates a member only after explicit consent', async ({ page }) => {
   const admitted = await page.request.post('http://localhost:3104/api/v1/test-auth/sign-in', {
@@ -10,19 +9,10 @@ test('done-when-1: onboarding creates a member only after explicit consent', asy
   await page.goto('/onboarding');
   await expect(page.getByRole('heading', { name: 'Finish your account' })).toBeVisible();
   await expect(page.getByLabel('Name')).toHaveValue('Listed Person');
-  await expect(page.getByRole('button', { name: 'Create my account' })).toBeDisabled();
-  await expect(page.getByText('The privacy notice is not available yet. Please try again later.')).toBeVisible();
+  // Version 1 is published by the T3 migration; setup now presents that notice immediately.
+  await expect(page.getByText(/Privacy notice — version 1/)).toBeVisible();
   const member = await page.request.get('http://localhost:3104/api/v1/members/me');
   expect(member.status()).toBe(403);
-
-  const db = new PrismaClient({ datasources: { db: { url: process.env.CWF_WEB_TEST_DATABASE_URL } } });
-  try {
-    await db.privacyNoticeVersion.create({ data: { version: 1, text: 'Test privacy notice for browser onboarding.', isMaterialChange: true, publishedAtUtc: new Date() } });
-  } finally {
-    await db.$disconnect();
-  }
-  await page.reload();
-  await expect(page.getByText('Test privacy notice for browser onboarding.')).toBeVisible();
   const name = page.getByLabel('Name');
   const phone = page.getByLabel('WhatsApp number');
   await name.fill('');

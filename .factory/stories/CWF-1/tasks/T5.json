@@ -1,0 +1,46 @@
+{
+  "branch": "task/CWF-1-T5",
+  "review": {
+    "commit": "874370e5d178f59bc39b22832a35a8540cd1c332",
+    "dismissals": [
+      {
+        "because": "apps/web/src/api/fetcher.ts:40 googleStartUrl builds the sign-in URL on apiOrigin, a separate origin: apps/web/README.md:14 and decision 0013 put the web app at https://<domain>.in and the API at https://api.<domain>.in, so the service worker (scope / on the web origin, vite.config.ts:12) never intercepts navigation to the API's /api/v1/auth/google/* routes; the app and API do not share one origin",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
+    "findings": [
+      {
+        "body": "The app and API share one origin in production, but this Workbox navigation fallback has no exclusion for `/auth/google/start` or the OAuth callback. Once the service worker controls the page, clicking \u201cContinue with Google\u201d navigates to a URL that Workbox serves from the cached app shell instead of reaching the authentication endpoint. An installed member therefore cannot sign in again after expiry. Restrict the fallback to client routes or exclude the authentication routes. The install test uses a separate API port and misses this production path. [Workbox documents that the fallback handles navigation requests unless restricted](https://developer.chrome.com/docs/workbox/modules/workbox-webpack-plugin).",
+        "file": "apps/web/vite.config.ts",
+        "line": 16,
+        "priority": "P1",
+        "title": "Not done: sign in again after session expiry"
+      },
+      {
+        "body": "This new Forge task-status record is outside the allowed paths and is not needed for the profile, notice, session, or install behavior. Remove it from this branch.",
+        "file": ".factory/stories/CWF-1/tasks/T5.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task status file"
+      }
+    ],
+    "status": "clean",
+    "tree": "4c1dea99f8d6515d90d78a2e0c4d8a70e7766b617c32230a327da4ed34f81330"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-01T10:33:33+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-01T11:01:43+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-01T11:22:17+00:00",
+      "step": "review"
+    }
+  ]
+}
