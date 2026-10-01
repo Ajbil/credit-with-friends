@@ -1,67 +1,18 @@
 {
   "branch": "task/CWF-1-T5",
   "review": {
-    "commit": "cdee9abca13644c307f13b1c550a28c7e8cbe364",
+    "commit": "874370e5d178f59bc39b22832a35a8540cd1c332",
     "dismissals": [],
     "findings": [
       {
-        "body": "If a session expires while the profile is open and the member presses \u201cSign out of this device,\u201d a 401 from the sign-out request takes the generic error path. The profile and its private Google details remain visible, and the member is told only to try signing out again. Handle an invalid-session response here by clearing member data and showing the sign-in screen.",
-        "file": "apps/web/src/routes/profile/profile-page.tsx",
-        "line": 23,
-        "priority": "P1",
-        "title": "Not done: invalid sessions show the sign-in screen"
-      },
-      {
-        "body": "The change adds three route components but no route test files, although this part explicitly requires them. Add tests for the route behavior, including invalid-session handling and rejected edits.",
-        "file": "apps/web/src/routes/profile/profile-page.tsx",
-        "line": 10,
-        "priority": "P1",
-        "title": "Not done: apps/web/src/routes/**/*.test.tsx"
-      },
-      {
-        "body": "This test signs out deliberately and then visits the profile. It never expires or invalidates a session while the member is using it, so the required expired-session behavior can break without failing the test. Exercise that state through the running API and browser, then assert that sign-in is shown and the saved profile remains after signing in again.",
-        "file": "apps/web/e2e/profile.spec.ts",
-        "line": 36,
-        "priority": "P1",
-        "title": "Not done: session expiration test"
-      },
-      {
-        "body": "The second browser context signs into the same Google account, so it tests another device rather than another member. The required privacy boundary has no end-to-end proof: create a distinct member and verify that every screen and response available to that member omits the first member\u2019s Google email and account ID.",
-        "file": "apps/web/e2e/profile.spec.ts",
-        "line": 17,
-        "priority": "P1",
-        "title": "Not done: another member cannot receive private Google details"
-      },
-      {
-        "body": "After accepting version 2, the test checks only that profile access returns. It never verifies the stored accepted version or acceptance time, both explicit requirements. An implementation that restores access while recording an incorrect version or no acceptance time would pass.",
-        "file": "apps/web/e2e/notice.spec.ts",
-        "line": 28,
-        "priority": "P1",
-        "title": "Not done: notice acceptance version and time test"
-      },
-      {
-        "body": "The test inspects cache keys without intentionally making an API request while the service worker controls the page. A worker that caches API responses would still pass if this flow never requests one. Request member data through the controlled browser, then assert that its URL and response are absent from Cache Storage.",
-        "file": "apps/web/e2e/install.spec.ts",
-        "line": 38,
-        "priority": "P1",
-        "title": "Not done: install test proves API responses stay out of caches"
-      },
-      {
-        "body": "The supplied functional check describes signing out and signing in again, but does not walk an expired or invalid session. That skips a covered session requirement. Exercise that failure in the browser and record that it shows the sign-in screen and preserves the member\u2019s data after sign-in.",
-        "file": "apps/web/e2e/profile.spec.ts",
-        "line": 39,
-        "priority": "P1",
-        "title": "Not done: functional check"
-      },
-      {
-        "body": "The return-path check accepts a value beginning with a slash followed by a backslash. Browsers interpret `/\\attacker.example` as a network-path URL, so a crafted `returnTo` can send a member to an external site after they accept the notice. Parse and constrain the destination to a same-origin path before calling `location.replace`.",
-        "file": "apps/web/src/routes/notice/notice-page.tsx",
+        "body": "The app and API share one origin in production, but this Workbox navigation fallback has no exclusion for `/auth/google/start` or the OAuth callback. Once the service worker controls the page, clicking \u201cContinue with Google\u201d navigates to a URL that Workbox serves from the cached app shell instead of reaching the authentication endpoint. An installed member therefore cannot sign in again after expiry. Restrict the fallback to client routes or exclude the authentication routes. The install test uses a separate API port and misses this production path. [Workbox documents that the fallback handles navigation requests unless restricted](https://developer.chrome.com/docs/workbox/modules/workbox-webpack-plugin).",
+        "file": "apps/web/vite.config.ts",
         "line": 16,
-        "priority": "P2",
-        "title": "Reject backslashes in notice return paths"
+        "priority": "P1",
+        "title": "Not done: sign in again after session expiry"
       },
       {
-        "body": "This task-status record is outside the allowed paths and is not needed to deliver the profile, notice, session, or install behavior. Remove it from the branch.",
+        "body": "This new Forge task-status record is outside the allowed paths and is not needed for the profile, notice, session, or install behavior. Remove it from this branch.",
         "file": ".factory/stories/CWF-1/tasks/T5.json",
         "line": 1,
         "priority": "P2",
@@ -69,7 +20,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "22538c29af95d0113c5352a747cd8d891cd9b3f797f36705148916c00896daf2"
+    "tree": "4c1dea99f8d6515d90d78a2e0c4d8a70e7766b617c32230a327da4ed34f81330"
   },
   "status": "fixing",
   "steps": [
@@ -79,6 +30,10 @@
     },
     {
       "at": "2026-10-01T11:01:43+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-01T11:22:17+00:00",
       "step": "review"
     }
   ]
