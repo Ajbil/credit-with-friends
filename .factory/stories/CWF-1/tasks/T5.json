@@ -1,0 +1,10 @@
+{
+  "branch": "task/CWF-1-T5",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-01T10:33:33+00:00",
+      "step": "start"
+    }
+  ]
+}
