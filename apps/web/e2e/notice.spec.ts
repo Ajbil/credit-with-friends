@@ -21,10 +21,25 @@ test('done-when-3: a material notice requires fresh agreement before profile acc
     await expect(page.getByText('We now use your data for a new purpose. Contact owner@example.in.')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Accept and continue' })).toBeDisabled();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.getByLabel('I agree to the privacy notice.').check();
+    await page.goto('/notice?returnTo=%2F%5Cattacker.example');
+    await expect(page.getByRole('heading', { name: 'Review the privacy notice' })).toBeVisible();
+    await page.getByLabel('I agree to the privacy notice.').focus();
+    await expect(page.getByLabel('I agree to the privacy notice.')).toBeFocused();
+    await page.keyboard.press('Space');
+    await expect(page.getByLabel('I agree to the privacy notice.')).toBeChecked();
+    const acceptedAfter = new Date();
     await page.getByRole('button', { name: 'Accept and continue' }).click();
     await expect(page.getByRole('heading', { name: 'Your profile' })).toBeVisible();
+    expect(new URL(page.url()).pathname).toBe('/profile');
     expect((await page.request.get(`${api}/members/me`)).ok()).toBeTruthy();
+    const consent = await db.consent.findFirstOrThrow({
+      where: { member: { googleAccountId: 'web-notice' }, privacyNoticeVersion: { version: 2 } },
+      select: { acceptedAtUtc: true, privacyNoticeVersion: { select: { version: true } } },
+    });
+    expect(consent.privacyNoticeVersion.version).toBe(2);
+    expect(consent.acceptedAtUtc).toBeInstanceOf(Date);
+    expect(consent.acceptedAtUtc.getTime()).toBeGreaterThanOrEqual(acceptedAfter.getTime());
+    expect(consent.acceptedAtUtc.getTime()).toBeLessThanOrEqual(Date.now());
   } finally {
     await db.consent.deleteMany({ where: { privacyNoticeVersion: { version: 2 } } });
     await db.privacyNoticeVersion.deleteMany({ where: { version: 2 } });

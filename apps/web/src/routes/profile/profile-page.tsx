@@ -5,6 +5,7 @@ import { accountsControllerMe, sessionsControllerSignOut, type MemberDataDto } f
 import { apiFetch, ApiError } from '../../api/fetcher';
 import { Button } from '../../components/ui/button';
 import { PageFrame } from '../../components/page-frame';
+import { SessionPage } from '../session/session-page';
 import './profile.css';
 
 export function ProfilePage() {
@@ -19,14 +20,14 @@ export function ProfilePage() {
     setPhone(null);
     setErrors({});
   }, onError: (error) => {
-    if (error instanceof ApiError && error.status === 401) { location.replace('/session'); return; }
+    if (error instanceof ApiError && error.status === 401) return;
     if (error instanceof ApiError && error.failure.code === 'PRIVACY_NOTICE_REQUIRED') { location.replace('/notice?returnTo=/profile'); return; }
     if (error instanceof ApiError) setErrors(Object.fromEntries((error.failure.details?.fieldErrors ?? []).map(({ field, reason }) => [field, reason])));
   } });
   const signOut = useMutation({ mutationFn: sessionsControllerSignOut, onSuccess: () => { client.clear(); location.replace('/'); } });
 
+  if ([member.error, save.error, signOut.error].some((error) => error instanceof ApiError && error.status === 401)) return <SessionPage />;
   if (member.isPending) return <PageFrame><section className="profile-layout"><p role="status">Loading your profile…</p></section></PageFrame>;
-  if (member.error instanceof ApiError && member.error.status === 401) { location.replace('/session'); return null; }
   if (member.error instanceof ApiError && member.error.failure.code === 'PRIVACY_NOTICE_REQUIRED') { location.replace('/notice?returnTo=/profile'); return null; }
   if (member.isError) return <PageFrame><section className="profile-layout"><h1>We couldn't load your profile</h1><p>Please try again.</p><Button onClick={() => member.refetch()}>Try again</Button></section></PageFrame>;
 
