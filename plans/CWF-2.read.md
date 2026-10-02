@@ -1,12 +1,12 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-02T21:33:35+00:00
-read_hash: bacb261041c0d32bde80bd608d9dce29179892ae
-round: 7
-passed: no
-doc_seen: bacb261041c0d32bde80bd608d9dce29179892ae
+read_at: 2026-10-02T21:34:53+00:00
+read_hash: a51714c91287edd9682ca12c1c24d94c35495a90
+round: 8
+passed: yes
+doc_seen: a51714c91287edd9682ca12c1c24d94c35495a90
 spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
-notes_seen: f4d9b8857e1212ab6a342a2841df0c590ca6dc58
+notes_seen: c30880152f0effe91e07a6f913a4527be8d11100
 ---
 # Cold read notes
 
@@ -142,3 +142,7 @@ Only a genuine trade-off goes to the human, as a question with options. There is
 28. Disputed keep 26: CWF-2’s roadmap story still promises the work moved to CWF-7.
     Its story sentence says members can leave and admins can remove, rename, hand over and delete; the plan now assigns those actions to CWF-7. The acceptance criteria were split, but the roadmap story text and this plan’s title still describe the old scope.
    Disposition: keep amended: the roadmap's CWF-2 title and story sentence (on this story branch) and the plan title now read 'Create and join circles' and describe only create, invite, join and seeing members; leaving and admin powers are in CWF-7's story
+
+## Round 8
+
+No findings.
