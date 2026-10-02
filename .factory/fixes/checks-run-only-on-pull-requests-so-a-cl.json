@@ -1,0 +1,25 @@
+{
+  "base": "b7b7f5c264f1b3a876a3fa97c58344a94d8331b1",
+  "branch": "fix/checks-run-only-on-pull-requests-so-a-cl",
+  "done_when": ".github/workflows/ci.yml also runs on every push to main, and a run on main shows the full check suite",
+  "kind": "fix",
+  "review": {
+    "commit": "c7b99b8e9041f2ac3ce7adaaf4f51bc579dd60a1",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "952984565849e021ba9dea41e94940cfa899aae01f98af6baa52b8f46985371c"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-02T19:39:58+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-02T19:42:12+00:00",
+      "step": "review"
+    }
+  ],
+  "why": "Checks run only on pull requests, so a clash between two separately green pull requests stays hidden on main"
+}
