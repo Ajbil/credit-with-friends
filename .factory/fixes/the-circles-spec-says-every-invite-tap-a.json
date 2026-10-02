@@ -3,11 +3,24 @@
   "branch": "fix/the-circles-spec-says-every-invite-tap-a",
   "done_when": "docs/specs/circles.md states that recording an invite or join usage event never blocks or undoes the member's action and that a failed record leaves that one event uncounted, matching the roadmap and decision 0008",
   "kind": "fix",
-  "status": "started",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "a035dc55833d01b1643b6913174fdc775d7a0a4b6a51f0f97b4fbb0f4f395eb8",
+    "commit": "1e87e52e85437c38ddce804187dbcbc5c2af1ec1",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "c74406ebedf437721debdfbdc5d6e88b3c9d4d62d66065aab8cef982a6392616"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-02T20:54:05+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-02T20:58:41+00:00",
+      "step": "review"
     }
   ],
   "why": "The circles spec says every invite tap and join records an event, but the approved roadmap says a failed record leaves that one event uncounted; the owner chose the roadmap rule"
