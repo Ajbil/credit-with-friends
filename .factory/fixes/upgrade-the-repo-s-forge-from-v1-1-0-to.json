@@ -3,11 +3,24 @@
   "branch": "fix/upgrade-the-repo-s-forge-from-v1-1-0-to",
   "done_when": "forge.toml pins v1.2.1, forge sync has rewritten the adapter files and hooks, and forge doctor reports no version or adapter drift",
   "kind": "fix",
-  "status": "started",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "ad1f7cabfb7866ec722f9c6e24f1ce61b080f18ef9b42438f88459b970867d42",
+    "commit": "4c4262fd5b23e6d97177b527149600b65a6e2a69",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "82b4c731a825d8f388d465333f0ec741341859868adfac5f1175ad6019ec6eb1"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-02T20:18:45+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-02T20:23:40+00:00",
+      "step": "review"
     }
   ],
   "why": "Upgrade the repo's Forge from v1.1.0 to v1.2.1 so it matches the installed forge command and its hooks"
