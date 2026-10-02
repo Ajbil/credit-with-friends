@@ -1,12 +1,12 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-02T21:17:19+00:00
-read_hash: 9d91145febbe799b786c95a4e03a53da8f7b171f
-round: 4
+read_at: 2026-10-02T21:20:33+00:00
+read_hash: fdbc6a436b2aaa770b0a91688d24499ff180cbef
+round: 5
 passed: no
-doc_seen: 9d91145febbe799b786c95a4e03a53da8f7b171f
+doc_seen: fdbc6a436b2aaa770b0a91688d24499ff180cbef
 spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
-notes_seen: e24bfaecad167e8bbe568805c6988d0620fd7681
+notes_seen: 694eae2cea27f400099298654937c698af0595d7
 ---
 # Cold read notes
 
@@ -111,7 +111,7 @@ Only a genuine trade-off goes to the human, as a question with options. There is
 
 22. Cut or defer: removal-block and deleted-circle handling in CWF-2.
     No action in this story creates a block or deletes a circle, so these join states are reachable only through direct test-database setup. Move their schema, checks and item 3 cases to CWF-7, where removal and deletion become available; keep those protections when those actions ship.
-   Disposition: defer: removal-block and deleted-circle join states, their table and checks move to CWF-7, which brings removal and deletion; the plan's out-of-scope notes name them as the deleted-circle and removal parts of roadmap criteria 9 and 14
+   Disposition: keep split across stories, not a spec deferral: removal-block and deleted-circle join states, their table and checks move to CWF-7, which brings removal and deletion; the plan's out-of-scope notes name them as the deleted-circle and removal parts of roadmap criteria 9 and 14
 
 23. Unproven: item 2: a joined non-admin is denied the invite link through a direct request.
     T1B runs before the join API exists, and no later Tests cell assigns this permission check. Add a running-API test after T2 joins a second member.
@@ -119,4 +119,10 @@ Only a genuine trade-off goes to the human, as a question with options. There is
 
 24. Unproven: item 4: a member’s name stops reaching someone when their last shared circle ends.
     Item 4 promises visibility only while membership is shared, but CWF-2 has no leave or remove operation with which to prove revocation through the app. Assign that case and its test to CWF-7.
-   Disposition: defer: Done-when 4 drops 'only while they do'; proving a name stops reaching someone after their last shared circle ends moves to CWF-7 with leave and remove
+   Disposition: keep split across stories, not a spec deferral: Done-when 4 drops 'only while they do'; proving a name stops reaching someone after their last shared circle ends moves to CWF-7 with leave and remove
+
+## Round 5
+
+25. The deferrals in findings 22 and 24 are not closed as stated.
+    The plan moves blocked and deleted-circle links, and visibility revocation, to CWF-7. The confirmed spec still includes them in its behaviour and acceptance criteria, with no corresponding entry under Out of scope. Record this as a split across stories rather than a spec deferral, or update the spec and its scope consistently.
+   Disposition: keep amended: dispositions 22 and 24 now record a split across stories; the spec keeps these behaviours in scope, and the plan's out-of-story notes say CWF-7 delivers them

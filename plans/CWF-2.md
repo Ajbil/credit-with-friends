@@ -88,6 +88,7 @@ The spec is `docs/specs/circles.md`; the tables and invariants are in
     deleted-circle link, a person blocked by a removal (with the `CircleRemovalBlock` table), and
     a member's name no longer reaching someone once they stop sharing a circle. Those are the
     deleted-circle and removal parts of roadmap criteria 9 and 14, delivered with CWF-7.
+    They stay in the circles spec's scope; this is a split across stories, not a deferral.
   - **CWF-5 (account deletion):** passing the admin role on, and erasing removal blocks, when a
     member deletes their account.
   - **CWF-3 (cards):** cards becoming visible on joining.
