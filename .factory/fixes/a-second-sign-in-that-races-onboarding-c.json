@@ -1,0 +1,14 @@
+{
+  "base": "b7b7f5c264f1b3a876a3fa97c58344a94d8331b1",
+  "branch": "fix/a-second-sign-in-that-races-onboarding-c",
+  "done_when": "a sign-in that finds the member created while it was writing its pending sign-in returns a member session and leaves no pending sign-in, proven by an integration test that forces that interleaving",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-02T19:40:16+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "A second sign-in that races onboarding can leave an existing member holding an unfinished sign-in session"
+}
