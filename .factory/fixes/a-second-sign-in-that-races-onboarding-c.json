@@ -1,0 +1,25 @@
+{
+  "base": "b7b7f5c264f1b3a876a3fa97c58344a94d8331b1",
+  "branch": "fix/a-second-sign-in-that-races-onboarding-c",
+  "done_when": "a sign-in that finds the member created while it was writing its pending sign-in returns a member session and leaves no pending sign-in, proven by an integration test that forces that interleaving",
+  "kind": "fix",
+  "review": {
+    "commit": "8019daaf79e4b3ace4b2debbc23ae1e9f51ca456",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "4aecfa7b4d58bd13f7c08a025d465bce20e6b1143c7de1bb2064b4cbd43e9a14"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-02T19:40:16+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-02T19:47:21+00:00",
+      "step": "review"
+    }
+  ],
+  "why": "A second sign-in that races onboarding can leave an existing member holding an unfinished sign-in session"
+}
