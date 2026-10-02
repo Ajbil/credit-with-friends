@@ -5,7 +5,7 @@ signoff = "docs/decisions/0010-client-signoff.md"
 workers = "codex"
 test = "[ ! -f package.json ] || ((command -v pnpm >/dev/null 2>&1 || corepack enable) && pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm test && pnpm build)"
 checks = ["tests", "forge-pr-check", "checks"]
-interfaces = ["**/routes/**", "**/*.controller.*", "**/migrations/**", "**/schema.*", "**/*.schema.*", "**/cli.*"]
+interfaces = ["apps/api/**/routes/**", "**/*.controller.*", "**/migrations/**", "**/schema.*", "**/*.schema.*", "**/cli.*"]
 
 [models.build]
 model = "gpt-6-sol"
