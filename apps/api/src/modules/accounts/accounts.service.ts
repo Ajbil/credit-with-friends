@@ -36,6 +36,12 @@ export class AccountsService {
       create: { googleAccountId: identity.googleAccountId, googleName: identity.name, googleEmail: identity.email },
       update: { googleName: identity.name, googleEmail: identity.email, lastActivityAtUtc: new Date() },
     });
+    const onboardedMember = await this.db.member.findUnique({ where: { googleAccountId: identity.googleAccountId } });
+    if (onboardedMember) {
+      await this.db.pendingSignIn.deleteMany({ where: { id: pending.id } });
+      await this.db.member.update({ where: { id: onboardedMember.id }, data: { googleEmail: identity.email } });
+      return { token: await this.sessions.create({ memberId: onboardedMember.id }, userAgent, safeReturnPath(returnPath)), status: 'member' as const, returnPath: safeReturnPath(returnPath) };
+    }
     return { token: await this.sessions.create({ pendingSignInId: pending.id }, userAgent, safeReturnPath(returnPath)), status: 'pending' as const, returnPath: safeReturnPath(returnPath) };
   }
 
