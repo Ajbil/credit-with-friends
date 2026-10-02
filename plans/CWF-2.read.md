@@ -1,8 +1,12 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-02T20:13:02+00:00
-read_hash: a153a00d8c45f5e166a100a29946946272b26015
-amended_hash: 05e877aba232c85b4b252299cf7927dd1c9fa524
+read_at: 2026-10-02T20:46:55+00:00
+read_hash: 05e877aba232c85b4b252299cf7927dd1c9fa524
+round: 2
+passed: no
+doc_seen: 05e877aba232c85b4b252299cf7927dd1c9fa524
+spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+notes_seen: 8212acaa5bcbc3056b05e2e9ecac712a848995c4
 ---
 # Cold read notes
 
@@ -58,3 +62,29 @@ Only a genuine trade-off goes to the human, as a question with options. There is
 11. Cut or defer: future-event fields in T1’s usage table.
     This story records only invite and join events. Bank, card, search and contact fields have no CWF-2 behaviour to serve, and the Bank table is scheduled for the cards story. Add those fields when their events are implemented.
    Disposition: cut
+
+## Round 2
+
+12. Disputed keep 1: T1A still appears too large for one task.
+    It includes a service bus, four tables and a migration, account and session changes, a lock helper, create/list/view endpoints, the full API contract, four stub controller areas, and integration tests. Split the shared foundations from create and view while keeping the contract pinned before its consumers start.
+   Disposition: keep amended: T1A now holds foundations, create and list (Done-when 1); the circle view with members moved to new T1C (Done-when 4); the API contract stays pinned in T1A before its consumers start
+
+13. Creation cannot use the stated lock order.
+    The shared helper says every membership write locks the circle row first, but a new circle has no row to lock. Pin creation’s lock path and test simultaneous creates and joins for a member near the 20-circle limit.
+   Disposition: keep amended: creation locks only the creator's member row (no circle row exists yet, so it never deadlocks with a join's circle-then-member order); a test races creates and joins near the 20-circle limit
+
+14. T1A must initialize the invite code when it creates a circle.
+    The spec requires every circle to have one active link. T1B owns invite behaviour but has no scope to change T1A’s create operation. Assign code generation to T1A and prove a newly created circle has a valid, unique link.
+   Disposition: keep amended: T1A generates the invite code at creation, with a test that each new circle has a valid, unique code
+
+15. Pin the usage module’s registration before T1B.
+    `AppModule` explicitly registers modules. T1B adds `UsageModule` but cannot edit `app.module.ts`; T1A owns that file and does not promise a usage stub. Give that registration to T1A, or assign the shared line to a wiring task.
+   Disposition: keep amended: T1A registers a stub UsageModule in app.module.ts and owns apps/api/src/modules/usage/ for it; T1B fills it in
+
+16. Usage-event failure contradicts Done-when 2 and 3.
+    Those items say every copy, share and successful join records an event. The builders’ rule logs and discards a failed post-commit record, permanently losing that count. Specify the intended guarantee and a failure test before implementation.
+   Disposition: keep amended: Done-when 2 and 3 now say a failed record never undoes the action and leaves that one event uncounted, matching the roadmap; the builders notes require a test that forces a failure
+
+17. Unproven: item 3: a dead link opened with an expired or invalid session cookie.
+    Optional-session preview must still show the same dead-link message to that visitor. T2’s Tests cell names an integration file but does not pin this case or the guard behaviour it depends on.
+   Disposition: keep amended: the optional-session mode treats an expired or invalid cookie as no session, never a 401; T2 tests a dead link opened with such a cookie
