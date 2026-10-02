@@ -3,11 +3,24 @@
   "branch": "fix/split-the-circles-roadmap-item-cwf-2-kee",
   "done_when": "plans/roadmap.json lists CWF-2 with acceptance criteria 1-9, 13-16 and 22 of the old item, a new CWF-7 'Leave, remove and run a circle' with criteria 10-12 and 17-21 depending on CWF-2 and ordered right after it, and CWF-5 also depends on CWF-7; no criterion is lost or reworded",
   "kind": "fix",
-  "status": "started",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "48dd4aa7600418b51da33dddf9f5965491f399a7417bb556e231a9cdf2a84105",
+    "commit": "5886c163c6ca7d31475e0cfee499342d1791aaf5",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "ac40d4a8842a8be8c840f44549c97a283c3f7d0880ec05706b84474b34875841"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-02T21:04:50+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-02T21:07:31+00:00",
+      "step": "review"
     }
   ],
   "why": "Split the circles roadmap item: CWF-2 keeps create, list, view, invite and join, and a new CWF-7 takes leave, removal and admin powers, because CWF-2's plan did not converge"
