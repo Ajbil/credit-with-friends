@@ -1,0 +1,34 @@
+{
+  "allow_large": "Owner allowed it: the interfaces glob **/routes/** matches the web app's screen folder apps/web/src/routes/profile, but this fix only adds two navigation links and tests, with no API change",
+  "base": "1335083ff747efea424f63f4825fc3c038723eb7",
+  "branch": "fix/signed-in-members-cannot-reach-their-pro",
+  "done_when": "the signed-in home screen has a 'Your profile' link that opens the profile in one tap, the profile has a way back to home, and a phone-width browser test starts on the home screen and taps through to the profile and to sign-out instead of typing the address",
+  "kind": "fix",
+  "review": {
+    "commit": "9c7a93480df782ec717b3646674576e70bfc70fc",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This test builds a mock router and API response to check that the link has `/profile` as its href. The new Playwright test already starts on the signed-in home screen and taps that link through to the profile, so the mocked component test adds setup without proving another requested behavior.",
+        "file": "apps/web/src/pages/signed-in-members-cannot-reach-their-profile.test.tsx",
+        "line": 20,
+        "priority": "P2",
+        "title": "Simpler: remove the mocked home-link test \u2192 keep the browser navigation test"
+      }
+    ],
+    "status": "clean",
+    "tree": "3a8c9060ec15cc51782e06c6ac731b97a07518f9f5795505b657850e4ef92821"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-02T16:52:43+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-02T17:09:34+00:00",
+      "step": "review"
+    }
+  ],
+  "why": "Signed-in members cannot reach their profile or sign out: no screen links to the profile, and the installed app has no address bar"
+}

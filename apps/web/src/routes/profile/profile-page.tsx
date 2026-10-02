@@ -46,7 +46,7 @@ export function ProfilePage() {
     save.mutate({ displayName, whatsappNumber });
   }
 
-  return <PageFrame><section className="profile-layout"><h1>Your profile</h1><p>Your name and WhatsApp number help people in your circles reach you.</p>
+  return <PageFrame><section className="profile-layout"><a className="button button--quiet" href="/">Back to home</a><h1>Your profile</h1><p>Your name and WhatsApp number help people in your circles reach you.</p>
     <form className="profile-form" onSubmit={submit} noValidate>
       <label htmlFor="profile-name">Name</label><input id="profile-name" autoComplete="name" value={name ?? member.data.displayName} onChange={(event) => setName(event.target.value)} aria-invalid={!!errors.displayName} aria-describedby={errors.displayName ? 'profile-name-error' : undefined}/>{errors.displayName && <p id="profile-name-error" className="field-error">{errors.displayName}</p>}
       <label htmlFor="profile-phone">WhatsApp number</label><input id="profile-phone" type="tel" autoComplete="tel" inputMode="tel" value={phone ?? member.data.whatsappE164} onChange={(event) => setPhone(event.target.value)} aria-invalid={!!errors.whatsappNumber} aria-describedby={errors.whatsappNumber ? 'profile-phone-error' : undefined}/>{errors.whatsappNumber && <p id="profile-phone-error" className="field-error">{errors.whatsappNumber}</p>}
