@@ -8,7 +8,17 @@
     "session": "a63f68e8-a558-49cf-9fac-cfa8b0ff293c"
   },
   "doc": "plans/CWF-1.md",
-  "status": "approved",
+  "finished": "2026-10-02T19:36:39+00:00",
+  "merged": {
+    "T1": "2026-09-29T19:15:46+00:00",
+    "T2": "2026-09-30T09:57:33+00:00",
+    "T3": "2026-10-01T10:23:24+00:00",
+    "T4": "2026-10-01T08:09:57+00:00",
+    "T5": "2026-10-01T14:46:57+00:00",
+    "T6": "2026-10-02T19:36:39+00:00"
+  },
+  "outcome": "Members sign in with Google, onboard once with a name, WhatsApp number, 18+ confirmation and consent to privacy notice version 1, and manage their profile and sessions in an installable phone app live at creditwithfriends.in; the owner verified every production check on 2026-10-03",
+  "status": "done",
   "steps": [
     {
       "at": "2026-09-29T18:17:54+00:00",
@@ -21,6 +31,10 @@
     {
       "at": "2026-09-29T19:07:52+00:00",
       "step": "approved"
+    },
+    {
+      "at": "2026-10-02T19:39:04+00:00",
+      "step": "done"
     }
   ],
   "title": "Sign in, onboard and manage profile",
