@@ -1,6 +1,6 @@
 # Create, join and run circles
 
-7 parts · Risks: permanent circle deletion, leaked invite links, a production migration · New moving parts: listed under Tasks
+11 parts · Risks: permanent circle deletion, leaked invite links, a production migration · New moving parts: listed under Tasks
 
 ## What changes for you
 
@@ -34,8 +34,8 @@ straight after sign-in.
    after trimming; an empty or longer name is rejected with a message. The creator becomes its
    only member and its admin. A member already in 20 circles can't create another and is told
    why. Each circle records at creation whether its creator was the owner named in deployment
-   configuration, and changing that setting later never changes it. Creating a circle records
-   no join.
+   configuration, and changing that setting later never changes it; when no owner is
+   configured, no circle is owner-created. Creating a circle records no join.
 2. **Only the admin can get, share or reset the invite link.** Each circle has exactly one
    active link, whose code has at least 128 bits of randomness. Only the admin can retrieve it,
    including through direct data requests. "Share on WhatsApp" opens WhatsApp with the circle
@@ -59,9 +59,9 @@ straight after sign-in.
      the circle.
 4. **What's inside a circle reaches only its members.** Members see the circle name, every
    member by display name and which one is the admin. Non-members never receive the member list
-   or any member name, including through direct data requests. A member's display name and
-   WhatsApp number reach only people who share at least one circle with them, and only while
-   they do.
+   or any member name, including through direct data requests. A member's display name reaches
+   only people who share at least one circle with them, and only while they do. Nothing in this
+   story returns another member's WhatsApp number.
 5. **Leaving and removal take effect at once.** Any member can leave after confirming. The admin
    can remove anyone else after confirming, but can't remove themselves. From that moment, the
    person who left or was removed and the remaining members stop seeing each other through that
@@ -118,19 +118,33 @@ stories.
   `constitution/03-modular-monolith-structure.md` requires, added here because circles is the
   first module that needs another module.
   - It depends on no domain module.
-  - Circles uses it to ask accounts for a completed member's display name, WhatsApp number and
-    owner status, and to tell usage to record an event.
-  - Circles answers one query that later stories reuse: "member ids sharing a non-deleted circle
-    with X".
-- **Tables:** `Circle`, `CircleMembership`, `CircleRemovalBlock`, `UsageEvent` and
-  `UsageEventCircle`, as in the data model.
+  - Circles uses it to ask accounts whether a member has completed onboarding, for their
+    display name, and whether their Google account ID is the configured owner's. It also uses it
+    to tell usage to record an event.
+  - Other members' WhatsApp numbers and a "who shares a circle with X" query are added by the
+    stories that first use them (CWF-3 and CWF-4).
+- **Tables:** `Circle`, `CircleMembership` and `CircleRemovalBlock`, as in the data model, plus
+  `UsageEvent` with only `type` (join or invite), `occurredAtUtc` and `memberId`, and
+  `UsageEventCircle`. The card, bank and search fields are added by the stories that record
+  those events.
   - **Invite codes:** 22-character base64url from 16 random bytes.
-  - **Deleting a circle:** clears `inviteCode`, sets `deletedAtUtc` and hard-deletes its
-    memberships and blocks.
-  - **Admin column:** `Circle.adminMemberId` is set to null when the member row goes.
-- **Concurrency:** create, join, leave, remove, handover and delete each run in one transaction
-  that locks the circle row and the member row (`SELECT ... FOR UPDATE`) before checking limits
-  and writing. Admin succession picks the earliest `joinedAtUtc`, breaking ties by membership id.
+  - **Deleting a circle:** one shared operation, pinned by T3a and used by both admin deletion
+    (T3b) and last-member leave (T3a). It clears `inviteCode` and `adminMemberId`, sets
+    `deletedAtUtc`, and hard-deletes its memberships and blocks.
+  - **Admin column:** `Circle.adminMemberId` is also set to null by the database if the member
+    row goes (account deletion, CWF-5).
+- **Owner flag:** at creation, `isOwnerCreated` is true only when `OWNER_GOOGLE_ACCOUNT_ID` is
+  set and equals the creator's Google account ID. Creation is never refused for a missing owner
+  setting; production already has it set (CWF-1 runbook).
+- **Concurrency, one lock helper pinned by T1a:** every write that changes memberships (create,
+  join, leave, remove, handover, delete) runs in one transaction. Each locks the circle row first
+  and then the member rows in ascending id order (`SELECT ... FOR UPDATE`), through one helper in
+  `apps/api/src/modules/circles/core/`, before checking limits and writing. Admin succession
+  picks the earliest `joinedAtUtc`, breaking ties by membership id.
+- **Invite preview without sign-in, pinned by T1a:** the session guard gets an optional-session
+  mode. The preview resolves the session when one is present and works without one. That way a
+  signed-out visitor sees a dead-link result before signing in, and a signed-in visitor is
+  recognised as a member or a blocked person.
 - **Usage events:** they're recorded through the bus after the member's action commits. A failed
   record is logged and swallowed, never undoing or delaying the action.
 - **Invite URL:** `https://<domain>/circles/join/<code>`. Every handled case of a dead link
@@ -138,13 +152,13 @@ stories.
   to it.
 - **WhatsApp share:** the link is `https://wa.me/?text=<encoded circle name and link>`, opened by
   the phone; the API never calls WhatsApp.
-- **One API contract, pinned by T1:** T1 commits `apps/api/openapi.json` with every circle
-  endpoint T2 and T3 will fill in, plus stub controllers under `circles/join/` and
-  `circles/manage/` registered in `circles.module.ts`. That way the web client is generated once,
-  in T4.
-- **Web screens:** the signed-in home screen becomes the circles list (with "Your profile" kept).
-  T4 also pins every circle route in `apps/web/src/main.tsx`, so T5 and T6 only fill in their own
-  folders.
+- **One API contract, pinned by T1a:** T1a commits `apps/api/openapi.json` with every circle
+  endpoint. It also adds stub controllers under `circles/invite/`, `circles/join/`,
+  `circles/membership/` and `circles/admin/`, registered in `circles.module.ts`, which T1b, T2,
+  T3a and T3b fill in. That way the web client is generated once, in T4a.
+- **Web screens, routes pinned by T4a:** the signed-in home screen becomes the circles list, with
+  "Your profile" kept. T4a registers every circle route in `apps/web/src/main.tsx` and commits a
+  stub component for each, so T4b, T5, T6a and T6b only fill in their own folders.
 - **Production deploys:** after each API part merges, deploy it in Render by hand. Take an
   export first whenever the part brings a migration (decision 0017).
 
@@ -152,18 +166,24 @@ stories.
 
 | ID | Name | What it delivers | Covers | Scope | Tests | After | User-facing |
 |---|---|---|---|---|---|---|---|
-| T1 | Circles API: create, view and invite link | The service bus, the circle and usage tables and migration, usage-event recording, accounts' bus answers, create and list circles, circle view with members, the admin's invite link with copy and share events and reset, the visibility query, and the full circles API contract with stub join and manage controllers | 1, 2, 4 | `apps/api/src/service-bus/`, `apps/api/src/modules/circles/`, `apps/api/src/modules/usage/`, `apps/api/src/modules/accounts/`, `apps/api/src/app.module.ts`, `apps/api/prisma/`, `apps/api/openapi.json`, `apps/api/test/circles-core.integration.spec.ts` | `apps/api/src/service-bus/**/*.spec.ts`, `apps/api/src/modules/circles/**/*.spec.ts`, `apps/api/src/modules/usage/**/*.spec.ts`, `apps/api/test/circles-core.integration.spec.ts` | | no |
-| T2 | Circles API: open a link and join | The invite preview with every case in order, and joining with all checks repeated at the moment of joining under row locks, refusal reasons and the join event | 3 | `apps/api/src/modules/circles/join/`, `apps/api/test/circles-join.integration.spec.ts` | `apps/api/src/modules/circles/join/**/*.spec.ts`, `apps/api/test/circles-join.integration.spec.ts` | T1 | no |
-| T3 | Circles API: leave, remove and admin powers | Leave, remove, removal blocks and clear all removals, rename, hand over, delete, admin succession and last-member deletion, all admin-only where the spec says so | 5, 6 | `apps/api/src/modules/circles/manage/`, `apps/api/test/circles-manage.integration.spec.ts` | `apps/api/src/modules/circles/manage/**/*.spec.ts`, `apps/api/test/circles-manage.integration.spec.ts` | T1 | no |
-| T4 | Web: circles home and circle screen | The signed-in home as the circles list with create and "Your profile", the circle screen with members and admin marker, and the admin's copy, share on WhatsApp and reset link; pins every circle route and regenerates the API client | 1, 2, 4 | `apps/web/src/routes/circles/home/`, `apps/web/src/routes/circles/circle/`, `apps/web/src/pages/sign-in-page.tsx`, `apps/web/src/main.tsx`, `apps/web/src/api/generated.ts`, `apps/web/e2e/circles.spec.ts` | `apps/web/src/routes/circles/**/*.test.tsx`, `apps/web/e2e/circles.spec.ts` | T1 | yes |
-| T5 | Web: invite page and joining | The invite page for every case, with sign-in and onboarding returning to it, the "Join" button and refusal messages | 3 | `apps/web/src/routes/circles/join/`, `apps/web/e2e/join.spec.ts` | `apps/web/src/routes/circles/join/**/*.test.tsx`, `apps/web/e2e/join.spec.ts` | T2, T4 | yes |
-| T6 | Web: leave, remove and admin actions | Leave, remove and delete with confirmation steps, clear all removals, rename and hand over | 5, 6 | `apps/web/src/routes/circles/manage/`, `apps/web/e2e/manage.spec.ts` | `apps/web/src/routes/circles/manage/**/*.test.tsx`, `apps/web/e2e/manage.spec.ts` | T3, T4 | yes |
-| T7 | Live check on your phone | A CWF-2 production check section in the runbook, filled in from your live walk-through | 7 | `docs/architecture/deployment.md` | `docs/architecture/deployment.md` (the recorded production check) | T5, T6 | yes |
+| T1a | Circles API: data, create and view | The service bus; the circle, membership, removal-block and minimal usage tables and migration; accounts' bus answers; the shared lock helper; the session guard's optional-session mode; create and list circles; the circle view with members and admin; and the full circles API contract with stub invite, join, membership and admin controllers | 1, 4 | `apps/api/src/service-bus/`, `apps/api/src/modules/circles/core/`, `apps/api/src/modules/circles/circles.module.ts`, `apps/api/src/modules/circles/invite/`, `apps/api/src/modules/circles/join/`, `apps/api/src/modules/circles/membership/`, `apps/api/src/modules/circles/admin/`, `apps/api/src/modules/accounts/`, `apps/api/src/modules/sessions/`, `apps/api/src/app.module.ts`, `apps/api/prisma/`, `apps/api/openapi.json`, `apps/api/test/circles-core.integration.spec.ts` | `apps/api/src/service-bus/**/*.spec.ts`, `apps/api/src/modules/circles/core/**/*.spec.ts`, `apps/api/test/circles-core.integration.spec.ts` | | no |
+| T1b | Circles API: invite link and usage events | The usage module recording events through the bus without ever blocking the action; the admin-only invite link with copy and share events; and reset | 2 | `apps/api/src/modules/usage/`, `apps/api/src/modules/circles/invite/`, `apps/api/test/circles-invite.integration.spec.ts` | `apps/api/src/modules/usage/**/*.spec.ts`, `apps/api/src/modules/circles/invite/**/*.spec.ts`, `apps/api/test/circles-invite.integration.spec.ts` | T1a | no |
+| T2 | Circles API: open a link and join | The invite preview with every case in order, with or without a session, and joining with every check repeated under the shared lock helper, refusal reasons and the join event | 3 | `apps/api/src/modules/circles/join/`, `apps/api/test/circles-join.integration.spec.ts` | `apps/api/src/modules/circles/join/**/*.spec.ts`, `apps/api/test/circles-join.integration.spec.ts` | T1b | no |
+| T3a | Circles API: leave, removal and succession | Leave; admin-only remove with blocks and clear all removals; admin succession; and the shared circle-deletion operation used for last-member leave | 5, 6 | `apps/api/src/modules/circles/membership/`, `apps/api/test/circles-membership.integration.spec.ts` | `apps/api/src/modules/circles/membership/**/*.spec.ts`, `apps/api/test/circles-membership.integration.spec.ts` | T1a | no |
+| T3b | Circles API: rename, hand over and delete | Admin-only rename with the 1 to 40 rule, handover, and delete through the shared deletion operation | 6 | `apps/api/src/modules/circles/admin/`, `apps/api/test/circles-admin.integration.spec.ts` | `apps/api/src/modules/circles/admin/**/*.spec.ts`, `apps/api/test/circles-admin.integration.spec.ts` | T3a | no |
+| T4a | Web: circles home and create | The signed-in home as the circles list with create and "Your profile"; registers every circle route with stub components; regenerates the API client | 1 | `apps/web/src/main.tsx`, `apps/web/src/pages/sign-in-page.tsx`, `apps/web/src/api/generated.ts`, `apps/web/src/routes/circles/`, `apps/web/e2e/circles-home.spec.ts` | `apps/web/src/routes/circles/home/**/*.test.tsx`, `apps/web/e2e/circles-home.spec.ts` | T1a | yes |
+| T4b | Web: circle screen and invite controls | The circle screen with members and the admin marker; the admin's copy, share on WhatsApp and reset link | 2, 4 | `apps/web/src/routes/circles/circle/`, `apps/web/e2e/circle.spec.ts` | `apps/web/src/routes/circles/circle/**/*.test.tsx`, `apps/web/e2e/circle.spec.ts` | T1b, T4a | yes |
+| T5 | Web: invite page and joining | The invite page for every case, with sign-in and onboarding returning to it, the "Join" button and refusal messages | 3 | `apps/web/src/routes/circles/join/`, `apps/web/e2e/join.spec.ts` | `apps/web/src/routes/circles/join/**/*.test.tsx`, `apps/web/e2e/join.spec.ts` | T2, T4a | yes |
+| T6a | Web: leave, remove and clear removals | Leave and remove with confirmation steps, and clear all removals | 5 | `apps/web/src/routes/circles/membership/`, `apps/web/e2e/membership.spec.ts` | `apps/web/src/routes/circles/membership/**/*.test.tsx`, `apps/web/e2e/membership.spec.ts` | T3a, T4b | yes |
+| T6b | Web: rename, hand over and delete | Rename, hand over, and delete with a confirmation that says it is permanent | 6 | `apps/web/src/routes/circles/admin/`, `apps/web/e2e/admin.spec.ts` | `apps/web/src/routes/circles/admin/**/*.test.tsx`, `apps/web/e2e/admin.spec.ts` | T3b, T4b | yes |
+| T7 | Live check on your phone | A CWF-2 production check section in the runbook, filled in from your live walk-through | 7 | `docs/architecture/deployment.md` | `docs/architecture/deployment.md` (the recorded production check) | T5, T6a, T6b | yes |
 
-T2, T3 and T4 can run side by side once T1 merges; T5 and T6 can run side by side after that.
+Once T1a merges, T1b, T3a and T4a can run side by side. Then T2, T3b and T4b can run side by
+side. T5, T6a and T6b follow as their API parts land.
 
 New moving parts:
-- **T1:** the in-process service bus in `apps/api/src/service-bus/` (Done-when 2 and 4), required by the modular-monolith constitution for the first cross-module call; and the usage module that records events (Done-when 2 and 3).
+- **T1a:** the in-process service bus in `apps/api/src/service-bus/` (Done-when 1 and 4), required by the modular-monolith constitution for the first cross-module call.
+- **T1b:** the usage module that records events (Done-when 2 and 3).
 
 ## Notes
 
@@ -171,4 +191,5 @@ New moving parts:
 
 - A second allowed Google account for the live check in T7. It must be on your pre-launch list,
   and one you can sign in with on another device or browser.
-- A manual export in Render before deploying T1, which adds the circle tables.
+- A manual export in Render before deploying T1a, which adds the circle tables, and before any
+  later part that brings a migration.
