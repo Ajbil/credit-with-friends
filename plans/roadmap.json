@@ -39,10 +39,10 @@
         "A signed-out visitor who opens an invite link, signs in and completes onboarding lands back on that invite; a person who is already a member and opens a valid link goes straight to the circle.",
         "Joining records a join usage event with the member and circle.",
         "A member sees the list of circles they belong to and, inside a circle, its name, its members by display name and which member is the admin.",
-        "A member's display name and WhatsApp number are returned only to members who share at least one circle with them, and only while they do, including through direct data requests.",
-        "An unknown, malformed, reset or deleted-circle link shows the same no-longer-valid message to everyone, including members, and reveals nothing about any circle; after a reset, the new link works and existing members are unaffected.",
+        "A member's display name and WhatsApp number are returned only to members who share at least one circle with them, including through direct data requests.",
+        "An unknown, malformed or reset link shows the same no-longer-valid message to everyone, including members, and reveals nothing about any circle; after a reset, the new link works and existing members are unaffected.",
         "Joining is refused with a reason at 100 members per circle and at 20 circles per member, and simultaneous joins never exceed either limit.",
-        "When Join is pressed, the system re-checks at that moment that the link is still active, the person has a completed account and is not blocked by a removal, whatever the screen showed.",
+        "When Join is pressed, the system re-checks at that moment that the link is still active, the person has a completed account, whatever the screen showed.",
         "Each circle records at creation whether its creator was the owner named in deployment configuration at that moment.",
         "Recording a join or invite usage event never blocks or undoes the member's action; a failed record leaves that event uncounted.",
         "Non-members never receive a circle's member list or member names, including through direct data requests."
@@ -68,7 +68,9 @@
         "Leaving, removing a member and deleting a circle each require a confirmation step.",
         "When the admin leaves, the remaining member with the earliest join time becomes admin; when the last member leaves, the circle is deleted and its link shows the no-longer-valid message.",
         "Deleting a circle ends every membership and makes its invite link show the no-longer-valid message; a deleted circle keeps its past usage events, its last name, its creation time, its deletion and whether the owner created it, so later usage counts can show it marked (deleted).",
-        "The admin can hand the admin role to another member, after which only the new admin has admin powers."
+        "The admin can hand the admin role to another member, after which only the new admin has admin powers.",
+        "A member's display name and WhatsApp number stop being returned to someone as soon as they no longer share any circle, including through direct data requests.",
+        "When Join is pressed, the system also re-checks at that moment that the person is not blocked by a removal, whatever the screen showed."
       ],
       "skill": "fullstack",
       "depends_on": [
