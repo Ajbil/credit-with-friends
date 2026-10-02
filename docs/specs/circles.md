@@ -41,6 +41,8 @@ people and reset the link.
 - Every tap on "Copy" or "Share on WhatsApp" records one "invite" usage event
   carrying the admin and the circle (decision 0008). The app cannot see whether
   the WhatsApp message was actually sent, so the tap is what counts.
+- Recording a join or invite usage event never blocks or undoes the member's
+  action. If recording fails, that one event is left uncounted.
 - The admin can reset the link. The old link stops working at once, and a new
   one replaces it; existing members are unaffected.
 
@@ -176,3 +178,5 @@ people and reset the link.
     including through direct data requests.
 16. A removed person who deletes their account and signs up again is not
     blocked from that circle.
+17. Recording a join or invite usage event never blocks or undoes the member's
+    action; a failed record leaves that one event uncounted.
