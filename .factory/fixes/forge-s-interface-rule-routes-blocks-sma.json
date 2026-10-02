@@ -1,0 +1,39 @@
+{
+  "base": "b7b7f5c264f1b3a876a3fa97c58344a94d8331b1",
+  "branch": "fix/forge-s-interface-rule-routes-blocks-sma",
+  "done_when": "forge.toml limits the routes interface pattern to API code (apps/api/**/routes/**) and keeps every other interface pattern unchanged",
+  "kind": "fix",
+  "review": {
+    "commit": "b32f85404279de4577ab2f0c8b31fd8126374761",
+    "dismissals": [
+      {
+        "because": "forge.toml:8 is Forge's own configuration, not app code, and Forge's matcher has its own tests upstream; checked with Forge's exact rule (prcheck.py:84, fnmatch on path and /path): apps/web/src/routes/profile/profile-page.tsx old=True new=False, apps/api/src/routes/members.ts old=True new=True, and API controllers stay covered by **/*.controller.*; the fix's done-when asks only for this forge.toml change",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
+    "findings": [
+      {
+        "body": "The branch changes the interface glob but adds no test. This fix needs a repository-suite test that invokes Forge\u2019s command and verifies that a web screen under apps/web/src/routes is excluded while an API route under apps/api is included. Such a test would fail with the previous broad glob; none appears in the supplied branch diff.",
+        "file": "forge.toml",
+        "line": 9,
+        "priority": "P1",
+        "title": "Not done: Forge command test for the routes interface rule"
+      }
+    ],
+    "status": "clean",
+    "tree": "fd80153c784eb223d1da16b446e2cfdb3df32779dc24f240e97ffe89abbd37fb"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-02T19:40:07+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-02T19:42:14+00:00",
+      "step": "review"
+    }
+  ],
+  "why": "Forge's interface rule **/routes/** blocks small web-screen fixes because the web app keeps its screens in apps/web/src/routes"
+}
