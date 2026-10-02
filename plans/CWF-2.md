@@ -44,25 +44,23 @@ emails can sign in at all (decisions 0009 and 0016).
    the new one works, and existing members are unaffected. Recording a usage event never blocks
    or undoes what the member did; if recording fails, that one event stays uncounted.
 3. **Opening an invite link and joining works safely in every case.**
-   - **A dead link:** an unknown, malformed, reset or deleted-circle link shows the same "This
+   - **A dead link:** an unknown, malformed or reset link shows the same "This
      invite link is no longer valid. Ask the person who shared it for a new one." to everyone,
      members included, and reveals nothing about any circle.
    - **Not signed in:** the person signs in and onboards first, then lands back on the invite.
    - **Already a member:** they go straight to the circle.
-   - **Blocked by a removal:** they see only "You can't join this circle." (Removing people
-     arrives in CWF-7; this story already honours a block when one exists.)
    - **Anyone else:** they see the circle name and member count, no names, and join only by
      tapping "Join".
    - **At the moment of joining:** the system checks again that the link is still active, the
-     person has a completed account and isn't blocked, the circle has fewer than 100 members and
+     person has a completed account, the circle has fewer than 100 members and
      the person is in fewer than 20 circles. A refused join says why. Simultaneous joins never
      go past either limit. A successful join records one join usage event with the member and
      the circle; a failed record never undoes the join and leaves that one event uncounted.
 4. **What's inside a circle reaches only its members.** Members see the circle name, every
    member by display name and which one is the admin. Non-members never receive the member list
    or any member name, including through direct data requests. A member's display name reaches
-   only people who share at least one circle with them, and only while they do. Nothing in this
-   story returns another member's WhatsApp number.
+   only people who share at least one circle with them. Nothing in this story returns another
+   member's WhatsApp number.
 5. **It works live on your phone.** On `creditwithfriends.in` you create a circle, share its
    link into WhatsApp, and a second allowed Google account opens it, sees the name and member
    count, and joins. Both of you then see each other in the circle. You reset the link: the old
@@ -85,8 +83,11 @@ The spec is `docs/specs/circles.md`; the tables and invariants are in
 `docs/architecture/11-data-model.md`.
 
 - **Out of this story:**
-  - **CWF-7:** leave, remove, removal blocks being created, clear all removals, rename, hand
-    over, delete, and admin succession.
+  - **CWF-7:** leave, remove, removal blocks, clear all removals, rename, hand over, delete and
+    admin succession. It also brings the join cases that only those actions make reachable: a
+    deleted-circle link, a person blocked by a removal (with the `CircleRemovalBlock` table), and
+    a member's name no longer reaching someone once they stop sharing a circle. Those are the
+    deleted-circle and removal parts of roadmap criteria 9 and 14, delivered with CWF-7.
   - **CWF-5 (account deletion):** passing the admin role on, and erasing removal blocks, when a
     member deletes their account.
   - **CWF-3 (cards):** cards becoming visible on joining.
@@ -102,11 +103,10 @@ The spec is `docs/specs/circles.md`; the tables and invariants are in
     to tell usage to record an event.
   - Other members' WhatsApp numbers and a "who shares a circle with X" query are added by the
     stories that first use them (CWF-3 and CWF-4).
-- **Tables:** `Circle`, `CircleMembership` and `CircleRemovalBlock`, as in the data model, plus
+- **Tables:** `Circle` and `CircleMembership`, as in the data model, plus
   `UsageEvent` with only `type` (join or invite), `occurredAtUtc` and `memberId`, and
   `UsageEventCircle`. The card, bank and search fields are added by the stories that record
-  those events. `CircleRemovalBlock` is created now so joining can honour blocks; CWF-7 writes
-  them.
+  those events. `CircleRemovalBlock` arrives with CWF-7.
   - **Invite codes:** 22-character base64url from 16 random bytes. A new circle gets its code at
     creation, in T1A, and a test proves each new circle has a valid, unique code.
   - **Admin column:** `Circle.adminMemberId` is set to null by the database if the member row
@@ -121,20 +121,21 @@ The spec is `docs/specs/circles.md`; the tables and invariants are in
   - **Creation** has no circle row to lock yet, so it locks only the creator's member row before
     counting their circles and inserting. It never locks a circle row, so it can't deadlock with
     a join. A test races creates and joins for a member near the 20-circle limit.
-- **Invite preview without sign-in, pinned by T1A:** the session guard gets an optional-session
+- **Invite preview without sign-in, in T2:** the session guard gets an optional-session
   mode. The preview resolves the session when one is present and works without one. That way a
   signed-out visitor sees a dead-link result before signing in, and a signed-in visitor is
-  recognised as a member or a blocked person. An expired or invalid session cookie counts as no
+  recognised as a member. An expired or invalid session cookie counts as no
   session; it never turns a preview into a 401. T2 tests a dead link opened with such a cookie.
 - **Usage events:** they're recorded through the bus after the member's action commits. A failed
   record is logged, never undoes or delays the action, and leaves that one event uncounted, as
   the spec and roadmap say. A test forces a failure and checks the action still succeeds.
 - **Module registration, pinned by T1A:** T1A registers a stub `UsageModule` in `app.module.ts`,
   which T1B fills in.
+- **Invite-link privacy after joining:** T2's integration test also has a joined member who isn't
+  the admin request the invite link directly and be refused.
 - **Invite URL:** `https://<domain>/circles/join/<code>`. Every handled case of a dead link
   returns the same response. The sign-in return path from CWF-1 brings a signed-out visitor back
-  to it. A deleted-circle link is tested by setting up a deleted circle directly in the test
-  database, since deleting arrives in CWF-7.
+  to it.
 - **WhatsApp share:** the link is `https://wa.me/?text=<encoded circle name and link>`, opened by
   the phone; the API never calls WhatsApp.
 - **One API contract, pinned by T1A:** T1A commits `apps/api/openapi.json` with every endpoint
@@ -151,11 +152,11 @@ The spec is `docs/specs/circles.md`; the tables and invariants are in
 
 | ID | Name | What it delivers | Covers | Scope | Tests | After | User-facing |
 |---|---|---|---|---|---|---|---|
-| T1A | Circles API: foundations and create | The service bus; the circle, membership, removal-block and minimal usage tables and migration; accounts' bus answers; the shared lock helper, including creation's member-only lock; the session guard's optional-session mode; a stub usage module registered in `app.module.ts`; creating a circle, with its invite code, as the test that crosses the bus, lock helper and tables; and this story's circles API contract with stub list, view, invite and join controllers | 1 | `apps/api/src/service-bus/`, `apps/api/src/modules/circles/core/`, `apps/api/src/modules/circles/circles.module.ts`, `apps/api/src/modules/circles/list/`, `apps/api/src/modules/circles/view/`, `apps/api/src/modules/circles/invite/`, `apps/api/src/modules/circles/join/`, `apps/api/src/modules/usage/`, `apps/api/src/modules/accounts/`, `apps/api/src/modules/sessions/`, `apps/api/src/app.module.ts`, `apps/api/prisma/`, `apps/api/openapi.json`, `apps/api/test/circles-core.integration.spec.ts` | `apps/api/src/service-bus/**/*.spec.ts`, `apps/api/src/modules/circles/core/**/*.spec.ts`, `apps/api/test/circles-core.integration.spec.ts` | | no |
+| T1A | Circles API: foundations and create | The service bus; the circle, membership and minimal usage tables and migration; accounts' bus answers; the shared lock helper, including creation's member-only lock; a stub usage module registered in `app.module.ts`; creating a circle, with its invite code, as the test that crosses the bus, lock helper and tables; and this story's circles API contract with stub list, view, invite and join controllers | 1 | `apps/api/src/service-bus/`, `apps/api/src/modules/circles/core/`, `apps/api/src/modules/circles/circles.module.ts`, `apps/api/src/modules/circles/list/`, `apps/api/src/modules/circles/view/`, `apps/api/src/modules/circles/invite/`, `apps/api/src/modules/circles/join/`, `apps/api/src/modules/usage/`, `apps/api/src/modules/accounts/`, `apps/api/src/app.module.ts`, `apps/api/prisma/`, `apps/api/openapi.json`, `apps/api/test/circles-core.integration.spec.ts` | `apps/api/src/service-bus/**/*.spec.ts`, `apps/api/src/modules/circles/core/**/*.spec.ts`, `apps/api/test/circles-core.integration.spec.ts` | | no |
 | T1D | Circles API: list my circles | The list of circles a member belongs to, with each circle's name, member count and whether they are its admin | 1 | `apps/api/src/modules/circles/list/`, `apps/api/test/circles-list.integration.spec.ts` | `apps/api/src/modules/circles/list/**/*.spec.ts`, `apps/api/test/circles-list.integration.spec.ts` | T1A | no |
 | T1C | Circles API: circle view and members | The circle view with its name, members by display name and the admin, for members only; non-members get nothing, including through direct data requests | 4 | `apps/api/src/modules/circles/view/`, `apps/api/test/circles-view.integration.spec.ts` | `apps/api/src/modules/circles/view/**/*.spec.ts`, `apps/api/test/circles-view.integration.spec.ts` | T1A | no |
 | T1B | Circles API: invite link and usage events | The usage module recording events through the bus without ever blocking the action; the admin-only invite link with copy and share events; and reset | 2 | `apps/api/src/modules/usage/`, `apps/api/src/modules/circles/invite/`, `apps/api/test/circles-invite.integration.spec.ts` | `apps/api/src/modules/usage/**/*.spec.ts`, `apps/api/src/modules/circles/invite/**/*.spec.ts`, `apps/api/test/circles-invite.integration.spec.ts` | T1A | no |
-| T2 | Circles API: open a link and join | The invite preview with every case in order, with or without a session, and joining with every check repeated under the shared lock helper, refusal reasons and the join event | 3 | `apps/api/src/modules/circles/join/`, `apps/api/test/circles-join.integration.spec.ts` | `apps/api/src/modules/circles/join/**/*.spec.ts`, `apps/api/test/circles-join.integration.spec.ts` | T1B | no |
+| T2 | Circles API: open a link and join | The session guard's optional-session mode; the invite preview with every case in order, with or without a session; joining with every check repeated under the shared lock helper, refusal reasons and the join event; and a joined non-admin refused the invite link | 3 | `apps/api/src/modules/circles/join/`, `apps/api/src/modules/sessions/`, `apps/api/test/circles-join.integration.spec.ts` | `apps/api/src/modules/sessions/**/*.spec.ts`, `apps/api/src/modules/circles/join/**/*.spec.ts`, `apps/api/test/circles-join.integration.spec.ts` | T1B | no |
 | T4A | Web: circles home and create | The signed-in home as the circles list with create and "Your profile"; registers every circle route with stub components; regenerates the API client | 1 | `apps/web/src/main.tsx`, `apps/web/src/pages/sign-in-page.tsx`, `apps/web/src/api/generated.ts`, `apps/web/src/routes/circles/`, `apps/web/e2e/circles-home.spec.ts` | `apps/web/src/routes/circles/home/**/*.test.tsx`, `apps/web/e2e/circles-home.spec.ts` | T1A, T1D | yes |
 | T4B | Web: circle screen and invite controls | The circle screen with members and the admin marker; the admin's copy, share on WhatsApp and reset link | 2, 4 | `apps/web/src/routes/circles/circle/`, `apps/web/e2e/circle.spec.ts` | `apps/web/src/routes/circles/circle/**/*.test.tsx`, `apps/web/e2e/circle.spec.ts` | T1B, T1C, T4A | yes |
 | T5 | Web: invite page and joining | The invite page for every case, with sign-in and onboarding returning to it, the "Join" button and refusal messages | 3 | `apps/web/src/routes/circles/join/`, `apps/web/e2e/join.spec.ts` | `apps/web/src/routes/circles/join/**/*.test.tsx`, `apps/web/e2e/join.spec.ts` | T2, T4A | yes |

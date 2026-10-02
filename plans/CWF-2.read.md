@@ -1,12 +1,12 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-02T20:50:24+00:00
-read_hash: 31d93f5447c2ff56d659f927b3bb780eded29488
-round: 3
+read_at: 2026-10-02T21:17:19+00:00
+read_hash: 9d91145febbe799b786c95a4e03a53da8f7b171f
+round: 4
 passed: no
-doc_seen: 31d93f5447c2ff56d659f927b3bb780eded29488
+doc_seen: 9d91145febbe799b786c95a4e03a53da8f7b171f
 spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
-notes_seen: a32e415a0ee4c9fc842db6e4b318983ce05a134a
+notes_seen: e24bfaecad167e8bbe568805c6988d0620fd7681
 ---
 # Cold read notes
 
@@ -102,3 +102,21 @@ Only a genuine trade-off goes to the human, as a question with options. There is
 20. Unproven: item 5: removal blocks joining through a later reset link, and clearing removals permits joining again.
     T3A creates removals without depending on T2’s join API, while T2 does not depend on T3A’s removal API. Neither task’s integration test can prove the full sequence through the running API as ordered. Assign that test to a task after both APIs land, or add the needed dependency.
    Disposition: keep amended: T3B now waits for T2 and T3A and owns the end-to-end test that a removed person can't rejoin through the current or a later reset link and can rejoin after clear all removals; T3B covers Done-when 5 and 6
+
+## Round 4
+
+21. Disputed keep 18: T1A still exceeds the task-size guideline.
+    Moving list to T1D leaves the migration, service bus, account and session changes, locking, create, the full API contract, four stub controllers and integration tests in T1A. The owner’s chosen split has reduced its scope, but it still appears substantially larger than about 400 changed lines.
+   Disposition: keep T1A is the seam-pinning first task the planning rules require (shared tables, bus, lock helper and the one API contract that lets T1B, T1C, T1D and T2 edit separate files in parallel); the optional-session guard moved to T2, the only user; splitting further would leave a task covering no Done-when item, which the rules cut, and the owner chose this split
+
+22. Cut or defer: removal-block and deleted-circle handling in CWF-2.
+    No action in this story creates a block or deletes a circle, so these join states are reachable only through direct test-database setup. Move their schema, checks and item 3 cases to CWF-7, where removal and deletion become available; keep those protections when those actions ship.
+   Disposition: defer: removal-block and deleted-circle join states, their table and checks move to CWF-7, which brings removal and deletion; the plan's out-of-scope notes name them as the deleted-circle and removal parts of roadmap criteria 9 and 14
+
+23. Unproven: item 2: a joined non-admin is denied the invite link through a direct request.
+    T1B runs before the join API exists, and no later Tests cell assigns this permission check. Add a running-API test after T2 joins a second member.
+   Disposition: keep amended: T2, after joining exists, adds a running-API test that a joined non-admin is refused the invite link through a direct request
+
+24. Unproven: item 4: a member’s name stops reaching someone when their last shared circle ends.
+    Item 4 promises visibility only while membership is shared, but CWF-2 has no leave or remove operation with which to prove revocation through the app. Assign that case and its test to CWF-7.
+   Disposition: defer: Done-when 4 drops 'only while they do'; proving a name stops reaching someone after their last shared circle ends moves to CWF-7 with leave and remove
