@@ -1,12 +1,12 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-02T21:22:32+00:00
-read_hash: 4360c6ab58b2b4e291a74d17ccbaf7eaa647ca0b
-round: 6
+read_at: 2026-10-02T21:33:35+00:00
+read_hash: bacb261041c0d32bde80bd608d9dce29179892ae
+round: 7
 passed: no
-doc_seen: 4360c6ab58b2b4e291a74d17ccbaf7eaa647ca0b
+doc_seen: bacb261041c0d32bde80bd608d9dce29179892ae
 spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
-notes_seen: a02a2b23ad9789f8d363ff4007ef6403831d81ae
+notes_seen: f4d9b8857e1212ab6a342a2841df0c590ca6dc58
 ---
 # Cold read notes
 
@@ -136,3 +136,9 @@ Only a genuine trade-off goes to the human, as a question with options. There is
 27. T1A and T2 omit Done-when 2 from their Covers cells.
     T1A creates and tests the active invite code, while T2 tests that a joined non-admin cannot retrieve the link. Both prove parts of item 2, but their Covers cells list only items 1 and 3 respectively.
    Disposition: keep amended: T1A now covers Done-when 1 and 2 (invite code at creation) and T2 covers 2 and 3 (a joined non-admin refused the link)
+
+## Round 7
+
+28. Disputed keep 26: CWF-2’s roadmap story still promises the work moved to CWF-7.
+    Its story sentence says members can leave and admins can remove, rename, hand over and delete; the plan now assigns those actions to CWF-7. The acceptance criteria were split, but the roadmap story text and this plan’s title still describe the old scope.
+   Disposition: keep amended: the roadmap's CWF-2 title and story sentence (on this story branch) and the plan title now read 'Create and join circles' and describe only create, invite, join and seeing members; leaving and admin powers are in CWF-7's story

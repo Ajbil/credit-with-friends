@@ -1,4 +1,4 @@
-# Create, join and run circles
+# Create and join circles
 
 9 parts · Risks: leaked invite links, a production migration, limits under load · New moving parts: listed under Tasks
 
