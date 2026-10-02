@@ -1,0 +1,12 @@
+{
+  "doc": "plans/CWF-2.md",
+  "status": "planning",
+  "steps": [
+    {
+      "at": "2026-10-02T20:08:33+00:00",
+      "step": "start"
+    }
+  ],
+  "title": "Create, join and run circles",
+  "touches": 0
+}
