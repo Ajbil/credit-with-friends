@@ -4,11 +4,22 @@
   "done_when": "The board shows the story as finished, with its outcome.",
   "kind": "story-done",
   "outcome": "Members sign in with Google, onboard once with a name, WhatsApp number, 18+ confirmation and consent to privacy notice version 1, and manage their profile and sessions in an installable phone app live at creditwithfriends.in; the owner verified every production check on 2026-10-03",
-  "status": "started",
+  "review": {
+    "commit": "b04f3f221261d61e71f20affad5ba3891091e4c2",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "4849aaa5765f42c5d6f3c4da2323bc070975e1ebe6dd8522a66e0733d622435c"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-02T19:39:04+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-02T19:40:43+00:00",
+      "step": "review"
     }
   ],
   "touches": 0,
