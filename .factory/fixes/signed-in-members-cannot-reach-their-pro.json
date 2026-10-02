@@ -1,0 +1,14 @@
+{
+  "base": "1335083ff747efea424f63f4825fc3c038723eb7",
+  "branch": "fix/signed-in-members-cannot-reach-their-pro",
+  "done_when": "the signed-in home screen has a 'Your profile' link that opens the profile in one tap, the profile has a way back to home, and a phone-width browser test starts on the home screen and taps through to the profile and to sign-out instead of typing the address",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-02T16:52:43+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "Signed-in members cannot reach their profile or sign out: no screen links to the profile, and the installed app has no address bar"
+}
