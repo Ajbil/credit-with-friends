@@ -1,0 +1,14 @@
+{
+  "base": "b7b7f5c264f1b3a876a3fa97c58344a94d8331b1",
+  "branch": "fix/checks-run-only-on-pull-requests-so-a-cl",
+  "done_when": ".github/workflows/ci.yml also runs on every push to main, and a run on main shows the full check suite",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-02T19:39:58+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "Checks run only on pull requests, so a clash between two separately green pull requests stays hidden on main"
+}
