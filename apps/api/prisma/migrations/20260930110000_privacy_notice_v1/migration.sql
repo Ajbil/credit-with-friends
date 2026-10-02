@@ -11,7 +11,7 @@ We record joins, invites, cards listed, searches and WhatsApp contact taps, link
 
 You can see your information in your profile and change your display name and WhatsApp number there. You can withdraw your consent by deleting your account. Deletion removes your profile, cards and circle memberships from the live app and ends your sessions.
 
-Deleted information may remain in our hosting provider's backups until they expire. Our database is stored in Singapore. Our hosting provider can restore it to any point in the past 3 days, and any backup copy we make by hand is kept for 7 days.
+Deleted information may remain in our hosting provider's backups until they expire. Our database is stored in Singapore. Our hosting provider can restore it to any point in the past 3 days, and any backup copy we make by hand is kept for at least 7 days.
 
 We never ask for a card number, CVV, expiry date or one-time password. Do not share any of these with anyone through the app or WhatsApp. Orders and repayment happen outside CreditWithFriends. We do not use third-party trackers.
 

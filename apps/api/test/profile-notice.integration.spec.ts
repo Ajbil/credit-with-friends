@@ -120,12 +120,14 @@ describe('profile and privacy notice API', () => {
   });
 
   test('done-when-3: own profile edits validate and preserve private Google identity', async () => {
+    // The notice is now public so Google can link to it before sign-in.
     const notice = await call('/privacy-notice');
-    expect(notice.response.status).toBe(401);
+    expect(notice.response.status).toBe(200);
     const cookie = await member('profile-owner');
     const currentNotice = await call('/privacy-notice', 'GET', cookie);
     expect(currentNotice.payload.data).toEqual({ version: 1, text: expectedVersionOneText.replaceAll('{{OWNER_CONTACT_EMAIL}}', 'owner@example.in') });
-    expect(currentNotice.payload.data.text).toContain('restore it to any point in the past 3 days, and any backup copy we make by hand is kept for 7 days');
+    // Render guarantees at least seven days for manual exports, not exactly seven.
+    expect(currentNotice.payload.data.text).toContain('restore it to any point in the past 3 days, and any backup copy we make by hand is kept for at least 7 days');
     expect(currentNotice.payload.data.text).toContain('never the variant you typed');
     expect(currentNotice.payload.data.text).toContain('stored in Singapore');
     expect(currentNotice.payload.data.text).not.toContain('{{OWNER_CONTACT_EMAIL}}');
