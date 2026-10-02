@@ -1,12 +1,12 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-02T21:20:33+00:00
-read_hash: fdbc6a436b2aaa770b0a91688d24499ff180cbef
-round: 5
+read_at: 2026-10-02T21:22:32+00:00
+read_hash: 4360c6ab58b2b4e291a74d17ccbaf7eaa647ca0b
+round: 6
 passed: no
-doc_seen: fdbc6a436b2aaa770b0a91688d24499ff180cbef
+doc_seen: 4360c6ab58b2b4e291a74d17ccbaf7eaa647ca0b
 spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
-notes_seen: 694eae2cea27f400099298654937c698af0595d7
+notes_seen: a02a2b23ad9789f8d363ff4007ef6403831d81ae
 ---
 # Cold read notes
 
@@ -126,3 +126,13 @@ Only a genuine trade-off goes to the human, as a question with options. There is
 25. The deferrals in findings 22 and 24 are not closed as stated.
     The plan moves blocked and deleted-circle links, and visibility revocation, to CWF-7. The confirmed spec still includes them in its behaviour and acceptance criteria, with no corresponding entry under Out of scope. Record this as a split across stories rather than a spec deferral, or update the spec and its scope consistently.
    Disposition: keep amended: dispositions 22 and 24 now record a split across stories; the spec keeps these behaviours in scope, and the plan's out-of-story notes say CWF-7 delivers them
+
+## Round 6
+
+26. Disputed keep 25: the roadmap has not been split consistently with the plan.
+    CWF-2’s roadmap criteria 8, 9 and 11 still include visibility after membership ends, deleted-circle links and removal blocks. The plan assigns those cases to CWF-7, but cites criteria 9 and 14; criterion 14 concerns non-member access. Update the roadmap’s CWF-2 scope and references to match the split.
+   Disposition: keep amended with the owner's choice: a roadmap fix moves the visibility-ending, deleted-circle-link and removal-block clauses out of CWF-2's criteria and into CWF-7's; the plan now says the roadmap lists those cases under CWF-7
+
+27. T1A and T2 omit Done-when 2 from their Covers cells.
+    T1A creates and tests the active invite code, while T2 tests that a joined non-admin cannot retrieve the link. Both prove parts of item 2, but their Covers cells list only items 1 and 3 respectively.
+   Disposition: keep amended: T1A now covers Done-when 1 and 2 (invite code at creation) and T2 covers 2 and 3 (a joined non-admin refused the link)
