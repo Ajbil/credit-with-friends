@@ -41,18 +41,10 @@
         "A member sees the list of circles they belong to and, inside a circle, its name, its members by display name and which member is the admin.",
         "A member's display name and WhatsApp number are returned only to members who share at least one circle with them, and only while they do, including through direct data requests.",
         "An unknown, malformed, reset or deleted-circle link shows the same no-longer-valid message to everyone, including members, and reveals nothing about any circle; after a reset, the new link works and existing members are unaffected.",
-        "A member who leaves, or is removed, immediately stops seeing that circle and the data of members they share no other circle with, and those members stop seeing theirs, including through direct data requests; visibility through any other shared circle continues.",
-        "A removed person cannot rejoin through the current or any later invite link and sees only \"You can't join this circle.\"; after Clear all removals they can rejoin only by opening a valid link and pressing Join; no list or names of removed people are shown to anyone.",
-        "A person who left voluntarily can rejoin through a valid link.",
         "Joining is refused with a reason at 100 members per circle and at 20 circles per member, and simultaneous joins never exceed either limit.",
         "When Join is pressed, the system re-checks at that moment that the link is still active, the person has a completed account and is not blocked by a removal, whatever the screen showed.",
         "Each circle records at creation whether its creator was the owner named in deployment configuration at that moment.",
         "Recording a join or invite usage event never blocks or undoes the member's action; a failed record leaves that event uncounted.",
-        "Only the admin can remove members, clear removals, retrieve or reset the link, rename, hand over the admin role or delete the circle, including through direct data requests; the admin cannot remove themselves; a rename follows the 1 to 40 character rule.",
-        "Leaving, removing a member and deleting a circle each require a confirmation step.",
-        "When the admin leaves, the remaining member with the earliest join time becomes admin; when the last member leaves, the circle is deleted and its link shows the no-longer-valid message.",
-        "Deleting a circle ends every membership and makes its invite link show the no-longer-valid message; a deleted circle keeps its past usage events, its last name, its creation time, its deletion and whether the owner created it, so later usage counts can show it marked (deleted).",
-        "The admin can hand the admin role to another member, after which only the new admin has admin powers.",
         "Non-members never receive a circle's member list or member names, including through direct data requests."
       ],
       "skill": "fullstack",
@@ -60,6 +52,29 @@
         "CWF-1"
       ],
       "order": 2,
+      "status": "pending"
+    },
+    {
+      "key": "CWF-7",
+      "title": "Leave, remove and run a circle",
+      "epic": "circles-cards",
+      "spec": "docs/specs/circles.md",
+      "story": "As a member, I can leave a circle, and as its admin I can remove people, clear removals, rename, hand over or delete the circle, so that only people I trust stay in it.",
+      "acceptance_criteria": [
+        "A member who leaves, or is removed, immediately stops seeing that circle and the data of members they share no other circle with, and those members stop seeing theirs, including through direct data requests; visibility through any other shared circle continues.",
+        "A removed person cannot rejoin through the current or any later invite link and sees only \"You can't join this circle.\"; after Clear all removals they can rejoin only by opening a valid link and pressing Join; no list or names of removed people are shown to anyone.",
+        "A person who left voluntarily can rejoin through a valid link.",
+        "Only the admin can remove members, clear removals, retrieve or reset the link, rename, hand over the admin role or delete the circle, including through direct data requests; the admin cannot remove themselves; a rename follows the 1 to 40 character rule.",
+        "Leaving, removing a member and deleting a circle each require a confirmation step.",
+        "When the admin leaves, the remaining member with the earliest join time becomes admin; when the last member leaves, the circle is deleted and its link shows the no-longer-valid message.",
+        "Deleting a circle ends every membership and makes its invite link show the no-longer-valid message; a deleted circle keeps its past usage events, its last name, its creation time, its deletion and whether the owner created it, so later usage counts can show it marked (deleted).",
+        "The admin can hand the admin role to another member, after which only the new admin has admin powers."
+      ],
+      "skill": "fullstack",
+      "depends_on": [
+        "CWF-2"
+      ],
+      "order": 3,
       "status": "pending"
     },
     {
@@ -88,7 +103,7 @@
         "CWF-1",
         "CWF-2"
       ],
-      "order": 3,
+      "order": 4,
       "status": "pending"
     },
     {
@@ -119,7 +134,7 @@
         "CWF-2",
         "CWF-3"
       ],
-      "order": 4,
+      "order": 5,
       "status": "pending"
     },
     {
@@ -140,9 +155,10 @@
       "depends_on": [
         "CWF-2",
         "CWF-3",
-        "CWF-4"
+        "CWF-4",
+        "CWF-7"
       ],
-      "order": 5,
+      "order": 6,
       "status": "pending"
     },
     {
@@ -172,7 +188,7 @@
         "CWF-4",
         "CWF-5"
       ],
-      "order": 6,
+      "order": 7,
       "status": "pending"
     }
   ],
