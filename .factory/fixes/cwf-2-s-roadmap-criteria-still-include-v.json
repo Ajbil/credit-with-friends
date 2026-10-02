@@ -3,11 +3,24 @@
   "branch": "fix/cwf-2-s-roadmap-criteria-still-include-v",
   "done_when": "in plans/roadmap.json, CWF-2's criteria no longer mention visibility ending, deleted-circle links or removal blocks, and CWF-7's criteria cover visibility ending when members stop sharing a circle and the join-time removal-block re-check; no other criterion changes",
   "kind": "fix",
-  "status": "started",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "5e73a87ce4b1f35917635004835dfc5b568857ed861d7d6357133b68717fb2bf",
+    "commit": "569e11310c34540e922e1c2539a8d6253b271bf9",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "9cd13e9d099a7742b491fe455a8e8395bb44f6e04fee7e333fb38c3a33d0ed15"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-02T21:24:02+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-02T21:26:45+00:00",
+      "step": "review"
     }
   ],
   "why": "CWF-2's roadmap criteria still include visibility after leaving, deleted-circle links and removal blocks, which the CWF-2 plan moved to CWF-7"
