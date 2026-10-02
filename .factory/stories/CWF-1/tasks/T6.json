@@ -1,0 +1,29 @@
+{
+  "branch": "task/CWF-1-T6",
+  "review": {
+    "commit": "1a863dac79ec20bc3de69bf79a651a35408fc3b6",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This branch is limited to docs/architecture/deployment.md, but it also adds .factory/stories/CWF-1/tasks/T6.json. The task status record is not needed for the deployment runbook or recorded production check. Remove it from this change.",
+        "file": ".factory/stories/CWF-1/tasks/T6.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove task metadata outside the allowed scope"
+      }
+    ],
+    "status": "clean",
+    "tree": "e074500d618f2a28b1031e297b9d023e93b1af4c800fc4e33dcc52ac72fdb43d"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-02T10:07:30+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-02T19:01:26+00:00",
+      "step": "review"
+    }
+  ]
+}
