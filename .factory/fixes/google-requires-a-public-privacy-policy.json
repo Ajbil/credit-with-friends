@@ -1,0 +1,26 @@
+{
+  "allow_large": "Owner approved keeping it a fix: version 1 notice text has never run on the production database, so correcting the migration in place is safe; about 120 lines",
+  "base": "ec0e2dd7eec0d492f378825dd6a60f6a7ae0281a",
+  "branch": "fix/google-requires-a-public-privacy-policy",
+  "done_when": "Anyone can open /privacy without signing in and read the current privacy notice with the configured contact address; version 1 says a backup copy made by hand is kept for at least 7 days, and decision 0017 says the same",
+  "kind": "fix",
+  "review": {
+    "commit": "3fa687741cd9c8e72287dd8bd3ed8485d823662b",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "93ae4abda56c49227b557361e111cbb2069c5022fa99043553c7798cd45d7cbe"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-02T06:54:52+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-02T07:10:57+00:00",
+      "step": "review"
+    }
+  ],
+  "why": "Google requires a public privacy policy link before the sign-in app can be published, and Render's dashboard says manual exports are kept at least 7 days while the notice says 7 days"
+}

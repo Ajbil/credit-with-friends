@@ -58,12 +58,12 @@ export class GoogleController {
 }
 
 @ApiTags('Accounts')
-@ApiCookieAuth('cwf_session')
 @Controller()
 export class AccountsController {
   constructor(@Inject(AccountsService) private readonly accounts: AccountsService, @Inject(SessionsService) private readonly sessions: SessionsService, @Inject(ConfigService) private readonly config: ConfigService<ApiConfig, true>) {}
 
   @Get('sign-ins')
+  @ApiCookieAuth('cwf_session')
   @SetMetadata(PENDING_ROUTE, true)
   @ApiOperation({ summary: 'Get pending sign-in information' })
   @ApiOkResponse({ type: PendingResponseDto })
@@ -71,13 +71,14 @@ export class AccountsController {
   pending(@Req() request: AuthenticatedRequest) { return this.accounts.pending(request.caller); }
 
   @Get('privacy-notice')
-  @SetMetadata(PENDING_ROUTE, true)
+  @SetMetadata(PUBLIC_ROUTE, true)
   @ApiOperation({ summary: 'Read the current privacy notice' })
   @ApiOkResponse({ type: NoticeResponseDto })
   @ApiForbiddenResponse({ type: ApiErrorResponseDto })
   notice() { return this.accounts.notice(); }
 
   @Post('onboarding')
+  @ApiCookieAuth('cwf_session')
   @HttpCode(200)
   @SetMetadata(PENDING_ROUTE, true)
   @ApiOperation({ summary: 'Complete onboarding and join' })
@@ -88,6 +89,7 @@ export class AccountsController {
   onboard(@Req() request: AuthenticatedRequest, @Body() body: OnboardingDto) { return this.accounts.onboard(request.caller, body); }
 
   @Post('sign-ins/cancel')
+  @ApiCookieAuth('cwf_session')
   @HttpCode(200)
   @SetMetadata(PENDING_ROUTE, true)
   @ApiOperation({ summary: 'Cancel and remove pending sign-in' })
@@ -100,6 +102,7 @@ export class AccountsController {
   }
 
   @Get('members/me')
+  @ApiCookieAuth('cwf_session')
   @ApiOperation({ summary: 'Read your own member account' })
   @ApiOkResponse({ type: MemberResponseDto })
   @ApiUnauthorizedResponse({ type: ApiErrorResponseDto })
