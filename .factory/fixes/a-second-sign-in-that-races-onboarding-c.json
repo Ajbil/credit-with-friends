@@ -3,7 +3,7 @@
   "branch": "fix/a-second-sign-in-that-races-onboarding-c",
   "done_when": "a sign-in that finds the member created while it was writing its pending sign-in returns a member session and leaves no pending sign-in, proven by an integration test that forces that interleaving",
   "kind": "fix",
-  "status": "started",
+  "status": "working",
   "steps": [
     {
       "at": "2026-10-02T19:40:16+00:00",
