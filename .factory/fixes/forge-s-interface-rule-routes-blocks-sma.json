@@ -1,0 +1,14 @@
+{
+  "base": "b7b7f5c264f1b3a876a3fa97c58344a94d8331b1",
+  "branch": "fix/forge-s-interface-rule-routes-blocks-sma",
+  "done_when": "forge.toml limits the routes interface pattern to API code (apps/api/**/routes/**) and keeps every other interface pattern unchanged",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-02T19:40:07+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "Forge's interface rule **/routes/** blocks small web-screen fixes because the web app keeps its screens in apps/web/src/routes"
+}
