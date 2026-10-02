@@ -1,12 +1,12 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-02T20:46:55+00:00
-read_hash: 05e877aba232c85b4b252299cf7927dd1c9fa524
-round: 2
+read_at: 2026-10-02T20:50:24+00:00
+read_hash: 31d93f5447c2ff56d659f927b3bb780eded29488
+round: 3
 passed: no
-doc_seen: 05e877aba232c85b4b252299cf7927dd1c9fa524
+doc_seen: 31d93f5447c2ff56d659f927b3bb780eded29488
 spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
-notes_seen: 8212acaa5bcbc3056b05e2e9ecac712a848995c4
+notes_seen: a32e415a0ee4c9fc842db6e4b318983ce05a134a
 ---
 # Cold read notes
 
@@ -88,3 +88,17 @@ Only a genuine trade-off goes to the human, as a question with options. There is
 17. Unproven: item 3: a dead link opened with an expired or invalid session cookie.
     Optional-session preview must still show the same dead-link message to that visitor. T2’s Tests cell names an integration file but does not pin this case or the guard behaviour it depends on.
    Disposition: keep amended: the optional-session mode treats an expired or invalid cookie as no session, never a 401; T2 tests a dead link opened with such a cookie
+
+## Round 3
+
+18. Disputed keep 12: T1A still exceeds the task-size guideline.
+    Moving circle view to T1C leaves T1A with the migration, service bus, account and session changes, locking, create and list, the full API contract, five stub controllers and integration tests. Split the foundations from create and list, with the contract pinned before its consumers start.
+   Disposition: keep amended with the owner's choice: T1A now holds only the shared foundations plus creating a circle as the test that crosses them; listing circles moved to new T1D, and the circle view stays in T1C
+
+19. Disputed keep 16: the amended failure rule conflicts with the confirmed spec.
+    The spec still requires an invite event for every Copy or Share tap and a join event on joining. The plan now permits those events to remain uncounted after a recording failure. The roadmap contains that exception, but the confirmed spec has not been changed to match it.
+   Disposition: keep amended with the owner's choice: a separate fix adds the roadmap's rule to docs/specs/circles.md (behaviour and acceptance criterion 17), so the spec, roadmap and this plan agree that a failed record never undoes the action and leaves that one event uncounted
+
+20. Unproven: item 5: removal blocks joining through a later reset link, and clearing removals permits joining again.
+    T3A creates removals without depending on T2’s join API, while T2 does not depend on T3A’s removal API. Neither task’s integration test can prove the full sequence through the running API as ordered. Assign that test to a task after both APIs land, or add the needed dependency.
+   Disposition: keep amended: T3B now waits for T2 and T3A and owns the end-to-end test that a removed person can't rejoin through the current or a later reset link and can rejoin after clear all removals; T3B covers Done-when 5 and 6
