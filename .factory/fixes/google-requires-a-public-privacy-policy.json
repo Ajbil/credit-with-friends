@@ -3,7 +3,7 @@
   "branch": "fix/google-requires-a-public-privacy-policy",
   "done_when": "Anyone can open /privacy without signing in and read the current privacy notice with the configured contact address; version 1 says a backup copy made by hand is kept for at least 7 days, and decision 0017 says the same",
   "kind": "fix",
-  "status": "started",
+  "status": "working",
   "steps": [
     {
       "at": "2026-10-02T06:54:52+00:00",
