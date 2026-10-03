@@ -29,6 +29,9 @@ export class AccountsService implements OnModuleInit {
       if (!member) return null;
       return member;
     });
+    this.bus.registerRequest('accounts.displayNames', (memberIds) => this.db.member.findMany({
+      where: { id: { in: memberIds } }, select: { id: true, displayName: true },
+    }));
   }
 
   async signIn(identity: GoogleIdentity, userAgent?: string, returnPath = '/') {

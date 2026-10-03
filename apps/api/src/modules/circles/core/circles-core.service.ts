@@ -18,7 +18,7 @@ export class CirclesCoreService {
     const creator = await this.bus.request('accounts.circleCreator', memberId);
     if (!creator) throw new UnauthorizedException();
     return this.db.$transaction(async (tx) => {
-      if (!await lockCircleMembershipRows(tx, creator.id)) throw new UnauthorizedException();
+      if (!await lockCircleMembershipRows(tx, [creator.id])) throw new UnauthorizedException();
       if (await tx.circleMembership.count({ where: { memberId: creator.id } }) >= MAX_CIRCLES_PER_MEMBER) {
         throw new BadRequestException({ code: 'VALIDATION_ERROR', details: { fieldErrors: [{ field: 'name', reason: 'You can belong to at most 20 circles.' }] } });
       }

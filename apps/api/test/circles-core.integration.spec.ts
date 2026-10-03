@@ -9,6 +9,7 @@ import { Test } from '@nestjs/testing';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import type { ApiConfig } from '../src/common/config/config.module';
 import { PrismaService } from '../src/common/database/prisma.service';
+import { ServiceBus } from '../src/service-bus/service-bus.service';
 
 const origin = 'http://localhost:5173';
 const baseDatabaseUrl = process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5433/credit_with_friends';
@@ -110,5 +111,44 @@ describe('circles create API', () => {
     expect(codes[0]).toMatch(/^[A-Za-z0-9_-]{22}$/);
     expect(codes[1]).toMatch(/^[A-Za-z0-9_-]{22}$/);
     expect(codes[0]).not.toBe(codes[1]);
+  });
+
+  test('accounts answers display names only for completed members through the bus', async () => {
+    const completedCookie = await member('named-member');
+    const completed = await call('/members/me', 'GET', completedCookie);
+    const pending = await call('/test-auth/sign-in', 'POST', '', { googleAccountId: 'pending-name', email: 'listed@example.in', name: 'Pending Name' });
+    expect(pending.payload.data.status).toBe('pending');
+    const pendingId = (await db.pendingSignIn.findUniqueOrThrow({ where: { googleAccountId: 'pending-name' } })).id;
+    const names = await app.get(ServiceBus).request('accounts.displayNames', [completed.payload.data.id, pendingId]);
+    expect(names).toEqual([{ id: completed.payload.data.id, displayName: 'named-member' }]);
+    expect(JSON.stringify(names)).not.toContain('whatsapp');
+  });
+
+  test('circle API contracts describe the later list, view, invite and join responses', async () => {
+    const document = await (await fetch(`${url}/api/docs-json`)).json();
+    const paths = document.paths;
+    const schema = (operation: { responses: Record<string, { content: { 'application/json': { schema: { $ref: string } } } }> }) => {
+      const responseName = operation.responses['200'].content['application/json'].schema.$ref.split('/').at(-1)!;
+      const dataName = document.components.schemas[responseName].properties.data.$ref.split('/').at(-1)!;
+      return document.components.schemas[dataName];
+    };
+    const list = schema(paths['/api/v1/circles'].get);
+    const summaryName = list.properties.items.items.$ref.split('/').at(-1)!;
+    expect(Object.keys(document.components.schemas[summaryName].properties)).toEqual(['id', 'name', 'memberCount', 'isAdmin']);
+    expect(list.properties.pagination).toBeDefined();
+    const view = schema(paths['/api/v1/circles/{circleId}'].get);
+    const memberName = view.properties.members.items.$ref.split('/').at(-1)!;
+    expect(Object.keys(document.components.schemas[memberName].properties)).toEqual(['id', 'displayName', 'isAdmin']);
+    expect(schema(paths['/api/v1/circles/{circleId}/invite'].get).properties.url).toBeDefined();
+    expect(schema(paths['/api/v1/circles/{circleId}/invite/reset'].post).properties.url).toBeDefined();
+    const record = paths['/api/v1/circles/{circleId}/invite/record'].post;
+    expect(record.requestBody.content['application/json'].schema.$ref).toContain('RecordInviteDto');
+    expect(schema(record).properties.recorded).toBeDefined();
+    const preview = schema(paths['/api/v1/circle-invites/{code}'].get);
+    expect(Object.keys(preview.properties)).toEqual(['status', 'circleId', 'name', 'memberCount']);
+    expect(preview.required).not.toContain('circleId');
+    expect(schema(paths['/api/v1/circle-invites/{code}/join'].post).properties.circleId).toBeDefined();
+    expect(paths['/api/v1/circle-invites/{code}'].get.responses['404'].description).toContain('INVITE_LINK_INVALID');
+    expect(paths['/api/v1/circle-invites/{code}/join'].post.responses['409'].description).toContain('CIRCLE_FULL or TOO_MANY_CIRCLES');
   });
 });

@@ -16,4 +16,10 @@ describe('service bus', () => {
     expect(received).toEqual([event]);
     await expect(bus.request('unknown', 'member-one')).rejects.toThrow('No service-bus request handler registered for unknown');
   });
+
+  test('dispatches the completed-member display-name answer', async () => {
+    const bus = new ServiceBus();
+    bus.registerRequest('accounts.displayNames', async (ids) => ids.map((id) => ({ id, displayName: `Name ${id}` })));
+    await expect(bus.request('accounts.displayNames', ['member-one'])).resolves.toEqual([{ id: 'member-one', displayName: 'Name member-one' }]);
+  });
 });
