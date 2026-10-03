@@ -1,10 +1,45 @@
 {
   "branch": "task/CWF-2-T1A",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "fa5c7c7e667ec1a51bc5148f810bace528eaf020ebbea528904d1316c5bc586b",
+    "commit": "5d8b94e8077c04ade7ea52b8f6cedc5be6ace381",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "T1A explicitly requires a service-bus spec, but this change adds only the service-bus implementation and the circles integration spec. Add a test that exercises handler registration and dispatch through the bus.",
+        "file": "apps/api/src/service-bus/service-bus.service.ts",
+        "line": 8,
+        "priority": "P1",
+        "title": "Not done: service-bus/**/*.spec.ts"
+      },
+      {
+        "body": "T1A also explicitly requires a spec under circles/core, but none is added. The integration test covers creation through the API; it does not satisfy this separately named test requirement.",
+        "file": "apps/api/src/modules/circles/core/circles-core.service.ts",
+        "line": 13,
+        "priority": "P1",
+        "title": "Not done: circles/core/**/*.spec.ts"
+      },
+      {
+        "body": "JavaScript string length counts UTF-16 code units, so a valid name of 21 emoji is rejected as length 42 even though it contains 21 characters. Count Unicode characters after trimming when enforcing the 40-character limit.",
+        "file": "apps/api/src/modules/circles/core/circles-core.service.ts",
+        "line": 15,
+        "priority": "P2",
+        "title": "Count circle-name characters correctly"
+      }
+    ],
+    "status": "blocked",
+    "tree": "cf1bc6cbec2b71424cbedb3263547e16167b177a6acb784cd337dc8814ed9a37"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-03T06:48:05+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-03T07:06:45+00:00",
+      "step": "review"
     }
   ]
 }
