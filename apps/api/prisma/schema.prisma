@@ -33,6 +33,77 @@ model Member {
   updatedAtUtc       DateTime  @updatedAt
   sessions           Session[]
   consents           Consent[]
+  administeredCircles Circle[] @relation("CircleAdmin")
+  createdCircles      Circle[] @relation("CircleCreator")
+  modifiedCircles     Circle[] @relation("CircleModifier")
+  circleMemberships   CircleMembership[]
+  usageEvents         UsageEvent[]
+}
+
+model Circle {
+  id                 String @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name               String
+  inviteCode         String? @unique
+  adminMemberId      String? @db.Uuid
+  isOwnerCreated     Boolean
+  createdByAccountId String? @db.Uuid
+  modifiedByAccountId String? @db.Uuid
+  createdAtUtc       DateTime @default(now())
+  updatedAtUtc       DateTime @updatedAt
+  deletedAtUtc       DateTime?
+  admin              Member? @relation("CircleAdmin", fields: [adminMemberId], references: [id], onDelete: SetNull)
+  creator            Member? @relation("CircleCreator", fields: [createdByAccountId], references: [id], onDelete: SetNull)
+  modifier           Member? @relation("CircleModifier", fields: [modifiedByAccountId], references: [id], onDelete: SetNull)
+  memberships        CircleMembership[]
+  usageEventCircles  UsageEventCircle[]
+
+  @@index([adminMemberId], map: "idx_Circle_adminMemberId")
+  @@index([createdByAccountId], map: "idx_Circle_createdByAccountId")
+  @@index([modifiedByAccountId], map: "idx_Circle_modifiedByAccountId")
+}
+
+model CircleMembership {
+  id           String @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  circleId     String @db.Uuid
+  memberId     String @db.Uuid
+  joinedAtUtc  DateTime @default(now())
+  createdAtUtc DateTime @default(now())
+  updatedAtUtc DateTime @updatedAt
+  circle       Circle @relation(fields: [circleId], references: [id], onDelete: Cascade)
+  member       Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([circleId, memberId])
+  @@index([circleId], map: "idx_CircleMembership_circleId")
+  @@index([memberId], map: "idx_CircleMembership_memberId")
+}
+
+model UsageEvent {
+  id           String @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  type         String
+  memberId     String? @db.Uuid
+  occurredAtUtc DateTime @default(now())
+  createdAtUtc DateTime @default(now())
+  updatedAtUtc DateTime @updatedAt
+  member       Member? @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  circles      UsageEventCircle[]
+
+  @@index([memberId], map: "idx_UsageEvent_memberId")
+  @@index([type], map: "idx_UsageEvent_type")
+  @@index([occurredAtUtc], map: "idx_UsageEvent_occurredAtUtc")
+}
+
+model UsageEventCircle {
+  id           String @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  usageEventId String @db.Uuid
+  circleId     String @db.Uuid
+  createdAtUtc DateTime @default(now())
+  updatedAtUtc DateTime @updatedAt
+  usageEvent   UsageEvent @relation(fields: [usageEventId], references: [id], onDelete: Cascade)
+  circle       Circle @relation(fields: [circleId], references: [id])
+
+  @@unique([usageEventId, circleId])
+  @@index([usageEventId], map: "idx_UsageEventCircle_usageEventId")
+  @@index([circleId], map: "idx_UsageEventCircle_circleId")
 }
 
 model Session {

@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { ApiConfig } from '../../common/config/config.module';
@@ -6,6 +6,7 @@ import { PrismaService } from '../../common/database/prisma.service';
 import { Caller, SessionsService } from '../sessions/sessions.service';
 import { OnboardingDto } from './dto/onboarding.dto';
 import { renderPrivacyNotice } from '../privacy-notice/privacy-notice.service';
+import { ServiceBus } from '../../service-bus/service-bus.service';
 
 export type GoogleIdentity = { googleAccountId: string; email: string; name: string; emailVerified: boolean };
 
@@ -14,12 +15,24 @@ export function safeReturnPath(value?: string): string {
 }
 
 @Injectable()
-export class AccountsService {
+export class AccountsService implements OnModuleInit {
   constructor(
     @Inject(PrismaService) private readonly db: PrismaService,
     @Inject(SessionsService) private readonly sessions: SessionsService,
     @Inject(ConfigService) private readonly config: ConfigService<ApiConfig, true>,
+    @Inject(ServiceBus) private readonly bus: ServiceBus,
   ) {}
+
+  onModuleInit(): void {
+    this.bus.registerRequest('accounts.circleCreator', async (memberId) => {
+      const member = await this.db.member.findUnique({ where: { id: memberId }, select: { id: true, googleAccountId: true } });
+      if (!member) return null;
+      return member;
+    });
+    this.bus.registerRequest('accounts.displayNames', (memberIds) => this.db.member.findMany({
+      where: { id: { in: memberIds } }, select: { id: true, displayName: true },
+    }));
+  }
 
   async signIn(identity: GoogleIdentity, userAgent?: string, returnPath = '/') {
     if (!identity.emailVerified) throw new ForbiddenException();
