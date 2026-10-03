@@ -2,36 +2,14 @@
   "branch": "task/CWF-2-T1A",
   "review": {
     "blocking_level": "P1",
-    "changed": "1235e75672584722b0e789f5f1375f6d33c3ca066f37d648efb97d386dd9ec8b",
-    "commit": "61e81ad4ed260f465812eb1f588f382cdb031c1e",
+    "changed": "628f8bcc0cb8aea98689804dd8a468e2e8278a8a8f5c7ca832575796ebf3a96c",
+    "commit": "ec815e52d2d40897db519cd967345301e0f0bce0",
     "dismissals": [],
-    "findings": [
-      {
-        "body": "The stub endpoints advertise only 501 responses. The task assigns this branch the story-wide API contract so the web client can be generated once, but the later list, view, invite, and join tasks do not own openapi.json. Add their typed success responses and schemas now while retaining the 501 stub behavior. The ruling allowing 501 routes does not address the missing success contracts.",
-        "file": "apps/api/src/modules/circles/invite/circle-invite.controller.ts",
-        "line": 12,
-        "priority": "P1",
-        "title": "Not done: success response contracts for the stub circle endpoints"
-      },
-      {
-        "body": "The registered accounts answer returns only the member ID and Google account ID. T1A's plan also assigns accounts the bus answer for member display names, which the later circle-view task needs to show members. That task's scope excludes accounts and the service bus, so the cross-module answer needs to be added here.",
-        "file": "apps/api/src/modules/accounts/accounts.service.ts",
-        "line": 29,
-        "priority": "P1",
-        "title": "Not done: accounts' display-name bus answer"
-      },
-      {
-        "body": "When a circle ID is supplied, the helper locks the member row before the circle row. The task's shared locking contract specifies the opposite order for joins: circle first, then member rows in ascending ID order. The later join task does not own this helper, so it cannot follow that contract through the pinned helper as written.",
-        "file": "apps/api/src/modules/circles/core/circle-lock.helper.ts",
-        "line": 4,
-        "priority": "P2",
-        "title": "Pin the shared lock helper's circle-first order"
-      }
-    ],
-    "status": "blocked",
-    "tree": "af6acc6494f72c846fc62eca68d03ccaa929c9261966f46d7348c1fa6fce4c51"
+    "findings": [],
+    "status": "clean",
+    "tree": "a79ca570a70f179c16a0f77334fee4de7ee9b7ba4307aed181bcdce7e3468d75"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-03T06:48:05+00:00",
@@ -43,6 +21,10 @@
     },
     {
       "at": "2026-10-03T07:15:11+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-03T07:51:17+00:00",
       "step": "review"
     }
   ]
