@@ -24,11 +24,10 @@ export class AccountsService implements OnModuleInit {
   ) {}
 
   onModuleInit(): void {
-    this.bus.registerCircleCreator(async (memberId) => {
+    this.bus.registerRequest('accounts.circleCreator', async (memberId) => {
       const member = await this.db.member.findUnique({ where: { id: memberId }, select: { id: true, googleAccountId: true } });
       if (!member) return null;
-      const ownerId = this.config.get('ownerGoogleAccountId');
-      return { id: member.id, isOwner: Boolean(ownerId && member.googleAccountId === ownerId) };
+      return member;
     });
   }
 

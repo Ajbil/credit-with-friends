@@ -99,10 +99,12 @@ describe('circles create API', () => {
 
   test('done-when-2 foundation: creation gives each circle one unguessable active invite code', async () => {
     const cookie = await member('code-creator');
-    const first = await call('/circles', 'POST', cookie, { name: 'Office' });
+    const first = await call('/circles', 'POST', cookie, { name: '😀'.repeat(40) });
     const second = await call('/circles', 'POST', cookie, { name: 'Family' });
     expect(first.response.status).toBe(201);
+    expect(first.payload.data.name).toBe('😀'.repeat(40));
     expect(second.response.status).toBe(201);
+    expect((await call('/circles', 'POST', cookie, { name: '😀'.repeat(41) })).response.status).toBe(400);
     const codes = (await db.circle.findMany({ where: { id: { in: [first.payload.data.id, second.payload.data.id] } }, select: { inviteCode: true } })).map(({ inviteCode }) => inviteCode);
     expect(codes).toHaveLength(2);
     expect(codes[0]).toMatch(/^[A-Za-z0-9_-]{22}$/);
