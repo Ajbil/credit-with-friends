@@ -2,34 +2,34 @@
   "branch": "task/CWF-2-T1A",
   "review": {
     "blocking_level": "P1",
-    "changed": "fa5c7c7e667ec1a51bc5148f810bace528eaf020ebbea528904d1316c5bc586b",
-    "commit": "5d8b94e8077c04ade7ea52b8f6cedc5be6ace381",
+    "changed": "1235e75672584722b0e789f5f1375f6d33c3ca066f37d648efb97d386dd9ec8b",
+    "commit": "61e81ad4ed260f465812eb1f588f382cdb031c1e",
     "dismissals": [],
     "findings": [
       {
-        "body": "T1A explicitly requires a service-bus spec, but this change adds only the service-bus implementation and the circles integration spec. Add a test that exercises handler registration and dispatch through the bus.",
-        "file": "apps/api/src/service-bus/service-bus.service.ts",
-        "line": 8,
+        "body": "The stub endpoints advertise only 501 responses. The task assigns this branch the story-wide API contract so the web client can be generated once, but the later list, view, invite, and join tasks do not own openapi.json. Add their typed success responses and schemas now while retaining the 501 stub behavior. The ruling allowing 501 routes does not address the missing success contracts.",
+        "file": "apps/api/src/modules/circles/invite/circle-invite.controller.ts",
+        "line": 12,
         "priority": "P1",
-        "title": "Not done: service-bus/**/*.spec.ts"
+        "title": "Not done: success response contracts for the stub circle endpoints"
       },
       {
-        "body": "T1A also explicitly requires a spec under circles/core, but none is added. The integration test covers creation through the API; it does not satisfy this separately named test requirement.",
-        "file": "apps/api/src/modules/circles/core/circles-core.service.ts",
-        "line": 13,
+        "body": "The registered accounts answer returns only the member ID and Google account ID. T1A's plan also assigns accounts the bus answer for member display names, which the later circle-view task needs to show members. That task's scope excludes accounts and the service bus, so the cross-module answer needs to be added here.",
+        "file": "apps/api/src/modules/accounts/accounts.service.ts",
+        "line": 29,
         "priority": "P1",
-        "title": "Not done: circles/core/**/*.spec.ts"
+        "title": "Not done: accounts' display-name bus answer"
       },
       {
-        "body": "JavaScript string length counts UTF-16 code units, so a valid name of 21 emoji is rejected as length 42 even though it contains 21 characters. Count Unicode characters after trimming when enforcing the 40-character limit.",
-        "file": "apps/api/src/modules/circles/core/circles-core.service.ts",
-        "line": 15,
+        "body": "When a circle ID is supplied, the helper locks the member row before the circle row. The task's shared locking contract specifies the opposite order for joins: circle first, then member rows in ascending ID order. The later join task does not own this helper, so it cannot follow that contract through the pinned helper as written.",
+        "file": "apps/api/src/modules/circles/core/circle-lock.helper.ts",
+        "line": 4,
         "priority": "P2",
-        "title": "Count circle-name characters correctly"
+        "title": "Pin the shared lock helper's circle-first order"
       }
     ],
     "status": "blocked",
-    "tree": "cf1bc6cbec2b71424cbedb3263547e16167b177a6acb784cd337dc8814ed9a37"
+    "tree": "af6acc6494f72c846fc62eca68d03ccaa929c9261966f46d7348c1fa6fce4c51"
   },
   "status": "fixing",
   "steps": [
@@ -39,6 +39,10 @@
     },
     {
       "at": "2026-10-03T07:06:45+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-03T07:15:11+00:00",
       "step": "review"
     }
   ]
