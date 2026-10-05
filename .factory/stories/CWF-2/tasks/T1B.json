@@ -2,17 +2,10 @@
   "branch": "task/CWF-2-T1B",
   "review": {
     "blocking_level": "P1",
-    "changed": "81af7de1f49d9b8d1215fad899c9e56f6642d03dba65d5ec46f4d2e543bec849",
-    "commit": "409b08a0a7d571ca2cce8871e67f254c9088c236",
+    "changed": "3a04526fe1ccef527a341827188dea43a80ab9e9faa807b6997f5a721b697a46",
+    "commit": "2f56efb0c5c97a5dbd767beb4f041b4df4cf2316",
     "dismissals": [],
     "findings": [
-      {
-        "body": "The HTTP integration test checks a failed insert, but it never holds a usage write pending. If the controller awaited `bus.publish` again, the recorder would swallow the database error and this test would still pass, even though the share response would wait for the write. The test also counts events immediately after the response and drops the failure constraint without confirming that the attempted write has finished, so it can miss an event recorded later. Add an HTTP test that keeps the real database write pending while verifying that the copy or share response returns, and wait for the failed write's outcome before asserting the count.",
-        "file": "apps/api/test/circles-invite.integration.spec.ts",
-        "line": 104,
-        "priority": "P1",
-        "title": "Not done: Recording a usage event never blocks or undoes the action"
-      },
       {
         "body": "This branch adds task review metadata under `.factory`, outside the three permitted paths. The file is not needed for the invite or usage behavior.",
         "file": ".factory/stories/CWF-2/tasks/T1B.json",
@@ -21,10 +14,10 @@
         "title": "Remove the out-of-scope task status file"
       }
     ],
-    "status": "blocked",
-    "tree": "3d93a155e4fe6560a549608a6833e02bf1ba171fc28988a13dca4496bdd19c6d"
+    "status": "clean",
+    "tree": "3f72d1221cd8c9fb0f964bd7f9a75cbe0db08339562114779857ef94e354619e"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-05T17:28:34+00:00",
@@ -36,6 +29,10 @@
     },
     {
       "at": "2026-10-05T18:40:24+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T18:56:53+00:00",
       "step": "review"
     }
   ]
