@@ -1,10 +1,52 @@
 {
   "branch": "task/CWF-2-T1D",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "e775c6f386c4160bf8b6f8e3d475e2348e5a290dbb551b9fce4e8745ca02afd1",
+    "commit": "47a53cd4b1591681f4a37e04bb2fcd15ba5be868",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The integration test lists only circles created by the caller, so every asserted member count is 1 and every `isAdmin` value is true. Hardcoding those two values would pass while giving incorrect summaries to members who joined a circle. Add a real API and database case with a non-admin member and multiple memberships.",
+        "file": "apps/api/test/circles-list.integration.spec.ts",
+        "line": 74,
+        "priority": "P1",
+        "title": "Not done: joined-member list summary integration test"
+      },
+      {
+        "body": "The page-two assertion checks only that one item exists. It would pass if the list were sorted incorrectly, including when equal creation timestamps are ordered without the ruled ID tie-breaker. Assert the circle IDs returned on each page, including a timestamp tie.",
+        "file": "apps/api/test/circles-list.integration.spec.ts",
+        "line": 84,
+        "priority": "P1",
+        "title": "Not done: newest-first pagination integration test"
+      },
+      {
+        "body": "The parser accepts any safe integer as `page`, but multiplying a large page by `limit` can produce an offset beyond Prisma's supported integer range. A syntactically valid request can therefore return a server error instead of a validation response. Bound the computed offset before calling `findMany`.",
+        "file": "apps/api/src/modules/circles/list/list-circles.service.ts",
+        "line": 11,
+        "priority": "P2",
+        "title": "Reject page values whose offset Prisma cannot accept"
+      },
+      {
+        "body": "This new task-status JSON is outside the two allowed path groups and is not needed to implement or test circle listing. Remove it from the branch.",
+        "file": ".factory/stories/CWF-2/tasks/T1D.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the unrelated task metadata file"
+      }
+    ],
+    "status": "blocked",
+    "tree": "125d5849c7a68b3eea0779fbaa5469a16a93c2e440a6ba09fae0d819cf56ddac"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-05T17:29:02+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-05T18:16:50+00:00",
+      "step": "review"
     }
   ]
 }
