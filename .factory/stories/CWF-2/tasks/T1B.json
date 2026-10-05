@@ -1,10 +1,52 @@
 {
   "branch": "task/CWF-2-T1B",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "42d0670d53ed50fe060359b9967dc5dfb94e5789ae3bb742561211e5f5812ccb",
+    "commit": "c9fe8ad4371b2eb8cf776ca1361062a7017f22f2",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The share response contains the WhatsApp URL, but this endpoint awaits `bus.publish` before returning it. The recorder awaits the database insert, so a slow or stalled usage write delays the share action. The test covers a write that fails promptly, not a write that remains pending. Usage recording must be detached from delivery of the copy or share result.",
+        "file": "apps/api/src/modules/circles/invite/circle-invite.controller.ts",
+        "line": 83,
+        "priority": "P1",
+        "title": "Not done: Recording a usage event never blocks the action"
+      },
+      {
+        "body": "This branch adds the usage recorder but does not add or change a test under the required `apps/api/src/modules/usage/**/*.spec.ts` path. The integration test exercises invite recording, but it does not satisfy the explicitly required usage module test.",
+        "file": "apps/api/src/modules/usage/usage.module.ts",
+        "line": 13,
+        "priority": "P1",
+        "title": "Not done: usage event recorder spec"
+      },
+      {
+        "body": "The invite controller is implemented without adding or changing a test under the required `apps/api/src/modules/circles/invite/**/*.spec.ts` path. The new integration test does not satisfy that separate test requirement.",
+        "file": "apps/api/src/modules/circles/invite/circle-invite.controller.ts",
+        "line": 75,
+        "priority": "P1",
+        "title": "Not done: invite module spec"
+      },
+      {
+        "body": "The branch adds `.factory/stories/CWF-2/tasks/T1B.json` outside all three permitted paths. It contains only task status metadata and is not needed to deliver the invite or usage behavior.",
+        "file": ".factory/stories/CWF-2/tasks/T1B.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task status file"
+      }
+    ],
+    "status": "blocked",
+    "tree": "e1400ac5648bc2f046f15c3aae8c69d0c38a8cf647e6472b6e9d9f192bc8cf70"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-05T17:28:34+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-05T18:25:26+00:00",
+      "step": "review"
     }
   ]
 }
