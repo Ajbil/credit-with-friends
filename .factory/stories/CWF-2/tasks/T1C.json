@@ -4,7 +4,13 @@
     "blocking_level": "P1",
     "changed": "8fcaf4149bcd1ce0125800c49531a273c1f2ea52bf6f48d5946c25674ad1f6b9",
     "commit": "22304fbad5150b0643bef92210488f70d6f6a331",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": ".github/workflows/ci.yml:57 runs pnpm test:integration in the required checks job; vitest.config.ts:18 includes apps/api/test/**/*.spec.ts in the api-integration project, so apps/api/test/circles-view.integration.spec.ts runs on every pull request; the forge test command is the unit suite by design",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "The close-run evidence shows that `pnpm test` ran the API unit tests but did not run this integration test. This branch adds the test without changing the repository test command or its configuration, so the required running-API and real-database check remains outside the test suite.",
@@ -21,10 +27,10 @@
         "title": "Remove the out-of-scope task-status file"
       }
     ],
-    "status": "blocked",
+    "status": "clean",
     "tree": "5ee2616dd025215ef18c29644685ead0b8db8c13091c64e16fb04e5a8453b25a"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-05T17:28:49+00:00",
