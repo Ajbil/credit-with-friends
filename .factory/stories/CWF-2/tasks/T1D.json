@@ -2,12 +2,12 @@
   "branch": "task/CWF-2-T1D",
   "review": {
     "blocking_level": "P1",
-    "changed": "fed2529c41aa7ca57d51918c805684d33309f881c54c08df172d90ad7f8c3b1a",
-    "commit": "5f0d305edae43c2b5de5580c70b3864f2a391c69",
+    "changed": "b04730766526a8bbec2bb9822738f5d38a996cd126a09dced89b883fd9b36a02",
+    "commit": "f00560a9b278bdd4d810ba5d2f9ef7bb3fc67931",
     "dismissals": [],
     "findings": [
       {
-        "body": "The branch adds task-status metadata under .factory, outside the two allowed path groups. It is not needed to implement or test circle listing.",
+        "body": "This new task-status file is outside the allowed paths and is not needed to implement or test circle listing. Remove it from the branch.",
         "file": ".factory/stories/CWF-2/tasks/T1D.json",
         "line": 1,
         "priority": "P2",
@@ -15,9 +15,9 @@
       }
     ],
     "status": "clean",
-    "tree": "23aaf397ab44b06b0bbd6d2c96929699cba5ec3fda49ec23bb6c1046fa208930"
+    "tree": "eac22238e7bd924342d16aa472ea416eb1c12a81659e698b54568cfa6370f951"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-05T17:29:02+00:00",
@@ -29,6 +29,10 @@
     },
     {
       "at": "2026-10-05T18:30:47+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T18:57:37+00:00",
       "step": "review"
     }
   ]
