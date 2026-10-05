@@ -1,10 +1,45 @@
 {
   "branch": "task/CWF-2-T1C",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "94dbe628501ac03bcecb0907c679249799042e94447ac962920257ab668868db",
+    "commit": "c0832b5095748beeeac94cf7d9688bfa499e760e",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The new integration test is absent from the supplied `pnpm test` close run, which lists seven API unit test files. The required running-API and real-database proof is therefore not exercised by that test command. Include this test in the repository test suite.",
+        "file": "apps/api/test/circles-view.integration.spec.ts",
+        "line": 63,
+        "priority": "P1",
+        "title": "Not done: circle view integration test runs in the repository test suite"
+      },
+      {
+        "body": "This branch adds the view service but adds or changes no spec under the view directory, despite that path being explicitly required in this part's test list. The integration test does not satisfy the separately named test path.",
+        "file": "apps/api/src/modules/circles/view/view-circle.service.ts",
+        "line": 7,
+        "priority": "P1",
+        "title": "Not done: apps/api/src/modules/circles/view/**/*.spec.ts"
+      },
+      {
+        "body": "This new task-status JSON is outside the two permitted paths and contains no code or test needed to deliver the circle view. Remove it from this branch.",
+        "file": ".factory/stories/CWF-2/tasks/T1C.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task-status file"
+      }
+    ],
+    "status": "blocked",
+    "tree": "eccf6026e7f9534f96401ed2850c583453115405253d3a00fa7327ee90303516"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-05T17:28:49+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-05T18:25:41+00:00",
+      "step": "review"
     }
   ]
 }
