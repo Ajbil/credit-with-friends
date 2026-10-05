@@ -2,33 +2,19 @@
   "branch": "task/CWF-2-T1B",
   "review": {
     "blocking_level": "P1",
-    "changed": "42d0670d53ed50fe060359b9967dc5dfb94e5789ae3bb742561211e5f5812ccb",
-    "commit": "c9fe8ad4371b2eb8cf776ca1361062a7017f22f2",
+    "changed": "81af7de1f49d9b8d1215fad899c9e56f6642d03dba65d5ec46f4d2e543bec849",
+    "commit": "409b08a0a7d571ca2cce8871e67f254c9088c236",
     "dismissals": [],
     "findings": [
       {
-        "body": "The share response contains the WhatsApp URL, but this endpoint awaits `bus.publish` before returning it. The recorder awaits the database insert, so a slow or stalled usage write delays the share action. The test covers a write that fails promptly, not a write that remains pending. Usage recording must be detached from delivery of the copy or share result.",
-        "file": "apps/api/src/modules/circles/invite/circle-invite.controller.ts",
-        "line": 83,
+        "body": "The HTTP integration test checks a failed insert, but it never holds a usage write pending. If the controller awaited `bus.publish` again, the recorder would swallow the database error and this test would still pass, even though the share response would wait for the write. The test also counts events immediately after the response and drops the failure constraint without confirming that the attempted write has finished, so it can miss an event recorded later. Add an HTTP test that keeps the real database write pending while verifying that the copy or share response returns, and wait for the failed write's outcome before asserting the count.",
+        "file": "apps/api/test/circles-invite.integration.spec.ts",
+        "line": 104,
         "priority": "P1",
-        "title": "Not done: Recording a usage event never blocks the action"
+        "title": "Not done: Recording a usage event never blocks or undoes the action"
       },
       {
-        "body": "This branch adds the usage recorder but does not add or change a test under the required `apps/api/src/modules/usage/**/*.spec.ts` path. The integration test exercises invite recording, but it does not satisfy the explicitly required usage module test.",
-        "file": "apps/api/src/modules/usage/usage.module.ts",
-        "line": 13,
-        "priority": "P1",
-        "title": "Not done: usage event recorder spec"
-      },
-      {
-        "body": "The invite controller is implemented without adding or changing a test under the required `apps/api/src/modules/circles/invite/**/*.spec.ts` path. The new integration test does not satisfy that separate test requirement.",
-        "file": "apps/api/src/modules/circles/invite/circle-invite.controller.ts",
-        "line": 75,
-        "priority": "P1",
-        "title": "Not done: invite module spec"
-      },
-      {
-        "body": "The branch adds `.factory/stories/CWF-2/tasks/T1B.json` outside all three permitted paths. It contains only task status metadata and is not needed to deliver the invite or usage behavior.",
+        "body": "This branch adds task review metadata under `.factory`, outside the three permitted paths. The file is not needed for the invite or usage behavior.",
         "file": ".factory/stories/CWF-2/tasks/T1B.json",
         "line": 1,
         "priority": "P2",
@@ -36,7 +22,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "e1400ac5648bc2f046f15c3aae8c69d0c38a8cf647e6472b6e9d9f192bc8cf70"
+    "tree": "3d93a155e4fe6560a549608a6833e02bf1ba171fc28988a13dca4496bdd19c6d"
   },
   "status": "fixing",
   "steps": [
@@ -46,6 +32,10 @@
     },
     {
       "at": "2026-10-05T18:25:26+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T18:40:24+00:00",
       "step": "review"
     }
   ]
