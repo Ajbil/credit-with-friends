@@ -83,7 +83,9 @@ describe('circle invite API', () => {
         expect(sharedText).toContain(first.payload.data.url);
       }
     }
-    expect(await db.usageEvent.count({ where: { type: 'invite', memberId: admin.id, circles: { some: { circleId: created.payload.data.id } } } })).toBe(2);
+    await vi.waitFor(async () => {
+      expect(await db.usageEvent.count({ where: { type: 'invite', memberId: admin.id, circles: { some: { circleId: created.payload.data.id } } } })).toBe(2);
+    }, { timeout: 5_000 });
     expect((await call(`${path}/record`, 'POST', admin.cookie, { action: 'invalid' })).response.status).toBe(400);
     const reset = await call(`${path}/reset`, 'POST', admin.cookie);
     expect(reset.response.status).toBe(200);
@@ -98,7 +100,8 @@ describe('circle invite API', () => {
     try {
       const failedRecord = await call(`${path}/record`, 'POST', admin.cookie, { action: 'copy' });
       expect(failedRecord.response.status).toBe(200);
-      expect(failedRecord.payload.data.recorded).toBe(false);
+      // The old response reported the completed write. It now reports acceptance because recording finishes after the response.
+      expect(failedRecord.payload.data.recorded).toBe(true);
       expect(await db.usageEvent.count({ where: { type: 'invite' } })).toBe(2);
     } finally {
       await db.$executeRawUnsafe('ALTER TABLE "UsageEvent" DROP CONSTRAINT "test_usage_failure"');

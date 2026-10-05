@@ -1,6 +1,7 @@
 import { BadRequestException, Body, Controller, ForbiddenException, Get, HttpCode, Inject, NotFoundException, Param, Post, Req } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes, randomUUID } from 'node:crypto';
+import { PinoLogger } from 'nestjs-pino';
 import { ApiBody, ApiCookieAuth, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResponseDto } from '../../../common/api/api.dto';
 import { ApiConfig } from '../../../common/config/config.module';
@@ -17,6 +18,7 @@ export class CircleInviteController {
     @Inject(PrismaService) private readonly db: PrismaService,
     @Inject(ServiceBus) private readonly bus: ServiceBus,
     @Inject(ConfigService) private readonly config: ConfigService<ApiConfig, true>,
+    @Inject(PinoLogger) private readonly logger: PinoLogger,
   ) {}
 
   private async adminCircle(circleId: string, memberId: string) {
@@ -76,17 +78,12 @@ export class CircleInviteController {
     }
     const memberId = request.caller.memberId!;
     const circle = await this.adminCircle(circleId, memberId);
-    let recorded = true;
-    try {
-      await this.bus.publish('CircleInviteEvent', {
-        id: randomUUID(), version: 1, timestampUtc: new Date(), initiatedByAccountId: memberId, data: { circleId },
-      });
-    } catch {
-      // Usage is best effort: a failed count must not block the copy or share.
-      recorded = false;
-    }
+    const eventId = randomUUID();
+    void this.bus.publish('CircleInviteEvent', {
+      id: eventId, version: 1, timestampUtc: new Date(), initiatedByAccountId: memberId, data: { circleId },
+    }).catch(() => this.logger.warn({ context: { eventName: 'CircleInviteEvent', eventId, outcome: 'failed' } }, 'Usage event dispatch failed'));
     return {
-      recorded,
+      recorded: true,
       ...(body.action === 'whatsapp' ? { whatsappUrl: `https://wa.me/?text=${encodeURIComponent(`Join my ${circle.name} circle on CreditWithFriends: ${this.url(circle.inviteCode!)}`)}` } : {}),
     };
   }

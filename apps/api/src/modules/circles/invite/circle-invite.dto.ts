@@ -17,7 +17,7 @@ export class CircleInviteResponseDto {
 }
 
 export class RecordedInviteDataDto {
-  @ApiProperty({ type: Boolean, example: true, description: 'False when recording failed; the copy or share still proceeds.' }) recorded!: boolean;
+  @ApiProperty({ type: Boolean, example: true, description: 'The tap was accepted for recording; persistence can finish after this response.' }) recorded!: boolean;
   @ApiPropertyOptional({ type: String, example: 'https://wa.me/?text=Join%20my%20College%20batch%20circle', description: 'Open this on a WhatsApp share tap.' }) whatsappUrl?: string;
 }
 
