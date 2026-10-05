@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { PrismaClient } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
+import { PinoLogger } from 'nestjs-pino';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import type { ApiConfig } from '../src/common/config/config.module';
 import { PrismaService } from '../src/common/database/prisma.service';
@@ -28,10 +29,10 @@ async function start() {
   return application;
 }
 
-async function call(path: string, method = 'GET', cookie = '', body?: unknown) {
+async function call(path: string, method = 'GET', cookie = '', body?: unknown, signal?: AbortSignal) {
   const headers: Record<string, string> = { cookie };
   if (method !== 'GET') Object.assign(headers, { origin, 'x-requested-with': 'cwf', 'content-type': 'application/json' });
-  const response = await fetch(`${url}/api/v1${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+  const response = await fetch(`${url}/api/v1${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal });
   return { response, payload: await response.json() };
 }
 
@@ -96,14 +97,44 @@ describe('circle invite API', () => {
     expect(await db.circleMembership.count({ where: { circleId: created.payload.data.id } })).toBe(1);
     expect(await db.usageEvent.count({ where: { type: 'invite' } })).toBe(2);
 
+    const lockDb = new PrismaClient({ datasources: { db: { url: databaseUrl.toString() } } });
+    let lockReady!: () => void;
+    let releaseLock!: () => void;
+    const ready = new Promise<void>((resolve) => { lockReady = resolve; });
+    const held = new Promise<void>((resolve) => { releaseLock = resolve; });
+    const lockTransaction = lockDb.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe('LOCK TABLE "UsageEvent" IN ACCESS EXCLUSIVE MODE');
+      lockReady();
+      await held;
+    }, { timeout: 15_000 });
+    try {
+      await Promise.race([ready, lockTransaction]);
+      for (const action of ['whatsapp', 'copy']) {
+        const shared = await call(`${path}/record`, 'POST', admin.cookie, { action }, AbortSignal.timeout(3_000));
+        expect(shared.response.status).toBe(200);
+        if (action === 'whatsapp') expect(shared.payload.data.whatsappUrl).toContain('wa.me');
+      }
+    } finally {
+      releaseLock();
+      try { await lockTransaction; } finally { await lockDb.$disconnect(); }
+    }
+    await vi.waitFor(async () => {
+      expect(await db.usageEvent.count({ where: { type: 'invite', memberId: admin.id, circles: { some: { circleId: created.payload.data.id } } } })).toBe(4);
+    }, { timeout: 5_000 });
+
+    const warning = vi.spyOn(PinoLogger.prototype, 'warn');
     await db.$executeRawUnsafe('ALTER TABLE "UsageEvent" ADD CONSTRAINT "test_usage_failure" CHECK ("type" <> \'invite\') NOT VALID');
     try {
       const failedRecord = await call(`${path}/record`, 'POST', admin.cookie, { action: 'copy' });
       expect(failedRecord.response.status).toBe(200);
       // The old response reported the completed write. It now reports acceptance because recording finishes after the response.
       expect(failedRecord.payload.data.recorded).toBe(true);
-      expect(await db.usageEvent.count({ where: { type: 'invite' } })).toBe(2);
+      await vi.waitFor(() => {
+        expect(warning).toHaveBeenCalledWith(expect.objectContaining({ context: expect.objectContaining({ eventName: 'CircleInviteEvent', outcome: 'failed' }) }), 'Usage event recording failed');
+      }, { timeout: 5_000 });
+      expect(await db.usageEvent.count({ where: { type: 'invite' } })).toBe(4);
     } finally {
+      warning.mockRestore();
       await db.$executeRawUnsafe('ALTER TABLE "UsageEvent" DROP CONSTRAINT "test_usage_failure"');
     }
   });
