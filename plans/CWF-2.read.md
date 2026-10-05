@@ -1,0 +1,148 @@
+---
+reader: codex (gpt-6-sol)
+read_at: 2026-10-02T21:34:53+00:00
+read_hash: a51714c91287edd9682ca12c1c24d94c35495a90
+round: 8
+passed: yes
+doc_seen: a51714c91287edd9682ca12c1c24d94c35495a90
+spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+notes_seen: c30880152f0effe91e07a6f913a4527be8d11100
+---
+# Cold read notes
+
+Written by `forge read`. Under every finding, write one disposition line, amend the doc once, then
+run `forge read <doc> --amended`:
+
+- `Disposition: cut` when the doc was edited to remove it;
+- `Disposition: defer` when the item moved to the spec's Out of scope;
+- `Disposition: keep <one-line reason>` otherwise.
+
+Only a genuine trade-off goes to the human, as a question with options. There is no second read.
+
+1. Split: T1 → circle data and create/view; invite and usage API.
+   It spans four modules, a migration, the full API contract, controllers and integration tests. Its scope strongly suggests more than 400 changed lines. The first part must pin the schema and API contract used by later tasks.
+   Disposition: keep amended: split into T1A (data, create and view; pins schema, bus, lock helper, optional-session guard and the full API contract) and T1B (invite link and usage events), consistent with the owner's choice to split oversized parts in CWF-1
+
+2. Split: T3 → leave, removal and succession; rename, handover and deletion.
+   Seven operations, their permission checks and concurrency cases are too much for one task. Pin the shared circle-deletion operation in the first part so last-member leave and admin deletion use the same rule.
+   Disposition: keep amended: split into T3A (leave, removal, succession; pins the shared circle-deletion operation) and T3B (rename, handover, delete using it)
+
+3. Split: T4 → home and create; circle view and invite controls.
+   Two screens, route registration, client generation and end-to-end coverage suggest more than 400 changed lines.
+   Disposition: keep amended: split into T4A (home and create; pins routes and client) and T4B (circle screen and invite controls)
+
+4. Split: T6 → leave and removal controls; remaining admin controls.
+   Confirmations and UI states for six actions suggest more than 400 changed lines.
+   Disposition: keep amended: split into T6A (leave, remove, clear removals) and T6B (rename, hand over, delete)
+
+5. Pin the web route seam before T5 and T6.
+   T4 promises to register their routes in `main.tsx`, but its scope does not include the join or manage folders needed for compilable stub components. Let T4 commit those stubs with explicit scope, or give route registration to a small wiring task. T5 and T6 should depend on the task that pins this shared route line.
+   Disposition: keep amended: T4A's scope now covers apps/web/src/routes/circles/ and commits a stub component for every circle route; T4B, T5, T6A and T6B list T4A (directly or via T4B) under After
+
+6. Pin an optional-session invite preview in T1’s API contract and scope.
+   A signed-out visitor must see a dead-link result before sign-in, while a signed-in visitor must be recognized as a member or a blocked person. The existing session guard rejects unauthenticated requests, and its public-route mode skips session resolution entirely. Neither mode supports both cases; the guard change also sits outside T2’s scope.
+   Disposition: keep amended: T1A pins an optional-session mode in the session guard (apps/api/src/modules/sessions/ in its scope) used by the invite preview
+
+7. Pin the transaction and lock interface shared by T2 and T3.
+   Both join and management actions change membership under a circle lock, but T1 pins no common lock function or lock order. Define the circle/member locking operation and order in T1 so parallel implementations cannot acquire them differently.
+   Disposition: keep amended: T1A pins one lock helper in circles/core that locks the circle row first, then member rows in ascending id order; every membership write uses it
+
+8. State the owner-configuration prerequisite for creation.
+   `OWNER_GOOGLE_ACCOUNT_ID` is optional at boot today, yet Done-when 1 requires an owner-created value fixed at creation. T1 must say whether creation is refused until it is configured; the live setup notes also need that configuration step.
+   Disposition: keep amended: Done-when 1 and the builders notes say isOwnerCreated is true only when OWNER_GOOGLE_ACCOUNT_ID is set and equals the creator; creation is never refused; production already has it set (CWF-1 runbook)
+
+9. Clear `adminMemberId` when deleting a circle.
+   The plan says deleted circles keep only their name, dates, owner flag and usage history, but its stated nulling rule applies when the member row is deleted. Admin deletion and last-member leave can leave the member row intact, so T3 must explicitly null this field on circle deletion.
+   Disposition: keep amended: the shared deletion operation (T3A) clears inviteCode and adminMemberId, sets deletedAtUtc and deletes memberships and blocks
+
+10. Cut or defer: the WhatsApp-number bus answer and “members sharing a circle with X” query.
+    CWF-2 displays member names and controls circle access; no CWF-2 screen or API needs another member’s number or that future search query. Add each with the story that first uses it, while retaining the account lookup and usage recording needed here.
+   Disposition: cut
+
+11. Cut or defer: future-event fields in T1’s usage table.
+    This story records only invite and join events. Bank, card, search and contact fields have no CWF-2 behaviour to serve, and the Bank table is scheduled for the cards story. Add those fields when their events are implemented.
+   Disposition: cut
+
+## Round 2
+
+12. Disputed keep 1: T1A still appears too large for one task.
+    It includes a service bus, four tables and a migration, account and session changes, a lock helper, create/list/view endpoints, the full API contract, four stub controller areas, and integration tests. Split the shared foundations from create and view while keeping the contract pinned before its consumers start.
+   Disposition: keep amended: T1A now holds foundations, create and list (Done-when 1); the circle view with members moved to new T1C (Done-when 4); the API contract stays pinned in T1A before its consumers start
+
+13. Creation cannot use the stated lock order.
+    The shared helper says every membership write locks the circle row first, but a new circle has no row to lock. Pin creation’s lock path and test simultaneous creates and joins for a member near the 20-circle limit.
+   Disposition: keep amended: creation locks only the creator's member row (no circle row exists yet, so it never deadlocks with a join's circle-then-member order); a test races creates and joins near the 20-circle limit
+
+14. T1A must initialize the invite code when it creates a circle.
+    The spec requires every circle to have one active link. T1B owns invite behaviour but has no scope to change T1A’s create operation. Assign code generation to T1A and prove a newly created circle has a valid, unique link.
+   Disposition: keep amended: T1A generates the invite code at creation, with a test that each new circle has a valid, unique code
+
+15. Pin the usage module’s registration before T1B.
+    `AppModule` explicitly registers modules. T1B adds `UsageModule` but cannot edit `app.module.ts`; T1A owns that file and does not promise a usage stub. Give that registration to T1A, or assign the shared line to a wiring task.
+   Disposition: keep amended: T1A registers a stub UsageModule in app.module.ts and owns apps/api/src/modules/usage/ for it; T1B fills it in
+
+16. Usage-event failure contradicts Done-when 2 and 3.
+    Those items say every copy, share and successful join records an event. The builders’ rule logs and discards a failed post-commit record, permanently losing that count. Specify the intended guarantee and a failure test before implementation.
+   Disposition: keep amended: Done-when 2 and 3 now say a failed record never undoes the action and leaves that one event uncounted, matching the roadmap; the builders notes require a test that forces a failure
+
+17. Unproven: item 3: a dead link opened with an expired or invalid session cookie.
+    Optional-session preview must still show the same dead-link message to that visitor. T2’s Tests cell names an integration file but does not pin this case or the guard behaviour it depends on.
+   Disposition: keep amended: the optional-session mode treats an expired or invalid cookie as no session, never a 401; T2 tests a dead link opened with such a cookie
+
+## Round 3
+
+18. Disputed keep 12: T1A still exceeds the task-size guideline.
+    Moving circle view to T1C leaves T1A with the migration, service bus, account and session changes, locking, create and list, the full API contract, five stub controllers and integration tests. Split the foundations from create and list, with the contract pinned before its consumers start.
+   Disposition: keep amended with the owner's choice: T1A now holds only the shared foundations plus creating a circle as the test that crosses them; listing circles moved to new T1D, and the circle view stays in T1C
+
+19. Disputed keep 16: the amended failure rule conflicts with the confirmed spec.
+    The spec still requires an invite event for every Copy or Share tap and a join event on joining. The plan now permits those events to remain uncounted after a recording failure. The roadmap contains that exception, but the confirmed spec has not been changed to match it.
+   Disposition: keep amended with the owner's choice: a separate fix adds the roadmap's rule to docs/specs/circles.md (behaviour and acceptance criterion 17), so the spec, roadmap and this plan agree that a failed record never undoes the action and leaves that one event uncounted
+
+20. Unproven: item 5: removal blocks joining through a later reset link, and clearing removals permits joining again.
+    T3A creates removals without depending on T2’s join API, while T2 does not depend on T3A’s removal API. Neither task’s integration test can prove the full sequence through the running API as ordered. Assign that test to a task after both APIs land, or add the needed dependency.
+   Disposition: keep amended: T3B now waits for T2 and T3A and owns the end-to-end test that a removed person can't rejoin through the current or a later reset link and can rejoin after clear all removals; T3B covers Done-when 5 and 6
+
+## Round 4
+
+21. Disputed keep 18: T1A still exceeds the task-size guideline.
+    Moving list to T1D leaves the migration, service bus, account and session changes, locking, create, the full API contract, four stub controllers and integration tests in T1A. The owner’s chosen split has reduced its scope, but it still appears substantially larger than about 400 changed lines.
+   Disposition: keep T1A is the seam-pinning first task the planning rules require (shared tables, bus, lock helper and the one API contract that lets T1B, T1C, T1D and T2 edit separate files in parallel); the optional-session guard moved to T2, the only user; splitting further would leave a task covering no Done-when item, which the rules cut, and the owner chose this split
+
+22. Cut or defer: removal-block and deleted-circle handling in CWF-2.
+    No action in this story creates a block or deletes a circle, so these join states are reachable only through direct test-database setup. Move their schema, checks and item 3 cases to CWF-7, where removal and deletion become available; keep those protections when those actions ship.
+   Disposition: keep split across stories, not a spec deferral: removal-block and deleted-circle join states, their table and checks move to CWF-7, which brings removal and deletion; the plan's out-of-scope notes name them as the deleted-circle and removal parts of roadmap criteria 9 and 14
+
+23. Unproven: item 2: a joined non-admin is denied the invite link through a direct request.
+    T1B runs before the join API exists, and no later Tests cell assigns this permission check. Add a running-API test after T2 joins a second member.
+   Disposition: keep amended: T2, after joining exists, adds a running-API test that a joined non-admin is refused the invite link through a direct request
+
+24. Unproven: item 4: a member’s name stops reaching someone when their last shared circle ends.
+    Item 4 promises visibility only while membership is shared, but CWF-2 has no leave or remove operation with which to prove revocation through the app. Assign that case and its test to CWF-7.
+   Disposition: keep split across stories, not a spec deferral: Done-when 4 drops 'only while they do'; proving a name stops reaching someone after their last shared circle ends moves to CWF-7 with leave and remove
+
+## Round 5
+
+25. The deferrals in findings 22 and 24 are not closed as stated.
+    The plan moves blocked and deleted-circle links, and visibility revocation, to CWF-7. The confirmed spec still includes them in its behaviour and acceptance criteria, with no corresponding entry under Out of scope. Record this as a split across stories rather than a spec deferral, or update the spec and its scope consistently.
+   Disposition: keep amended: dispositions 22 and 24 now record a split across stories; the spec keeps these behaviours in scope, and the plan's out-of-story notes say CWF-7 delivers them
+
+## Round 6
+
+26. Disputed keep 25: the roadmap has not been split consistently with the plan.
+    CWF-2’s roadmap criteria 8, 9 and 11 still include visibility after membership ends, deleted-circle links and removal blocks. The plan assigns those cases to CWF-7, but cites criteria 9 and 14; criterion 14 concerns non-member access. Update the roadmap’s CWF-2 scope and references to match the split.
+   Disposition: keep amended with the owner's choice: a roadmap fix moves the visibility-ending, deleted-circle-link and removal-block clauses out of CWF-2's criteria and into CWF-7's; the plan now says the roadmap lists those cases under CWF-7
+
+27. T1A and T2 omit Done-when 2 from their Covers cells.
+    T1A creates and tests the active invite code, while T2 tests that a joined non-admin cannot retrieve the link. Both prove parts of item 2, but their Covers cells list only items 1 and 3 respectively.
+   Disposition: keep amended: T1A now covers Done-when 1 and 2 (invite code at creation) and T2 covers 2 and 3 (a joined non-admin refused the link)
+
+## Round 7
+
+28. Disputed keep 26: CWF-2’s roadmap story still promises the work moved to CWF-7.
+    Its story sentence says members can leave and admins can remove, rename, hand over and delete; the plan now assigns those actions to CWF-7. The acceptance criteria were split, but the roadmap story text and this plan’s title still describe the old scope.
+   Disposition: keep amended: the roadmap's CWF-2 title and story sentence (on this story branch) and the plan title now read 'Create and join circles' and describe only create, invite, join and seeing members; leaving and admin powers are in CWF-7's story
+
+## Round 8
+
+No findings.
