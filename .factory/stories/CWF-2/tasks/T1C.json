@@ -2,25 +2,12 @@
   "branch": "task/CWF-2-T1C",
   "review": {
     "blocking_level": "P1",
-    "changed": "8fcaf4149bcd1ce0125800c49531a273c1f2ea52bf6f48d5946c25674ad1f6b9",
-    "commit": "22304fbad5150b0643bef92210488f70d6f6a331",
-    "dismissals": [
-      {
-        "because": ".github/workflows/ci.yml:57 runs pnpm test:integration in the required checks job; vitest.config.ts:18 includes apps/api/test/**/*.spec.ts in the api-integration project, so apps/api/test/circles-view.integration.spec.ts runs on every pull request; the forge test command is the unit suite by design",
-        "finding": 1,
-        "from_base": false
-      }
-    ],
+    "changed": "33bbff3f5cb21e1ea0c1479cdb6d6d51b07a1dc937cf8cd72f824f986ddc2f30",
+    "commit": "c4524a304dc2f96877e541ee53943ff8095060d1",
+    "dismissals": [],
     "findings": [
       {
-        "body": "The close-run evidence shows that `pnpm test` ran the API unit tests but did not run this integration test. This branch adds the test without changing the repository test command or its configuration, so the required running-API and real-database check remains outside the test suite.",
-        "file": "apps/api/test/circles-view.integration.spec.ts",
-        "line": 63,
-        "priority": "P1",
-        "title": "Not done: circle view integration test runs in the repository test suite"
-      },
-      {
-        "body": "This task-status JSON is outside the two permitted paths and contributes no code or test needed for the circle view. The earlier scope finding remains open because the file is still in the branch.",
+        "body": "This new task-status JSON is outside the permitted circle-view source and test paths. It is review bookkeeping and is not needed to deliver the API or its tests. The previous scope finding remains open because the file is still in this branch.",
         "file": ".factory/stories/CWF-2/tasks/T1C.json",
         "line": 1,
         "priority": "P2",
@@ -28,9 +15,9 @@
       }
     ],
     "status": "clean",
-    "tree": "5ee2616dd025215ef18c29644685ead0b8db8c13091c64e16fb04e5a8453b25a"
+    "tree": "850798ed1785f4c972608cd61c81d8ce627714cba903a842c6dbda819c4d5fdc"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-05T17:28:49+00:00",
@@ -42,6 +29,10 @@
     },
     {
       "at": "2026-10-05T18:40:00+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T19:00:18+00:00",
       "step": "review"
     }
   ]
