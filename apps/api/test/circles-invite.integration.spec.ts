@@ -96,6 +96,18 @@ describe('circle invite API', () => {
     expect((await db.circle.findUnique({ where: { inviteCode: reset.payload.data.url.split('/').at(-1) } }))?.id).toBe(created.payload.data.id);
     expect(await db.circleMembership.count({ where: { circleId: created.payload.data.id } })).toBe(1);
     expect(await db.usageEvent.count({ where: { type: 'invite' } })).toBe(2);
+    const active = await call(path, 'GET', admin.cookie);
+    expect(active.response.status).toBe(200);
+    expect(active.payload.data.url).toBe(reset.payload.data.url);
+    const sharedAfterReset = await call(`${path}/record`, 'POST', admin.cookie, { action: 'whatsapp' });
+    expect(sharedAfterReset.response.status).toBe(200);
+    const activeShareText = new URL(sharedAfterReset.payload.data.whatsappUrl).searchParams.get('text');
+    expect(activeShareText).toContain('College batch');
+    expect(activeShareText).toContain(reset.payload.data.url);
+    expect(activeShareText).not.toContain(first.payload.data.url);
+    await vi.waitFor(async () => {
+      expect(await db.usageEvent.count({ where: { type: 'invite' } })).toBe(3);
+    }, { timeout: 5_000 });
 
     const lockDb = new PrismaClient({ datasources: { db: { url: databaseUrl.toString() } } });
     let lockReady!: () => void;
@@ -119,7 +131,7 @@ describe('circle invite API', () => {
       try { await lockTransaction; } finally { await lockDb.$disconnect(); }
     }
     await vi.waitFor(async () => {
-      expect(await db.usageEvent.count({ where: { type: 'invite', memberId: admin.id, circles: { some: { circleId: created.payload.data.id } } } })).toBe(4);
+      expect(await db.usageEvent.count({ where: { type: 'invite', memberId: admin.id, circles: { some: { circleId: created.payload.data.id } } } })).toBe(5);
     }, { timeout: 5_000 });
 
     const warning = vi.spyOn(PinoLogger.prototype, 'warn');
@@ -132,7 +144,7 @@ describe('circle invite API', () => {
       await vi.waitFor(() => {
         expect(warning).toHaveBeenCalledWith(expect.objectContaining({ context: expect.objectContaining({ eventName: 'CircleInviteEvent', outcome: 'failed' }) }), 'Usage event recording failed');
       }, { timeout: 5_000 });
-      expect(await db.usageEvent.count({ where: { type: 'invite' } })).toBe(4);
+      expect(await db.usageEvent.count({ where: { type: 'invite' } })).toBe(5);
     } finally {
       warning.mockRestore();
       await db.$executeRawUnsafe('ALTER TABLE "UsageEvent" DROP CONSTRAINT "test_usage_failure"');

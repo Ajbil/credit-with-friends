@@ -18,7 +18,10 @@ const request = (memberId: string) => ({ caller: { memberId } }) as Authenticate
 function setup(publish: () => Promise<void> = async () => {}) {
   const circle = { id: circleId, name: 'College batch', inviteCode: code, adminMemberId: adminId, deletedAtUtc: null };
   const findUnique = vi.fn(async () => circle);
-  const updateMany = vi.fn(async () => ({ count: 1 }));
+  const updateMany = vi.fn(async ({ data }: { data: { inviteCode: string } }) => {
+    circle.inviteCode = data.inviteCode;
+    return { count: 1 };
+  });
   const db = { circle: { findUnique, updateMany } } as unknown as PrismaService;
   const bus = { publish: vi.fn(publish) } as unknown as ServiceBus;
   const config = { getOrThrow: () => 'http://localhost:5173' } as unknown as ConfigService<ApiConfig, true>;
@@ -42,11 +45,13 @@ describe('circle invite controller', () => {
     const reset = await controller.reset(circleId, request(adminId));
     expect(reset.url).not.toBe(previous.url);
     expect(reset.url).toMatch(/^http:\/\/localhost:5173\/circles\/join\/[A-Za-z0-9_-]{22}$/);
+    expect((await controller.get(circleId, request(adminId))).url).toBe(reset.url);
     expect(updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: circleId, adminMemberId: adminId, deletedAtUtc: null }, data: expect.objectContaining({ modifiedByAccountId: adminId }) }));
     const share = await controller.record(circleId, request(adminId), { action: 'whatsapp' });
     const text = new URL(share.whatsappUrl!).searchParams.get('text');
     expect(text).toContain('College batch');
-    expect(text).toContain(previous.url);
+    expect(text).toContain(reset.url);
+    expect(text).not.toContain(previous.url);
   });
 
   test('copy and WhatsApp share return while usage recording remains pending', async () => {
