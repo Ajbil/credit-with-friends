@@ -2,20 +2,34 @@
   "branch": "task/CWF-2-T1B",
   "review": {
     "blocking_level": "P1",
-    "changed": "3a04526fe1ccef527a341827188dea43a80ab9e9faa807b6997f5a721b697a46",
-    "commit": "2f56efb0c5c97a5dbd767beb4f041b4df4cf2316",
+    "changed": "901716db04fbf8f7d2750ade4958ac04ddbef3c1f5b49582285411524011c048",
+    "commit": "56d0862f7f591da0ca6ff559f0733a07f720de6e",
     "dismissals": [],
     "findings": [
       {
-        "body": "This branch adds task review metadata under `.factory`, outside the three permitted paths. The file is not needed for the invite or usage behavior.",
+        "body": "The test claims to check the active link after a reset, but its circle mock never updates and the assertion expects the pre-reset URL. The integration test also checks WhatsApp text only before resetting. Add a post-reset share assertion against the new URL so the test fails if sharing a stale link.",
+        "file": "apps/api/src/modules/circles/invite/circle-invite.controller.spec.ts",
+        "line": 47,
+        "priority": "P1",
+        "title": "Not done: post-reset WhatsApp share uses the active link"
+      },
+      {
+        "body": "The reset integration test checks invite-code rows directly, but never opens the old and new links through the invite endpoint. That leaves the required user-facing result unproven. The supplied OpenAPI change still describes the join endpoint as returning 501, so this flow check depends on the later join task.",
+        "file": "apps/api/test/circles-invite.integration.spec.ts",
+        "line": 105,
+        "priority": "P2",
+        "title": "Later: join task should test reset links through the public invite flow"
+      },
+      {
+        "body": "This branch adds review and task metadata under `.factory`, outside the permitted paths. The file is unnecessary for invite-link or usage-event behavior.",
         "file": ".factory/stories/CWF-2/tasks/T1B.json",
         "line": 1,
         "priority": "P2",
         "title": "Remove the out-of-scope task status file"
       }
     ],
-    "status": "clean",
-    "tree": "3f72d1221cd8c9fb0f964bd7f9a75cbe0db08339562114779857ef94e354619e"
+    "status": "blocked",
+    "tree": "34a7ece6b85d270e1204e8eebeca0ee64bfca16434637d93d6ba08461ccb8eb6"
   },
   "status": "fixing",
   "steps": [
@@ -33,6 +47,10 @@
     },
     {
       "at": "2026-10-05T18:56:53+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-06T04:20:48+00:00",
       "step": "review"
     }
   ]
