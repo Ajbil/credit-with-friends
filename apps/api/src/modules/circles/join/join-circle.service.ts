@@ -37,6 +37,8 @@ export async function joinCircle(db: PrismaService, bus: ServiceBus, logger: Pin
     if (!await lockCircleMembershipRows(tx, [memberId], circle.id)) invalidInvite();
     const current = await tx.circle.findUnique({ where: { id: circle.id }, select: { inviteCode: true, deletedAtUtc: true } });
     if (!current || current.deletedAtUtc || current.inviteCode !== code) invalidInvite();
+    // A Member row exists only after onboarding; recheck it on this locked transaction.
+    if (!await tx.member.findUnique({ where: { id: memberId }, select: { id: true } })) throw new ForbiddenException({ code: 'ACCOUNT_INCOMPLETE' });
     const existing = await tx.circleMembership.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
     if (existing) return false;
     if (await tx.circleMembership.count({ where: { circleId: circle.id } }) >= MAX_MEMBERS) {
@@ -52,7 +54,7 @@ export async function joinCircle(db: PrismaService, bus: ServiceBus, logger: Pin
     const eventId = randomUUID();
     void bus.publish('CircleJoinedEvent', {
       id: eventId, version: 1, timestampUtc: new Date(), initiatedByAccountId: memberId, data: { circleId: circle.id },
-    }).catch(() => logger.warn({ context: { eventName: 'CircleJoinedEvent', eventId, outcome: 'failed' } }, 'Usage event dispatch failed'));
+    }).catch(() => logger.warn({ context: { eventName: 'CircleJoinedEvent', eventId, outcome: 'failed' } }, 'Usage event recording failed'));
   }
   return { circleId: circle.id };
 }
