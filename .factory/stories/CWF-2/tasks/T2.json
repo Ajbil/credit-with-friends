@@ -2,40 +2,33 @@
   "branch": "task/CWF-2-T2",
   "review": {
     "blocking_level": "P1",
-    "changed": "91cf3b12573417b0c55076cc0eee58b211d2a887301d6df62c1ff71f4195d87b",
-    "commit": "57c0cea7f05722027631cb90f823d569ffd05f5d",
+    "changed": "9ef9e41a0c4dd242007c8fa6e70ef151383e6d926b4d7e646b97bd8f56428548",
+    "commit": "99997c6111cdc8eb67be0c0b6ecdf3d1cf10ca36",
     "dismissals": [],
     "findings": [
       {
-        "body": "The new integration test waits for a warning whose message is `Usage event recording failed`, but this catch handler logs `Usage event dispatch failed`. When the test forces event persistence to fail, that assertion times out and the API test suite fails.",
-        "file": "apps/api/src/modules/circles/join/join-circle.service.ts",
-        "line": 55,
+        "body": "The added spec declares `_query` without using it. The supplied close run reports an ESLint error at this line, so the repository test command exits before tests run. Remove the unused parameter or use it.",
+        "file": "apps/api/src/modules/circles/join/join-circle.service.spec.ts",
+        "line": 15,
         "priority": "P1",
-        "title": "Not done: failed join event integration test"
+        "title": "Not done: join-service spec passes lint"
       },
       {
-        "body": "The completed-account check runs before the transaction and is never repeated after `lockCircleMembershipRows` acquires the shared lock. A change to account state between that request and membership creation can therefore pass the join. The required at-join account check needs to occur under the lock.",
-        "file": "apps/api/src/modules/circles/join/join-circle.service.ts",
-        "line": 34,
+        "body": "The `expired` case fabricates the same `UnauthorizedException` as the `invalid` case. The HTTP integration test covers a missing cookie but never sends an expired one to the running API. It therefore cannot catch a failure to treat an expired cookie as signed out on invite preview. Add an HTTP case using an expired session cookie.",
+        "file": "apps/api/src/modules/sessions/session.guard.spec.ts",
+        "line": 38,
         "priority": "P1",
-        "title": "Not done: Recheck the completed account under the join lock"
+        "title": "Not done: expired-session invite preview integration test"
       },
       {
-        "body": "The branch adds optional-session behavior to the guard but adds or changes no test under the required `apps/api/src/modules/sessions/**/*.spec.ts` path. In particular, the new path that treats an unauthorized cookie as signed out has no changed guard spec.",
-        "file": "apps/api/src/modules/sessions/session.guard.ts",
-        "line": 34,
+        "body": "This test simulates a disappearing account by mocking the transaction's `member.findUnique`. The HTTP integration test checks an account that was already incomplete, so it never exercises an account change between the initial lookup and the locked check. The required at-join recheck is consequently proved only by a mocked unit test. Add a database-backed join test that changes account state while the join waits for the lock.",
+        "file": "apps/api/src/modules/circles/join/join-circle.service.spec.ts",
+        "line": 69,
         "priority": "P1",
-        "title": "Not done: optional-session guard spec"
+        "title": "Not done: locked completed-account check integration test"
       },
       {
-        "body": "The branch adds the preview and join service but adds or changes no test under the required `apps/api/src/modules/circles/join/**/*.spec.ts` path. The new integration file does not satisfy that separately named test path.",
-        "file": "apps/api/src/modules/circles/join/join-circle.service.ts",
-        "line": 31,
-        "priority": "P1",
-        "title": "Not done: join-service spec"
-      },
-      {
-        "body": "This new Forge task-status file is outside the permitted paths and supplies no code, API contract, or test needed for the invite work. It should be omitted from this branch.",
+        "body": "This new Forge task-status file is outside the permitted paths and supplies no code, API contract, or test needed for the invite work. Omit it from this branch.",
         "file": ".factory/stories/CWF-2/tasks/T2.json",
         "line": 1,
         "priority": "P2",
@@ -43,7 +36,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "54bf4ec3e40b0553fea19beb13da3a699b079d4c5cab5133f15184e8051fd71f"
+    "tree": "f875f447f11d27a79cd15244be2859e56d0409aefb4b64f63c00b3c025a5ff7a"
   },
   "status": "fixing",
   "steps": [
@@ -53,6 +46,10 @@
     },
     {
       "at": "2026-10-07T15:12:08+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T15:32:53+00:00",
       "step": "review"
     }
   ]
