@@ -163,6 +163,248 @@ export interface ActionResponseDto {
   error: ActionResponseDtoError;
 }
 
+export interface UpdateProfileDto {
+  displayName?: string;
+  whatsappNumber?: string;
+}
+
+export interface AcceptNoticeDto {
+  version: number;
+  isConsentGiven: boolean;
+}
+
+export interface AcceptedNoticeDataDto {
+  version: number;
+  acceptedAtUtc: string;
+}
+
+/**
+ * @nullable
+ */
+export type AcceptedNoticeResponseDtoError =
+  | (typeof AcceptedNoticeResponseDtoError)[keyof typeof AcceptedNoticeResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AcceptedNoticeResponseDtoError = {} as const;
+
+export interface AcceptedNoticeResponseDto {
+  success: boolean;
+  data: AcceptedNoticeDataDto;
+  /** @nullable */
+  error: AcceptedNoticeResponseDtoError;
+}
+
+export interface CreateCircleDto {
+  /** A circle name, 1 to 40 characters after trimming. */
+  name: string;
+}
+
+export interface CircleDataDto {
+  id: string;
+  name: string;
+}
+
+/**
+ * @nullable
+ */
+export type CircleResponseDtoError =
+  (typeof CircleResponseDtoError)[keyof typeof CircleResponseDtoError] | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CircleResponseDtoError = {} as const;
+
+export interface CircleResponseDto {
+  success: boolean;
+  data: CircleDataDto;
+  /** @nullable */
+  error: CircleResponseDtoError;
+}
+
+export interface CircleSummaryDto {
+  id: string;
+  name: string;
+  memberCount: number;
+  isAdmin: boolean;
+}
+
+export interface CirclePaginationDto {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface ListCirclesDataDto {
+  items: CircleSummaryDto[];
+  pagination: CirclePaginationDto;
+}
+
+/**
+ * @nullable
+ */
+export type ListCirclesResponseDtoError =
+  | (typeof ListCirclesResponseDtoError)[keyof typeof ListCirclesResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ListCirclesResponseDtoError = {} as const;
+
+export interface ListCirclesResponseDto {
+  success: boolean;
+  data: ListCirclesDataDto;
+  /** @nullable */
+  error: ListCirclesResponseDtoError;
+}
+
+export interface CircleMemberDto {
+  id: string;
+  displayName: string;
+  isAdmin: boolean;
+}
+
+export interface ViewCircleDataDto {
+  id: string;
+  name: string;
+  members: CircleMemberDto[];
+}
+
+/**
+ * @nullable
+ */
+export type ViewCircleResponseDtoError =
+  | (typeof ViewCircleResponseDtoError)[keyof typeof ViewCircleResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ViewCircleResponseDtoError = {} as const;
+
+export interface ViewCircleResponseDto {
+  success: boolean;
+  data: ViewCircleDataDto;
+  /** @nullable */
+  error: ViewCircleResponseDtoError;
+}
+
+export interface CircleInviteDataDto {
+  url: string;
+}
+
+/**
+ * @nullable
+ */
+export type CircleInviteResponseDtoError =
+  | (typeof CircleInviteResponseDtoError)[keyof typeof CircleInviteResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CircleInviteResponseDtoError = {} as const;
+
+export interface CircleInviteResponseDto {
+  success: boolean;
+  data: CircleInviteDataDto;
+  /** @nullable */
+  error: CircleInviteResponseDtoError;
+}
+
+/**
+ * The invite action the admin tapped.
+ */
+export type RecordInviteDtoAction =
+  (typeof RecordInviteDtoAction)[keyof typeof RecordInviteDtoAction];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RecordInviteDtoAction = {
+  copy: 'copy',
+  whatsapp: 'whatsapp',
+} as const;
+
+export interface RecordInviteDto {
+  /** The invite action the admin tapped. */
+  action: RecordInviteDtoAction;
+}
+
+export interface RecordedInviteDataDto {
+  /** The tap was accepted for recording; persistence can finish after this response. */
+  recorded: boolean;
+  /** Open this on a WhatsApp share tap. */
+  whatsappUrl?: string;
+}
+
+/**
+ * @nullable
+ */
+export type RecordedInviteResponseDtoError =
+  | (typeof RecordedInviteResponseDtoError)[keyof typeof RecordedInviteResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RecordedInviteResponseDtoError = {} as const;
+
+export interface RecordedInviteResponseDto {
+  success: boolean;
+  data: RecordedInviteDataDto;
+  /** @nullable */
+  error: RecordedInviteResponseDtoError;
+}
+
+export type InvitePreviewDataDtoStatus =
+  (typeof InvitePreviewDataDtoStatus)[keyof typeof InvitePreviewDataDtoStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitePreviewDataDtoStatus = {
+  preview: 'preview',
+  already_member: 'already_member',
+} as const;
+
+export interface InvitePreviewDataDto {
+  status: InvitePreviewDataDtoStatus;
+  /** Returned for an existing member. */
+  circleId?: string;
+  /** Shown to eligible non-members with a valid link. */
+  name?: string;
+  /** Shown to eligible non-members with a valid link. */
+  memberCount?: number;
+}
+
+/**
+ * @nullable
+ */
+export type InvitePreviewResponseDtoError =
+  | (typeof InvitePreviewResponseDtoError)[keyof typeof InvitePreviewResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitePreviewResponseDtoError = {} as const;
+
+export interface InvitePreviewResponseDto {
+  success: boolean;
+  data: InvitePreviewDataDto;
+  /** @nullable */
+  error: InvitePreviewResponseDtoError;
+}
+
+export interface JoinCircleDataDto {
+  circleId: string;
+}
+
+/**
+ * @nullable
+ */
+export type JoinCircleResponseDtoError =
+  | (typeof JoinCircleResponseDtoError)[keyof typeof JoinCircleResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const JoinCircleResponseDtoError = {} as const;
+
+export interface JoinCircleResponseDto {
+  success: boolean;
+  data: JoinCircleDataDto;
+  /** @nullable */
+  error: JoinCircleResponseDtoError;
+}
+
 export interface HealthDataDto {
   /** Indicates that the API process is ready. */
   status: string;
@@ -186,6 +428,17 @@ export interface HealthResponseDto {
 
 export type GoogleControllerStartParams = {
   returnTo?: string;
+};
+
+export type ListCirclesControllerListParams = {
+  /**
+   * Items per page, at most 100.
+   */
+  limit?: number;
+  /**
+   * Page number, starting at 1.
+   */
+  page?: number;
 };
 
 /**
@@ -452,6 +705,56 @@ export const accountsControllerMe = async (
 };
 
 /**
+ * @summary Edit your own member profile
+ */
+export type profileControllerUpdateResponse200 = {
+  data: MemberResponseDto;
+  status: 200;
+};
+
+export type profileControllerUpdateResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type profileControllerUpdateResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type profileControllerUpdateResponseSuccess =
+  profileControllerUpdateResponse200 & {
+    headers: Headers;
+  };
+export type profileControllerUpdateResponseError = (
+  profileControllerUpdateResponse400 | profileControllerUpdateResponse401
+) & {
+  headers: Headers;
+};
+
+export type profileControllerUpdateResponse =
+  profileControllerUpdateResponseSuccess | profileControllerUpdateResponseError;
+
+export const getProfileControllerUpdateUrl = () => {
+  return `/api/v1/members/me`;
+};
+
+export const profileControllerUpdate = async (
+  updateProfileDto: UpdateProfileDto,
+  options?: RequestInit,
+): Promise<profileControllerUpdateResponse> => {
+  return apiFetch<profileControllerUpdateResponse>(
+    getProfileControllerUpdateUrl(),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(updateProfileDto),
+    },
+  );
+};
+
+/**
  * @summary Start Google sign-in
  */
 export type googleControllerStartResponse302 = {
@@ -531,6 +834,535 @@ export const googleControllerCallback = async (
     {
       ...options,
       method: 'GET',
+    },
+  );
+};
+
+/**
+ * @summary Accept the current privacy notice
+ */
+export type privacyNoticeControllerAcceptResponse200 = {
+  data: AcceptedNoticeResponseDto;
+  status: 200;
+};
+
+export type privacyNoticeControllerAcceptResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type privacyNoticeControllerAcceptResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type privacyNoticeControllerAcceptResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type privacyNoticeControllerAcceptResponseSuccess =
+  privacyNoticeControllerAcceptResponse200 & {
+    headers: Headers;
+  };
+export type privacyNoticeControllerAcceptResponseError = (
+  | privacyNoticeControllerAcceptResponse400
+  | privacyNoticeControllerAcceptResponse401
+  | privacyNoticeControllerAcceptResponse403
+) & {
+  headers: Headers;
+};
+
+export type privacyNoticeControllerAcceptResponse =
+  | privacyNoticeControllerAcceptResponseSuccess
+  | privacyNoticeControllerAcceptResponseError;
+
+export const getPrivacyNoticeControllerAcceptUrl = () => {
+  return `/api/v1/privacy-notice/accept`;
+};
+
+export const privacyNoticeControllerAccept = async (
+  acceptNoticeDto: AcceptNoticeDto,
+  options?: RequestInit,
+): Promise<privacyNoticeControllerAcceptResponse> => {
+  return apiFetch<privacyNoticeControllerAcceptResponse>(
+    getPrivacyNoticeControllerAcceptUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(acceptNoticeDto),
+    },
+  );
+};
+
+/**
+ * @summary Create a circle
+ */
+export type createCircleControllerCreateResponse201 = {
+  data: CircleResponseDto;
+  status: 201;
+};
+
+export type createCircleControllerCreateResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type createCircleControllerCreateResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type createCircleControllerCreateResponseSuccess =
+  createCircleControllerCreateResponse201 & {
+    headers: Headers;
+  };
+export type createCircleControllerCreateResponseError = (
+  | createCircleControllerCreateResponse400
+  | createCircleControllerCreateResponse401
+) & {
+  headers: Headers;
+};
+
+export type createCircleControllerCreateResponse =
+  | createCircleControllerCreateResponseSuccess
+  | createCircleControllerCreateResponseError;
+
+export const getCreateCircleControllerCreateUrl = () => {
+  return `/api/v1/circles`;
+};
+
+export const createCircleControllerCreate = async (
+  createCircleDto: CreateCircleDto,
+  options?: RequestInit,
+): Promise<createCircleControllerCreateResponse> => {
+  return apiFetch<createCircleControllerCreateResponse>(
+    getCreateCircleControllerCreateUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createCircleDto),
+    },
+  );
+};
+
+/**
+ * @summary List your circles
+ */
+export type listCirclesControllerListResponse200 = {
+  data: ListCirclesResponseDto;
+  status: 200;
+};
+
+export type listCirclesControllerListResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type listCirclesControllerListResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type listCirclesControllerListResponseSuccess =
+  listCirclesControllerListResponse200 & {
+    headers: Headers;
+  };
+export type listCirclesControllerListResponseError = (
+  listCirclesControllerListResponse400 | listCirclesControllerListResponse401
+) & {
+  headers: Headers;
+};
+
+export type listCirclesControllerListResponse =
+  | listCirclesControllerListResponseSuccess
+  | listCirclesControllerListResponseError;
+
+export const getListCirclesControllerListUrl = (
+  params?: ListCirclesControllerListParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/circles?${stringifiedParams}`
+    : `/api/v1/circles`;
+};
+
+export const listCirclesControllerList = async (
+  params?: ListCirclesControllerListParams,
+  options?: RequestInit,
+): Promise<listCirclesControllerListResponse> => {
+  return apiFetch<listCirclesControllerListResponse>(
+    getListCirclesControllerListUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
+};
+
+/**
+ * @summary View a circle and its members
+ */
+export type viewCircleControllerViewResponse200 = {
+  data: ViewCircleResponseDto;
+  status: 200;
+};
+
+export type viewCircleControllerViewResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type viewCircleControllerViewResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type viewCircleControllerViewResponseSuccess =
+  viewCircleControllerViewResponse200 & {
+    headers: Headers;
+  };
+export type viewCircleControllerViewResponseError = (
+  viewCircleControllerViewResponse401 | viewCircleControllerViewResponse404
+) & {
+  headers: Headers;
+};
+
+export type viewCircleControllerViewResponse =
+  | viewCircleControllerViewResponseSuccess
+  | viewCircleControllerViewResponseError;
+
+export const getViewCircleControllerViewUrl = (circleId: string) => {
+  return `/api/v1/circles/${circleId}`;
+};
+
+export const viewCircleControllerView = async (
+  circleId: string,
+  options?: RequestInit,
+): Promise<viewCircleControllerViewResponse> => {
+  return apiFetch<viewCircleControllerViewResponse>(
+    getViewCircleControllerViewUrl(circleId),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
+};
+
+/**
+ * @summary Get the active invite link as circle admin
+ */
+export type circleInviteControllerGetResponse200 = {
+  data: CircleInviteResponseDto;
+  status: 200;
+};
+
+export type circleInviteControllerGetResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type circleInviteControllerGetResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type circleInviteControllerGetResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type circleInviteControllerGetResponseSuccess =
+  circleInviteControllerGetResponse200 & {
+    headers: Headers;
+  };
+export type circleInviteControllerGetResponseError = (
+  | circleInviteControllerGetResponse401
+  | circleInviteControllerGetResponse403
+  | circleInviteControllerGetResponse404
+) & {
+  headers: Headers;
+};
+
+export type circleInviteControllerGetResponse =
+  | circleInviteControllerGetResponseSuccess
+  | circleInviteControllerGetResponseError;
+
+export const getCircleInviteControllerGetUrl = (circleId: string) => {
+  return `/api/v1/circles/${circleId}/invite`;
+};
+
+export const circleInviteControllerGet = async (
+  circleId: string,
+  options?: RequestInit,
+): Promise<circleInviteControllerGetResponse> => {
+  return apiFetch<circleInviteControllerGetResponse>(
+    getCircleInviteControllerGetUrl(circleId),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
+};
+
+/**
+ * @summary Reset the invite link as circle admin
+ */
+export type circleInviteControllerResetResponse200 = {
+  data: CircleInviteResponseDto;
+  status: 200;
+};
+
+export type circleInviteControllerResetResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type circleInviteControllerResetResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type circleInviteControllerResetResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type circleInviteControllerResetResponseSuccess =
+  circleInviteControllerResetResponse200 & {
+    headers: Headers;
+  };
+export type circleInviteControllerResetResponseError = (
+  | circleInviteControllerResetResponse401
+  | circleInviteControllerResetResponse403
+  | circleInviteControllerResetResponse404
+) & {
+  headers: Headers;
+};
+
+export type circleInviteControllerResetResponse =
+  | circleInviteControllerResetResponseSuccess
+  | circleInviteControllerResetResponseError;
+
+export const getCircleInviteControllerResetUrl = (circleId: string) => {
+  return `/api/v1/circles/${circleId}/invite/reset`;
+};
+
+export const circleInviteControllerReset = async (
+  circleId: string,
+  options?: RequestInit,
+): Promise<circleInviteControllerResetResponse> => {
+  return apiFetch<circleInviteControllerResetResponse>(
+    getCircleInviteControllerResetUrl(circleId),
+    {
+      ...options,
+      method: 'POST',
+    },
+  );
+};
+
+/**
+ * @summary Record a copy or WhatsApp share tap
+ */
+export type circleInviteControllerRecordResponse200 = {
+  data: RecordedInviteResponseDto;
+  status: 200;
+};
+
+export type circleInviteControllerRecordResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type circleInviteControllerRecordResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type circleInviteControllerRecordResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type circleInviteControllerRecordResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type circleInviteControllerRecordResponseSuccess =
+  circleInviteControllerRecordResponse200 & {
+    headers: Headers;
+  };
+export type circleInviteControllerRecordResponseError = (
+  | circleInviteControllerRecordResponse400
+  | circleInviteControllerRecordResponse401
+  | circleInviteControllerRecordResponse403
+  | circleInviteControllerRecordResponse404
+) & {
+  headers: Headers;
+};
+
+export type circleInviteControllerRecordResponse =
+  | circleInviteControllerRecordResponseSuccess
+  | circleInviteControllerRecordResponseError;
+
+export const getCircleInviteControllerRecordUrl = (circleId: string) => {
+  return `/api/v1/circles/${circleId}/invite/record`;
+};
+
+export const circleInviteControllerRecord = async (
+  circleId: string,
+  recordInviteDto: RecordInviteDto,
+  options?: RequestInit,
+): Promise<circleInviteControllerRecordResponse> => {
+  return apiFetch<circleInviteControllerRecordResponse>(
+    getCircleInviteControllerRecordUrl(circleId),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(recordInviteDto),
+    },
+  );
+};
+
+/**
+ * @summary Preview an invite
+ */
+export type joinCircleControllerPreviewResponse200 = {
+  data: InvitePreviewResponseDto;
+  status: 200;
+};
+
+export type joinCircleControllerPreviewResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type joinCircleControllerPreviewResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type joinCircleControllerPreviewResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type joinCircleControllerPreviewResponse501 = {
+  data: ApiErrorResponseDto;
+  status: 501;
+};
+
+export type joinCircleControllerPreviewResponseSuccess =
+  joinCircleControllerPreviewResponse200 & {
+    headers: Headers;
+  };
+export type joinCircleControllerPreviewResponseError = (
+  | joinCircleControllerPreviewResponse401
+  | joinCircleControllerPreviewResponse403
+  | joinCircleControllerPreviewResponse404
+  | joinCircleControllerPreviewResponse501
+) & {
+  headers: Headers;
+};
+
+export type joinCircleControllerPreviewResponse =
+  | joinCircleControllerPreviewResponseSuccess
+  | joinCircleControllerPreviewResponseError;
+
+export const getJoinCircleControllerPreviewUrl = (code: string) => {
+  return `/api/v1/circle-invites/${code}`;
+};
+
+export const joinCircleControllerPreview = async (
+  code: string,
+  options?: RequestInit,
+): Promise<joinCircleControllerPreviewResponse> => {
+  return apiFetch<joinCircleControllerPreviewResponse>(
+    getJoinCircleControllerPreviewUrl(code),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
+};
+
+/**
+ * @summary Join through an active invite
+ */
+export type joinCircleControllerJoinResponse200 = {
+  data: JoinCircleResponseDto;
+  status: 200;
+};
+
+export type joinCircleControllerJoinResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type joinCircleControllerJoinResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type joinCircleControllerJoinResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type joinCircleControllerJoinResponse409 = {
+  data: ApiErrorResponseDto;
+  status: 409;
+};
+
+export type joinCircleControllerJoinResponse501 = {
+  data: ApiErrorResponseDto;
+  status: 501;
+};
+
+export type joinCircleControllerJoinResponseSuccess =
+  joinCircleControllerJoinResponse200 & {
+    headers: Headers;
+  };
+export type joinCircleControllerJoinResponseError = (
+  | joinCircleControllerJoinResponse401
+  | joinCircleControllerJoinResponse403
+  | joinCircleControllerJoinResponse404
+  | joinCircleControllerJoinResponse409
+  | joinCircleControllerJoinResponse501
+) & {
+  headers: Headers;
+};
+
+export type joinCircleControllerJoinResponse =
+  | joinCircleControllerJoinResponseSuccess
+  | joinCircleControllerJoinResponseError;
+
+export const getJoinCircleControllerJoinUrl = (code: string) => {
+  return `/api/v1/circle-invites/${code}/join`;
+};
+
+export const joinCircleControllerJoin = async (
+  code: string,
+  options?: RequestInit,
+): Promise<joinCircleControllerJoinResponse> => {
+  return apiFetch<joinCircleControllerJoinResponse>(
+    getJoinCircleControllerJoinUrl(code),
+    {
+      ...options,
+      method: 'POST',
     },
   );
 };
