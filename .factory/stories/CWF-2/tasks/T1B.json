@@ -1,0 +1,58 @@
+{
+  "branch": "task/CWF-2-T1B",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "b8aef46dbcb8b3843d412a03bc8e196d2e90a3cc344a91ae030286839f03d3f4",
+    "commit": "d69c4077455c28299e847436b03ea0a2d35ffff7",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The reset test verifies invite-code rows, but does not open the old and new links through the public invite endpoint. The changed OpenAPI contract still lists that endpoint as returning 501, so this user-facing check belongs to the later join task.",
+        "file": "apps/api/test/circles-invite.integration.spec.ts",
+        "line": 105,
+        "priority": "P2",
+        "title": "Later: join task should test reset links through the public invite flow"
+      },
+      {
+        "body": "This branch adds task and review metadata under `.factory`, outside the permitted paths. It is unnecessary for invite-link or usage-event behavior.",
+        "file": ".factory/stories/CWF-2/tasks/T1B.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task status file"
+      }
+    ],
+    "status": "clean",
+    "tree": "7b5fffbe9525be96501dabc7ff926ecf762cff3a2bbdb27b0432ddabd91940a8"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-05T17:28:34+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-05T18:25:26+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T18:40:24+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T18:56:53+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-06T04:20:48+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-06T04:27:55+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T09:12:35+00:00",
+      "step": "review"
+    }
+  ]
+}
