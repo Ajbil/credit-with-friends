@@ -2,37 +2,23 @@
   "branch": "task/CWF-2-T2",
   "review": {
     "blocking_level": "P1",
-    "changed": "4245eee5f1d866a3bc3841259c27bbcf41278a427e1da177deffc922d10b07a4",
-    "commit": "0217f3298702bcd36809b8fc4721fbbae02f6c70",
+    "changed": "9e8de3d1246aa93ba4afc0cc00e6080f36d1898af8012e8ed72f00cead394355",
+    "commit": "88b6a5dc692c7dd285da01593f8f3ddd12f00fd7",
     "dismissals": [],
     "findings": [
       {
-        "body": "The test for rejecting a reset link under the lock changes only the mocked transaction result. The HTTP integration test uses an old link only after reset has finished, so it cannot catch a join that reads an active link, waits for the circle lock, and then accepts it after reset. Add a database-backed HTTP test that resets the link while the join waits and verifies the old code is refused.",
-        "file": "apps/api/src/modules/circles/join/join-circle.service.spec.ts",
-        "line": 77,
-        "priority": "P1",
-        "title": "Not done: reset-during-join integration test"
+        "body": "INCOMPLETE_ACCOUNT_ROUTE and the existing PENDING_ROUTE have the same effect in the guard: either lets a pending caller reach the handler. The join endpoint can use PENDING_ROUTE and still return its specific ACCOUNT_INCOMPLETE refusal. Remove the new flag and its guard branch.",
+        "file": "apps/api/src/modules/sessions/session.guard.ts",
+        "line": 11,
+        "priority": "P2",
+        "title": "Simpler: reuse the pending-route flag \u2192 remove the duplicate incomplete-account flag"
       },
       {
-        "body": "The exception filter is global. Its fallback maps any HTTP 401 to UNAUTHORIZED, and this new entry makes every such response say to return to an invite. A failed session on profile, sign-out, or another protected endpoint now receives an incorrect invite-specific instruction. Apply that message only to invite errors.",
-        "file": "apps/api/src/common/api/api-exception.filter.ts",
-        "line": 16,
+        "body": "The new service-bus request checks only whether a member exists, then the transaction repeats that check against the Member row. The code states that this row exists only after onboarding. The transaction check supplies the required join-time decision; remove the redundant request before it.",
+        "file": "apps/api/src/modules/circles/join/join-circle.service.ts",
+        "line": 33,
         "priority": "P2",
-        "title": "Keep the invite sign-in message off unrelated 401 responses"
-      },
-      {
-        "body": "The preview endpoint now deliberately returns account_required without a cookie, but ApiCookieAuth marks the cookie as required in the generated OpenAPI operation. API consumers using that contract cannot tell that signed-out preview is supported. Remove the operation-level security requirement or describe the cookie as optional.",
-        "file": "apps/api/src/modules/circles/join/join-circle.controller.ts",
-        "line": 21,
-        "priority": "P2",
-        "title": "Document invite preview as allowing an absent session"
-      },
-      {
-        "body": "The guard's pending-account check is conditional on !optional, so PENDING_ROUTE has no effect on this optional-session endpoint. The added decorator is a second route flag with no behavior to preserve.",
-        "file": "apps/api/src/modules/circles/join/join-circle.controller.ts",
-        "line": 20,
-        "priority": "P2",
-        "title": "Simpler: remove the preview's pending-route flag \u2192 use its optional-session flag"
+        "title": "Simpler: remove the pre-transaction account lookup \u2192 use the locked Member check"
       },
       {
         "body": "This new Forge task-status file is outside the permitted paths and supplies no code, API contract, or test needed for the invite work. Omit it from this branch.",
@@ -42,10 +28,10 @@
         "title": "Remove the task-status file outside this part's scope"
       }
     ],
-    "status": "blocked",
-    "tree": "3bab1fa1e617c3e59b057e9c52e7f1699ec4fc18e9f5061407680858c224961e"
+    "status": "clean",
+    "tree": "972dfad403f335f7c5b759142b865f120a1131cb82bb1a7e44f2107a2f34e734"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-07T14:00:26+00:00",
@@ -61,6 +47,10 @@
     },
     {
       "at": "2026-10-07T16:32:58+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T17:00:38+00:00",
       "step": "review"
     }
   ]
