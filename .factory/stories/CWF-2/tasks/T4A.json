@@ -2,20 +2,27 @@
   "branch": "task/CWF-2-T4A",
   "review": {
     "blocking_level": "P1",
-    "changed": "e5777710352e1fe1a4f04d86bc95bf08f01b99567d0e0432c59d94e021ee99fc",
-    "commit": "34a6e7c4c86554e877f4daeed9e9454608fc8643",
+    "changed": "3afc2502daaaa997d3d44b70abdee0d4898db1ab985d4cda3a512ab6ff2bad7c",
+    "commit": "ea5f50cd16061cfd05373b00f05a587af1ca2a15",
     "dismissals": [],
     "findings": [
       {
-        "body": "This branch adds `.factory/stories/CWF-2/tasks/T4A.json`, which is outside the permitted paths and is not needed to deliver the circles home or create flow. Remove it from the change.",
+        "body": "The close run fails in `signed-in-members-cannot-reach-their-profile.test.tsx` while waiting for the \u201cYour profile\u201d link after this signed-in home branch renders. The repository test command exits with status 1. Resolve the rendering or test-fixture mismatch and keep the profile path covered by a passing test.",
+        "file": "apps/web/src/pages/sign-in-page.tsx",
+        "line": 19,
+        "priority": "P1",
+        "title": "Not done: signed-in profile test"
+      },
+      {
+        "body": "This branch adds a task status JSON file outside the permitted paths. It is not needed for the circles home or create flow and should be removed from the change.",
         "file": ".factory/stories/CWF-2/tasks/T4A.json",
         "line": 1,
         "priority": "P2",
         "title": "Remove the out-of-scope task status file"
       }
     ],
-    "status": "clean",
-    "tree": "a019081f30b30f11aec2f493f9e080fd959a1697f464df8a875c850aa7f912b7"
+    "status": "blocked",
+    "tree": "baf3cd88e1b3f90d4e75a3068c248f69cc500657611c929b7021ada2cf829380"
   },
   "status": "fixing",
   "steps": [
@@ -25,6 +32,10 @@
     },
     {
       "at": "2026-10-07T15:14:57+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T16:30:14+00:00",
       "step": "review"
     }
   ]
