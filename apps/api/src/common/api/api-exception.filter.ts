@@ -8,6 +8,13 @@ import { ApiConfig } from '../config/config.module';
 type RequestContext = { correlationId?: string; requestId?: string };
 type ValidationResponse = { code?: string; details?: { fieldErrors?: Array<{ field?: unknown; reason?: unknown }> } };
 
+const INVITE_ERRORS: Record<string, { status: number; message: string }> = {
+  INVITE_LINK_INVALID: { status: 404, message: 'This invite link is no longer valid. Ask the person who shared it for a new one.' },
+  ACCOUNT_INCOMPLETE: { status: 403, message: 'Finish onboarding before joining this circle.' },
+  CIRCLE_FULL: { status: 409, message: 'This circle is full. Ask the admin for another circle.' },
+  TOO_MANY_CIRCLES: { status: 409, message: 'You can belong to at most 20 circles.' },
+};
+
 function validationDetails(response: string | object): { fieldErrors: Array<{ field: string; reason: string }> } | Record<string, never> {
   const errors = (response as ValidationResponse)?.details?.fieldErrors;
   if (!Array.isArray(errors)) return {};
@@ -17,6 +24,8 @@ function validationDetails(response: string | object): { fieldErrors: Array<{ fi
 }
 
 function errorCode(status: number, response: string | object): string {
+  const inviteCode = (response as ValidationResponse)?.code;
+  if (inviteCode && INVITE_ERRORS[inviteCode]?.status === status) return inviteCode;
   if ((response as ValidationResponse)?.code === 'NOT_OPEN_YET') return 'NOT_OPEN_YET';
   if ((response as ValidationResponse)?.code === 'PRIVACY_NOTICE_REQUIRED' && status === 403) return 'PRIVACY_NOTICE_REQUIRED';
   if ((response as ValidationResponse)?.code === 'VALIDATION_ERROR') return 'VALIDATION_ERROR';
@@ -29,7 +38,9 @@ function errorCode(status: number, response: string | object): string {
 }
 
 function errorMessage(code: string): string {
+  if (INVITE_ERRORS[code]) return INVITE_ERRORS[code].message;
   return ({
+    UNAUTHORIZED: 'Sign in to continue.',
     FORBIDDEN: 'This request is not allowed.',
     NOT_OPEN_YET: 'Not open yet',
     PRIVACY_NOTICE_REQUIRED: 'Accept the current privacy notice to continue.',
