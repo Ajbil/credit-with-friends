@@ -2,12 +2,12 @@
   "branch": "task/CWF-2-T1B",
   "review": {
     "blocking_level": "P1",
-    "changed": "14982dbe8d7ad712823b85560238876a49392a460d061bc6af0cc6611f1dce1c",
-    "commit": "6aa97ae9ca8eaf2a0fae723e49e0170ce1cbbec5",
+    "changed": "b8aef46dbcb8b3843d412a03bc8e196d2e90a3cc344a91ae030286839f03d3f4",
+    "commit": "d69c4077455c28299e847436b03ea0a2d35ffff7",
     "dismissals": [],
     "findings": [
       {
-        "body": "The reset test checks invite-code rows but does not open the old and new links through the public invite endpoint. The changed OpenAPI contract still lists that endpoint as returning 501, so this user-facing check belongs to the later join task.",
+        "body": "The reset test verifies invite-code rows, but does not open the old and new links through the public invite endpoint. The changed OpenAPI contract still lists that endpoint as returning 501, so this user-facing check belongs to the later join task.",
         "file": "apps/api/test/circles-invite.integration.spec.ts",
         "line": 105,
         "priority": "P2",
@@ -22,7 +22,7 @@
       }
     ],
     "status": "clean",
-    "tree": "a66bc06228040fabcd05759e58b19931cfa171da5486e573c0f5d4c15c9b82b0"
+    "tree": "7b5fffbe9525be96501dabc7ff926ecf762cff3a2bbdb27b0432ddabd91940a8"
   },
   "status": "waiting for checks",
   "steps": [
@@ -48,6 +48,10 @@
     },
     {
       "at": "2026-10-06T04:27:55+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T09:12:35+00:00",
       "step": "review"
     }
   ]
