@@ -19,8 +19,7 @@ export class JoinCircleController {
   @ApiCookieAuth('cwf_session')
   @ApiOperation({ summary: 'Preview an invite' })
   @ApiParam({ name: 'code', type: String, example: 'ZJUnCsFn69xUJxhBPxJg6A' })
-  @ApiOkResponse({ type: InvitePreviewResponseDto, description: 'Valid link: preview name and member count, or return the circle ID for an existing member.' })
-  @ApiResponse({ status: 401, type: ApiErrorResponseDto, description: 'UNAUTHORIZED: sign in and complete onboarding, then return to the invite.' })
+  @ApiOkResponse({ type: InvitePreviewResponseDto, description: 'Valid link: require an account, preview name and member count, or return the circle ID for an existing member.' })
   @ApiResponse({ status: 403, type: ApiErrorResponseDto, description: 'FORBIDDEN: a removed member cannot rejoin.' })
   @ApiResponse({ status: 404, type: ApiErrorResponseDto, description: 'INVITE_LINK_INVALID: This invite link is no longer valid. Ask the person who shared it for a new one.' })
   preview(@Param('code') code: string, @Req() request: OptionalSessionRequest) { return previewInvite(this.db, code, request.caller?.memberId ?? undefined); }

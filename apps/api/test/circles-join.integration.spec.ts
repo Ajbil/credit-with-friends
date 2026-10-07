@@ -88,6 +88,8 @@ describe('open and join a circle invite', () => {
     const admin = await signIn('preview-admin');
     const newcomer = await signIn('preview-newcomer');
     const pending = await signIn('preview-pending', false);
+    const expired = await signIn('preview-expired');
+    await db.session.updateMany({ where: { memberId: expired.id }, data: { expiresAtUtc: new Date(0) } });
     const { circleId, code } = await create(admin.cookie, 'Family');
     const path = `/circle-invites/${code}`;
     for (const deadCode of ['bad!', 'A'.repeat(22)]) {
@@ -97,8 +99,16 @@ describe('open and join a circle invite', () => {
       expect(dead.payload.error.message).toBe('This invite link is no longer valid. Ask the person who shared it for a new one.');
       expect(JSON.stringify(dead.payload)).not.toContain('Family');
     }
-    expect((await call(path)).response.status).toBe(401);
-    expect((await call(path, 'GET', pending.cookie)).response.status).toBe(401);
+    const signedOut = await call(path);
+    const stale = await call(path, 'GET', expired.cookie);
+    for (const result of [signedOut, stale]) {
+      expect(result.response.status).toBe(200);
+      expect(result.payload.data).toEqual({ status: 'account_required' });
+    }
+    const deadWithExpiredSession = await call('/circle-invites/bad!', 'GET', expired.cookie);
+    expect(deadWithExpiredSession.response.status).toBe(404);
+    expect(deadWithExpiredSession.payload.error).toMatchObject({ code: 'INVITE_LINK_INVALID', message: 'This invite link is no longer valid. Ask the person who shared it for a new one.' });
+    expect((await call(path, 'GET', pending.cookie)).payload.data).toEqual({ status: 'account_required' });
     const incomplete = await call(`${path}/join`, 'POST', pending.cookie);
     expect(incomplete.response.status).toBe(403);
     expect(incomplete.payload.error).toMatchObject({ code: 'ACCOUNT_INCOMPLETE', message: 'Finish onboarding before joining this circle.' });
@@ -124,7 +134,7 @@ describe('open and join a circle invite', () => {
       expect(JSON.stringify(old.payload)).not.toContain('Family');
     }
     expect((await call(`/circle-invites/${newCode}`, 'GET', admin.cookie)).payload.data).toEqual({ status: 'already_member', circleId });
-    expect((await call(`/circle-invites/${newCode}`, 'GET', pending.cookie)).response.status).toBe(401);
+    expect((await call(`/circle-invites/${newCode}`, 'GET', pending.cookie)).payload.data).toEqual({ status: 'account_required' });
     const afterReset = await call(`/circle-invites/${newCode}/join`, 'POST', pending.cookie);
     expect(afterReset.response.status).toBe(403);
     expect((await call('/sign-ins', 'GET', pending.cookie)).payload.data.returnPath).toBe('/circles/join/example');
@@ -147,16 +157,50 @@ describe('open and join a circle invite', () => {
     expect(await db.circleMembership.count({ where: { memberId: member.id } })).toBe(20);
   });
 
+  test('done-when-3: deleting an account while its join waits on the circle lock refuses the join', async () => {
+    const admin = await signIn('race-admin', true, '10.40.0.1');
+    const joining = await signIn('race-joining', true, '10.40.0.2');
+    const { circleId, code } = await create(admin.cookie, 'Race circle', '10.40.0.1');
+    const lockDb = new PrismaClient({ datasources: { db: { url: databaseUrl.toString() } } });
+    let releaseLock!: () => void;
+    let lockReady!: (pid: number) => void;
+    const released = new Promise<void>((resolve) => { releaseLock = resolve; });
+    const ready = new Promise<number>((resolve) => { lockReady = resolve; });
+    const blocker = lockDb.$transaction(async (tx) => {
+      const [{ pid }] = await tx.$queryRaw<Array<{ pid: number }>>`SELECT pg_backend_pid() AS pid`;
+      await tx.$queryRaw`SELECT "id" FROM "Circle" WHERE "id" = ${circleId}::uuid FOR UPDATE`;
+      lockReady(pid);
+      await released;
+    }, { timeout: 30_000 });
+    let joinRequest: ReturnType<typeof call> | undefined;
+    try {
+      const blockerPid = await Promise.race([ready, blocker.then(() => { throw new Error('Circle lock was released before joining.'); })]);
+      joinRequest = call(`/circle-invites/${code}/join`, 'POST', joining.cookie, undefined, '10.40.0.2');
+      await vi.waitFor(async () => {
+        const [{ waiting }] = await db.$queryRaw<Array<{ waiting: number }>>`SELECT COUNT(*)::int AS waiting FROM pg_stat_activity WHERE ${blockerPid} = ANY(pg_blocking_pids(pid))`;
+        expect(waiting).toBeGreaterThan(0);
+      }, { timeout: 10_000 });
+      await db.member.delete({ where: { id: joining.id } });
+    } finally {
+      releaseLock();
+      try { await blocker; } finally { await lockDb.$disconnect(); }
+    }
+    const joined = await joinRequest!;
+    expect(joined.response.status).toBe(403);
+    expect(joined.payload.error).toMatchObject({ code: 'ACCOUNT_INCOMPLETE', message: 'Finish onboarding before joining this circle.' });
+    expect(await db.circleMembership.count({ where: { circleId, memberId: joining.id } })).toBe(0);
+  }, 45_000);
+
   test('done-when-3: a failed join event never undoes membership', async () => {
-    const admin = await signIn('event-admin');
-    const member = await signIn('event-member');
-    const { circleId, code } = await create(admin.cookie, 'Event circle');
+    const admin = await signIn('event-admin', true, '10.50.0.1');
+    const member = await signIn('event-member', true, '10.50.0.2');
+    const { circleId, code } = await create(admin.cookie, 'Event circle', '10.50.0.1');
     const warning = vi.spyOn(PinoLogger.prototype, 'warn');
     await db.$executeRawUnsafe('ALTER TABLE "UsageEvent" ADD CONSTRAINT "test_join_usage_failure" CHECK ("type" <> \'join\') NOT VALID');
     try {
-      const joined = await call(`/circle-invites/${code}/join`, 'POST', member.cookie);
+      const joined = await call(`/circle-invites/${code}/join`, 'POST', member.cookie, undefined, '10.50.0.2');
       expect(joined.response.status).toBe(200);
-      expect((await call(`/circles/${circleId}`, 'GET', member.cookie)).response.status).toBe(200);
+      expect((await call(`/circles/${circleId}`, 'GET', member.cookie, undefined, '10.50.0.2')).response.status).toBe(200);
       await vi.waitFor(() => expect(warning).toHaveBeenCalledWith(expect.objectContaining({ context: expect.objectContaining({ eventName: 'CircleJoinedEvent', outcome: 'failed' }) }), 'Usage event recording failed'));
       expect(await db.usageEvent.count({ where: { type: 'join', memberId: member.id, circles: { some: { circleId } } } })).toBe(0);
     } finally {

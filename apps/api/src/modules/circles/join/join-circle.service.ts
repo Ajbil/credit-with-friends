@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import type { PinoLogger } from 'nestjs-pino';
 import { PrismaService } from '../../../common/database/prisma.service';
@@ -22,7 +22,7 @@ async function activeCircle(db: PrismaService, code: string) {
 
 export async function previewInvite(db: PrismaService, code: string, memberId?: string) {
   const circle = await activeCircle(db, code);
-  if (!memberId) throw new UnauthorizedException({ code: 'UNAUTHORIZED' });
+  if (!memberId) return { status: 'account_required' as const };
   const membership = await db.circleMembership.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
   if (membership) return { status: 'already_member' as const, circleId: circle.id };
   return { status: 'preview' as const, name: circle.name, memberCount: await db.circleMembership.count({ where: { circleId: circle.id } }) };
@@ -34,11 +34,11 @@ export async function joinCircle(db: PrismaService, bus: ServiceBus, logger: Pin
   const member = await bus.request('accounts.circleCreator', memberId);
   if (!member) throw new ForbiddenException({ code: 'ACCOUNT_INCOMPLETE' });
   const joined = await db.$transaction(async (tx) => {
-    if (!await lockCircleMembershipRows(tx, [memberId], circle.id)) invalidInvite();
+    const locked = await lockCircleMembershipRows(tx, [memberId], circle.id);
     const current = await tx.circle.findUnique({ where: { id: circle.id }, select: { inviteCode: true, deletedAtUtc: true } });
     if (!current || current.deletedAtUtc || current.inviteCode !== code) invalidInvite();
     // A Member row exists only after onboarding; recheck it on this locked transaction.
-    if (!await tx.member.findUnique({ where: { id: memberId }, select: { id: true } })) throw new ForbiddenException({ code: 'ACCOUNT_INCOMPLETE' });
+    if (!locked || !await tx.member.findUnique({ where: { id: memberId }, select: { id: true } })) throw new ForbiddenException({ code: 'ACCOUNT_INCOMPLETE' });
     const existing = await tx.circleMembership.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
     if (existing) return false;
     if (await tx.circleMembership.count({ where: { circleId: circle.id } }) >= MAX_MEMBERS) {

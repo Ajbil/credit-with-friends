@@ -12,7 +12,7 @@ const circle = { id: circleId, name: 'College batch', inviteCode: code, deletedA
 function setup() {
   const findFirst = vi.fn(async () => circle);
   const findUnique = vi.fn(async () => null as { id: string } | null);
-  const count = vi.fn(async (_query: { where: { circleId?: string } }) => 1);
+  const count = vi.fn(async () => 1);
   const create = vi.fn(async () => ({ id: 'membership' }));
   const queryRaw = vi.fn(async (_parts: TemplateStringsArray, id: string) => [{ id }]);
   const currentCircle = vi.fn(async () => circle);
@@ -39,9 +39,9 @@ describe('circle invite preview', () => {
     expect(findUnique).not.toHaveBeenCalled();
   });
 
-  test('a valid link asks for sign-in before revealing its name', async () => {
+  test('a valid link requires an account before revealing its name', async () => {
     const { db, findUnique } = setup();
-    await expect(previewInvite(db, code)).rejects.toMatchObject({ status: 401, response: { code: 'UNAUTHORIZED' } });
+    await expect(previewInvite(db, code)).resolves.toEqual({ status: 'account_required' });
     expect(findUnique).not.toHaveBeenCalled();
   });
 
@@ -86,7 +86,7 @@ describe('circle join refusals', () => {
     { circleCount: 1, memberCount: 20, code: 'TOO_MANY_CIRCLES' },
   ])('refuses $code before creating a membership', async ({ circleCount, memberCount, code: errorCode }) => {
     const { db, bus, logger, count, create } = setup();
-    count.mockImplementation(async ({ where }: { where: { circleId?: string } }) => where.circleId ? circleCount : memberCount);
+    count.mockResolvedValueOnce(circleCount).mockResolvedValueOnce(memberCount);
     await expect(joinCircle(db, bus, logger, code, memberId)).rejects.toMatchObject({ status: 409, response: { code: errorCode } });
     expect(create).not.toHaveBeenCalled();
   });
