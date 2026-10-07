@@ -1,0 +1,43 @@
+{
+  "branch": "task/CWF-2-T1C",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "fc007ccc8ba5e52a743a873fce3de25a870272537b17990762379d7cb353f00c",
+    "commit": "9696aab5bf8efbbdbd33b3933da4bbf30ee5220e",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This review-status JSON is outside the permitted circle-view source and test paths and is not needed to deliver the API or its tests. The previously reported scope gap remains open.",
+        "file": ".factory/stories/CWF-2/tasks/T1C.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task-status file"
+      }
+    ],
+    "status": "clean",
+    "tree": "e478d6e38db95b15ec2e1d06aaf72a9e56d52e001c27d53c839afcb9c37df8d8"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-05T17:28:49+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-05T18:25:41+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T18:40:00+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T19:00:18+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T08:13:55+00:00",
+      "step": "review"
+    }
+  ]
+}

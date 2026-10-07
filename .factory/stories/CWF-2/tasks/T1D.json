@@ -1,0 +1,39 @@
+{
+  "branch": "task/CWF-2-T1D",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "b04730766526a8bbec2bb9822738f5d38a996cd126a09dced89b883fd9b36a02",
+    "commit": "f00560a9b278bdd4d810ba5d2f9ef7bb3fc67931",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This new task-status file is outside the allowed paths and is not needed to implement or test circle listing. Remove it from the branch.",
+        "file": ".factory/stories/CWF-2/tasks/T1D.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the unrelated task metadata file"
+      }
+    ],
+    "status": "clean",
+    "tree": "eac22238e7bd924342d16aa472ea416eb1c12a81659e698b54568cfa6370f951"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-05T17:29:02+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-05T18:16:50+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T18:30:47+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-05T18:57:37+00:00",
+      "step": "review"
+    }
+  ]
+}
