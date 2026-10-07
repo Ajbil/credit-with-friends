@@ -8,6 +8,7 @@ import { ApiConfig } from '../../common/config/config.module';
 export const PUBLIC_ROUTE = 'publicRoute';
 export const PENDING_ROUTE = 'pendingRoute';
 export const OPTIONAL_SESSION_ROUTE = 'optionalSessionRoute';
+export const INCOMPLETE_ACCOUNT_ROUTE = 'incompleteAccountRoute';
 export type AuthenticatedRequest = Request & { caller: Caller };
 export type OptionalSessionRequest = Request & { caller?: Caller };
 
@@ -33,7 +34,7 @@ export class SessionGuard implements CanActivate {
     const { caller, token } = resolved;
     request.caller = caller;
     context.switchToHttp().getResponse<Response>().setHeader('Set-Cookie', this.sessions.cookie(token, this.config.getOrThrow('environment') === 'Production'));
-    if (!request.caller.memberId && !optional && !this.reflector.getAllAndOverride<boolean>(PENDING_ROUTE, [context.getHandler(), context.getClass()])) {
+    if (!request.caller.memberId && !optional && !this.reflector.getAllAndOverride<boolean>(PENDING_ROUTE, [context.getHandler(), context.getClass()]) && !this.reflector.getAllAndOverride<boolean>(INCOMPLETE_ACCOUNT_ROUTE, [context.getHandler(), context.getClass()])) {
       throw new ForbiddenException();
     }
     return true;

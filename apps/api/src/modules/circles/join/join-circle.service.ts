@@ -10,7 +10,7 @@ const MAX_MEMBERS = 100;
 const MAX_CIRCLES = 20;
 
 function invalidInvite(): never {
-  throw new NotFoundException({ code: 'INVITE_LINK_INVALID', message: 'This invite link is no longer valid. Ask the person who shared it for a new one.' });
+  throw new NotFoundException({ code: 'INVITE_LINK_INVALID' });
 }
 
 async function activeCircle(db: PrismaService, code: string) {
@@ -22,16 +22,17 @@ async function activeCircle(db: PrismaService, code: string) {
 
 export async function previewInvite(db: PrismaService, code: string, memberId?: string) {
   const circle = await activeCircle(db, code);
-  if (!memberId) throw new UnauthorizedException({ code: 'UNAUTHORIZED', message: 'Sign in and complete onboarding, then return to the invite.' });
+  if (!memberId) throw new UnauthorizedException({ code: 'UNAUTHORIZED' });
   const membership = await db.circleMembership.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
   if (membership) return { status: 'already_member' as const, circleId: circle.id };
   return { status: 'preview' as const, name: circle.name, memberCount: await db.circleMembership.count({ where: { circleId: circle.id } }) };
 }
 
-export async function joinCircle(db: PrismaService, bus: ServiceBus, logger: PinoLogger, code: string, memberId: string) {
+export async function joinCircle(db: PrismaService, bus: ServiceBus, logger: PinoLogger, code: string, memberId: string | null) {
   const circle = await activeCircle(db, code);
+  if (!memberId) throw new ForbiddenException({ code: 'ACCOUNT_INCOMPLETE' });
   const member = await bus.request('accounts.circleCreator', memberId);
-  if (!member) throw new ForbiddenException({ code: 'ACCOUNT_INCOMPLETE', message: 'Finish onboarding before joining this circle.' });
+  if (!member) throw new ForbiddenException({ code: 'ACCOUNT_INCOMPLETE' });
   const joined = await db.$transaction(async (tx) => {
     if (!await lockCircleMembershipRows(tx, [memberId], circle.id)) invalidInvite();
     const current = await tx.circle.findUnique({ where: { id: circle.id }, select: { inviteCode: true, deletedAtUtc: true } });
@@ -39,10 +40,10 @@ export async function joinCircle(db: PrismaService, bus: ServiceBus, logger: Pin
     const existing = await tx.circleMembership.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
     if (existing) return false;
     if (await tx.circleMembership.count({ where: { circleId: circle.id } }) >= MAX_MEMBERS) {
-      throw new ConflictException({ code: 'CIRCLE_FULL', message: 'This circle is full. Ask the admin for another circle.' });
+      throw new ConflictException({ code: 'CIRCLE_FULL' });
     }
     if (await tx.circleMembership.count({ where: { memberId } }) >= MAX_CIRCLES) {
-      throw new ConflictException({ code: 'TOO_MANY_CIRCLES', message: 'You can belong to at most 20 circles.' });
+      throw new ConflictException({ code: 'TOO_MANY_CIRCLES' });
     }
     await tx.circleMembership.create({ data: { circleId: circle.id, memberId } });
     return true;

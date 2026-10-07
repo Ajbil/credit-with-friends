@@ -4,7 +4,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { ApiErrorResponseDto } from '../../../common/api/api.dto';
 import { PrismaService } from '../../../common/database/prisma.service';
 import { ServiceBus } from '../../../service-bus/service-bus.service';
-import { AuthenticatedRequest, OPTIONAL_SESSION_ROUTE, OptionalSessionRequest, PENDING_ROUTE } from '../../sessions/session.guard';
+import { AuthenticatedRequest, INCOMPLETE_ACCOUNT_ROUTE, OPTIONAL_SESSION_ROUTE, OptionalSessionRequest, PENDING_ROUTE } from '../../sessions/session.guard';
 import { InvitePreviewResponseDto, JoinCircleResponseDto } from './join-circle.dto';
 import { joinCircle, previewInvite } from './join-circle.service';
 
@@ -27,6 +27,7 @@ export class JoinCircleController {
 
   @Post(':code/join')
   @HttpCode(200)
+  @SetMetadata(INCOMPLETE_ACCOUNT_ROUTE, true)
   @ApiCookieAuth('cwf_session')
   @ApiOperation({ summary: 'Join through an active invite' })
   @ApiParam({ name: 'code', type: String, example: 'ZJUnCsFn69xUJxhBPxJg6A' })
@@ -35,5 +36,5 @@ export class JoinCircleController {
   @ApiResponse({ status: 403, type: ApiErrorResponseDto, description: 'ACCOUNT_INCOMPLETE: sign in and finish onboarding before joining.' })
   @ApiResponse({ status: 404, type: ApiErrorResponseDto, description: 'INVITE_LINK_INVALID: the link is unknown, malformed, reset or deleted.' })
   @ApiResponse({ status: 409, type: ApiErrorResponseDto, description: 'CIRCLE_FULL or TOO_MANY_CIRCLES: joining would exceed the 100-member or 20-circle limit.' })
-  join(@Param('code') code: string, @Req() request: AuthenticatedRequest) { return joinCircle(this.db, this.bus, this.logger, code, request.caller.memberId!); }
+  join(@Param('code') code: string, @Req() request: AuthenticatedRequest) { return joinCircle(this.db, this.bus, this.logger, code, request.caller.memberId); }
 }

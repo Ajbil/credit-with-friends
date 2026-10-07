@@ -46,11 +46,11 @@ async function signIn(id: string, onboard = true, clientIp?: string) {
   return { cookie, id: profile.payload.data.id as string };
 }
 
-async function create(adminCookie: string, name: string) {
-  const created = await call('/circles', 'POST', adminCookie, { name });
+async function create(adminCookie: string, name: string, clientIp?: string) {
+  const created = await call('/circles', 'POST', adminCookie, { name }, clientIp);
   expect(created.response.status).toBe(201);
   const circleId = created.payload.data.id as string;
-  const invite = await call(`/circles/${circleId}/invite`, 'GET', adminCookie);
+  const invite = await call(`/circles/${circleId}/invite`, 'GET', adminCookie, undefined, clientIp);
   return { circleId, code: (invite.payload.data.url as string).split('/').at(-1)! };
 }
 
@@ -93,12 +93,15 @@ describe('open and join a circle invite', () => {
     for (const deadCode of ['bad!', 'A'.repeat(22)]) {
       const dead = await call(`/circle-invites/${deadCode}`, 'GET', admin.cookie);
       expect(dead.response.status).toBe(404);
+      expect(dead.payload.error.code).toBe('INVITE_LINK_INVALID');
       expect(dead.payload.error.message).toBe('This invite link is no longer valid. Ask the person who shared it for a new one.');
       expect(JSON.stringify(dead.payload)).not.toContain('Family');
     }
     expect((await call(path)).response.status).toBe(401);
     expect((await call(path, 'GET', pending.cookie)).response.status).toBe(401);
-    expect((await call(`${path}/join`, 'POST', pending.cookie)).response.status).toBe(403);
+    const incomplete = await call(`${path}/join`, 'POST', pending.cookie);
+    expect(incomplete.response.status).toBe(403);
+    expect(incomplete.payload.error).toMatchObject({ code: 'ACCOUNT_INCOMPLETE', message: 'Finish onboarding before joining this circle.' });
     const preview = await call(path, 'GET', newcomer.cookie);
     expect(preview.response.status).toBe(200);
     expect(preview.payload.data).toEqual({ status: 'preview', name: 'Family', memberCount: 1 });
@@ -116,6 +119,7 @@ describe('open and join a circle invite', () => {
     for (const cookie of ['', admin.cookie, newcomer.cookie]) {
       const old = await call(path, 'GET', cookie);
       expect(old.response.status).toBe(404);
+      expect(old.payload.error.code).toBe('INVITE_LINK_INVALID');
       expect(old.payload.error.message).toBe('This invite link is no longer valid. Ask the person who shared it for a new one.');
       expect(JSON.stringify(old.payload)).not.toContain('Family');
     }
@@ -139,7 +143,7 @@ describe('open and join a circle invite', () => {
     const targets = await Promise.all(admins.map(({ cookie }, index) => create(cookie, `Target ${index}`)));
     const joins = await Promise.all(targets.map(({ code }) => call(`/circle-invites/${code}/join`, 'POST', member.cookie)));
     expect(joins.map(({ response }) => response.status).sort()).toEqual([200, 409]);
-    expect(joins.find(({ response }) => response.status === 409)?.payload.error.message).toContain('20 circles');
+    expect(joins.find(({ response }) => response.status === 409)?.payload.error).toMatchObject({ code: 'TOO_MANY_CIRCLES', message: 'You can belong to at most 20 circles.' });
     expect(await db.circleMembership.count({ where: { memberId: member.id } })).toBe(20);
   });
 
@@ -162,8 +166,8 @@ describe('open and join a circle invite', () => {
   });
 
   test('done-when-3: simultaneous joins stop at 100 members', async () => {
-    const admin = await signIn('full-admin');
-    const { circleId, code } = await create(admin.cookie, 'Full circle');
+    const admin = await signIn('full-admin', true, '10.30.0.1');
+    const { circleId, code } = await create(admin.cookie, 'Full circle', '10.30.0.1');
     for (let start = 0; start < 98; start += 10) {
       const members = await Promise.all(Array.from({ length: Math.min(10, 98 - start) }, (_, offset) => {
         const index = start + offset;
@@ -175,7 +179,7 @@ describe('open and join a circle invite', () => {
     const candidates = await Promise.all([signIn('full-extra-a', true, '10.21.0.1'), signIn('full-extra-b', true, '10.21.0.2')]);
     const refused = await Promise.all(candidates.map(({ cookie }, index) => call(`/circle-invites/${code}/join`, 'POST', cookie, undefined, `10.21.0.${index + 1}`)));
     expect(refused.map(({ response }) => response.status).sort()).toEqual([200, 409]);
-    expect(refused.find(({ response }) => response.status === 409)?.payload.error.message).toContain('full');
+    expect(refused.find(({ response }) => response.status === 409)?.payload.error).toMatchObject({ code: 'CIRCLE_FULL', message: 'This circle is full. Ask the admin for another circle.' });
     expect(await db.circleMembership.count({ where: { circleId } })).toBe(100);
   }, 120_000);
 });
