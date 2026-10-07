@@ -191,6 +191,54 @@ describe('open and join a circle invite', () => {
     expect(await db.circleMembership.count({ where: { circleId, memberId: joining.id } })).toBe(0);
   }, 45_000);
 
+  test('done-when-3: resetting a link while its join waits on the circle lock refuses the old link', async () => {
+    const admin = await signIn('reset-race-admin', true, '10.60.0.1');
+    const joining = await signIn('reset-race-joining', true, '10.60.0.2');
+    const { circleId, code } = await create(admin.cookie, 'Reset race circle', '10.60.0.1');
+    const lockDb = new PrismaClient({ datasources: { db: { url: databaseUrl.toString() } } });
+    let releaseLock!: () => void;
+    let lockReady!: (pid: number) => void;
+    let resetLink!: () => void;
+    let resetDone!: () => void;
+    const released = new Promise<void>((resolve) => { releaseLock = resolve; });
+    const ready = new Promise<number>((resolve) => { lockReady = resolve; });
+    const resetRequested = new Promise<void>((resolve) => { resetLink = resolve; });
+    const updated = new Promise<void>((resolve) => { resetDone = resolve; });
+    const blocker = lockDb.$transaction(async (tx) => {
+      const [{ pid }] = await tx.$queryRaw<Array<{ pid: number }>>`SELECT pg_backend_pid() AS pid`;
+      await tx.$queryRaw`SELECT "id" FROM "Circle" WHERE "id" = ${circleId}::uuid FOR UPDATE`;
+      lockReady(pid);
+      await resetRequested;
+      await tx.circle.update({ where: { id: circleId }, data: { inviteCode: 'A'.repeat(22) } });
+      resetDone();
+      await released;
+    }, { timeout: 30_000 });
+    let joinRequest: ReturnType<typeof call> | undefined;
+    try {
+      const blockerPid = await Promise.race([ready, blocker.then(() => { throw new Error('Circle lock was released before joining.'); })]);
+      joinRequest = call(`/circle-invites/${code}/join`, 'POST', joining.cookie, undefined, '10.60.0.2');
+      await vi.waitFor(async () => {
+        const [{ waiting }] = await db.$queryRaw<Array<{ waiting: number }>>`SELECT COUNT(*)::int AS waiting FROM pg_stat_activity WHERE ${blockerPid} = ANY(pg_blocking_pids(pid))`;
+        expect(waiting).toBeGreaterThan(0);
+      }, { timeout: 10_000 });
+      resetLink();
+      await updated;
+    } finally {
+      releaseLock();
+      try { await blocker; } finally { await lockDb.$disconnect(); }
+    }
+    const joined = await joinRequest!;
+    expect(joined.response.status).toBe(404);
+    expect(joined.payload.error).toMatchObject({ code: 'INVITE_LINK_INVALID', message: 'This invite link is no longer valid. Ask the person who shared it for a new one.' });
+    expect(await db.circleMembership.count({ where: { circleId, memberId: joining.id } })).toBe(0);
+  }, 45_000);
+
+  test('a protected profile request keeps the generic sign-in message', async () => {
+    const result = await call('/members/me', 'GET', '', undefined, '10.70.0.1');
+    expect(result.response.status).toBe(401);
+    expect(result.payload.error).toMatchObject({ code: 'UNAUTHORIZED', message: 'Sign in to continue.' });
+  });
+
   test('done-when-3: a failed join event never undoes membership', async () => {
     const admin = await signIn('event-admin', true, '10.50.0.1');
     const member = await signIn('event-member', true, '10.50.0.2');

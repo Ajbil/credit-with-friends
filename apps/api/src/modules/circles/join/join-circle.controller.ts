@@ -4,7 +4,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { ApiErrorResponseDto } from '../../../common/api/api.dto';
 import { PrismaService } from '../../../common/database/prisma.service';
 import { ServiceBus } from '../../../service-bus/service-bus.service';
-import { AuthenticatedRequest, INCOMPLETE_ACCOUNT_ROUTE, OPTIONAL_SESSION_ROUTE, OptionalSessionRequest, PENDING_ROUTE } from '../../sessions/session.guard';
+import { AuthenticatedRequest, INCOMPLETE_ACCOUNT_ROUTE, OPTIONAL_SESSION_ROUTE, OptionalSessionRequest } from '../../sessions/session.guard';
 import { InvitePreviewResponseDto, JoinCircleResponseDto } from './join-circle.dto';
 import { joinCircle, previewInvite } from './join-circle.service';
 
@@ -15,8 +15,6 @@ export class JoinCircleController {
 
   @Get(':code')
   @SetMetadata(OPTIONAL_SESSION_ROUTE, true)
-  @SetMetadata(PENDING_ROUTE, true)
-  @ApiCookieAuth('cwf_session')
   @ApiOperation({ summary: 'Preview an invite' })
   @ApiParam({ name: 'code', type: String, example: 'ZJUnCsFn69xUJxhBPxJg6A' })
   @ApiOkResponse({ type: InvitePreviewResponseDto, description: 'Valid link: require an account, preview name and member count, or return the circle ID for an existing member.' })

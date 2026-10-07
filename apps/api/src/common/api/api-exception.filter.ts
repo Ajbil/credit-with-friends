@@ -13,7 +13,6 @@ const INVITE_ERRORS: Record<string, { status: number; message: string }> = {
   ACCOUNT_INCOMPLETE: { status: 403, message: 'Finish onboarding before joining this circle.' },
   CIRCLE_FULL: { status: 409, message: 'This circle is full. Ask the admin for another circle.' },
   TOO_MANY_CIRCLES: { status: 409, message: 'You can belong to at most 20 circles.' },
-  UNAUTHORIZED: { status: 401, message: 'Sign in and complete onboarding, then return to the invite.' },
 };
 
 function validationDetails(response: string | object): { fieldErrors: Array<{ field: string; reason: string }> } | Record<string, never> {
@@ -41,6 +40,7 @@ function errorCode(status: number, response: string | object): string {
 function errorMessage(code: string): string {
   if (INVITE_ERRORS[code]) return INVITE_ERRORS[code].message;
   return ({
+    UNAUTHORIZED: 'Sign in to continue.',
     FORBIDDEN: 'This request is not allowed.',
     NOT_OPEN_YET: 'Not open yet',
     PRIVACY_NOTICE_REQUIRED: 'Accept the current privacy notice to continue.',
