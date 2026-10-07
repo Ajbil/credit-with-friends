@@ -2,30 +2,37 @@
   "branch": "task/CWF-2-T2",
   "review": {
     "blocking_level": "P1",
-    "changed": "9ef9e41a0c4dd242007c8fa6e70ef151383e6d926b4d7e646b97bd8f56428548",
-    "commit": "99997c6111cdc8eb67be0c0b6ecdf3d1cf10ca36",
+    "changed": "4245eee5f1d866a3bc3841259c27bbcf41278a427e1da177deffc922d10b07a4",
+    "commit": "0217f3298702bcd36809b8fc4721fbbae02f6c70",
     "dismissals": [],
     "findings": [
       {
-        "body": "The added spec declares `_query` without using it. The supplied close run reports an ESLint error at this line, so the repository test command exits before tests run. Remove the unused parameter or use it.",
+        "body": "The test for rejecting a reset link under the lock changes only the mocked transaction result. The HTTP integration test uses an old link only after reset has finished, so it cannot catch a join that reads an active link, waits for the circle lock, and then accepts it after reset. Add a database-backed HTTP test that resets the link while the join waits and verifies the old code is refused.",
         "file": "apps/api/src/modules/circles/join/join-circle.service.spec.ts",
-        "line": 15,
+        "line": 77,
         "priority": "P1",
-        "title": "Not done: join-service spec passes lint"
+        "title": "Not done: reset-during-join integration test"
       },
       {
-        "body": "The `expired` case fabricates the same `UnauthorizedException` as the `invalid` case. The HTTP integration test covers a missing cookie but never sends an expired one to the running API. It therefore cannot catch a failure to treat an expired cookie as signed out on invite preview. Add an HTTP case using an expired session cookie.",
-        "file": "apps/api/src/modules/sessions/session.guard.spec.ts",
-        "line": 38,
-        "priority": "P1",
-        "title": "Not done: expired-session invite preview integration test"
+        "body": "The exception filter is global. Its fallback maps any HTTP 401 to UNAUTHORIZED, and this new entry makes every such response say to return to an invite. A failed session on profile, sign-out, or another protected endpoint now receives an incorrect invite-specific instruction. Apply that message only to invite errors.",
+        "file": "apps/api/src/common/api/api-exception.filter.ts",
+        "line": 16,
+        "priority": "P2",
+        "title": "Keep the invite sign-in message off unrelated 401 responses"
       },
       {
-        "body": "This test simulates a disappearing account by mocking the transaction's `member.findUnique`. The HTTP integration test checks an account that was already incomplete, so it never exercises an account change between the initial lookup and the locked check. The required at-join recheck is consequently proved only by a mocked unit test. Add a database-backed join test that changes account state while the join waits for the lock.",
-        "file": "apps/api/src/modules/circles/join/join-circle.service.spec.ts",
-        "line": 69,
-        "priority": "P1",
-        "title": "Not done: locked completed-account check integration test"
+        "body": "The preview endpoint now deliberately returns account_required without a cookie, but ApiCookieAuth marks the cookie as required in the generated OpenAPI operation. API consumers using that contract cannot tell that signed-out preview is supported. Remove the operation-level security requirement or describe the cookie as optional.",
+        "file": "apps/api/src/modules/circles/join/join-circle.controller.ts",
+        "line": 21,
+        "priority": "P2",
+        "title": "Document invite preview as allowing an absent session"
+      },
+      {
+        "body": "The guard's pending-account check is conditional on !optional, so PENDING_ROUTE has no effect on this optional-session endpoint. The added decorator is a second route flag with no behavior to preserve.",
+        "file": "apps/api/src/modules/circles/join/join-circle.controller.ts",
+        "line": 20,
+        "priority": "P2",
+        "title": "Simpler: remove the preview's pending-route flag \u2192 use its optional-session flag"
       },
       {
         "body": "This new Forge task-status file is outside the permitted paths and supplies no code, API contract, or test needed for the invite work. Omit it from this branch.",
@@ -36,7 +43,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "f875f447f11d27a79cd15244be2859e56d0409aefb4b64f63c00b3c025a5ff7a"
+    "tree": "3bab1fa1e617c3e59b057e9c52e7f1699ec4fc18e9f5061407680858c224961e"
   },
   "status": "fixing",
   "steps": [
@@ -50,6 +57,10 @@
     },
     {
       "at": "2026-10-07T15:32:53+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T16:32:58+00:00",
       "step": "review"
     }
   ]
