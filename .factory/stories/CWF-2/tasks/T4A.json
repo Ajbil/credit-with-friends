@@ -1,10 +1,31 @@
 {
   "branch": "task/CWF-2-T4A",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "e5777710352e1fe1a4f04d86bc95bf08f01b99567d0e0432c59d94e021ee99fc",
+    "commit": "34a6e7c4c86554e877f4daeed9e9454608fc8643",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This branch adds `.factory/stories/CWF-2/tasks/T4A.json`, which is outside the permitted paths and is not needed to deliver the circles home or create flow. Remove it from the change.",
+        "file": ".factory/stories/CWF-2/tasks/T4A.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task status file"
+      }
+    ],
+    "status": "clean",
+    "tree": "a019081f30b30f11aec2f493f9e080fd959a1697f464df8a875c850aa7f912b7"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-07T14:00:43+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-07T15:14:57+00:00",
+      "step": "review"
     }
   ]
 }
