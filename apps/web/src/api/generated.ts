@@ -353,6 +353,7 @@ export type InvitePreviewDataDtoStatus =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitePreviewDataDtoStatus = {
+  account_required: 'account_required',
   preview: 'preview',
   already_member: 'already_member',
 } as const;
@@ -1245,11 +1246,6 @@ export type joinCircleControllerPreviewResponse200 = {
   status: 200;
 };
 
-export type joinCircleControllerPreviewResponse401 = {
-  data: ApiErrorResponseDto;
-  status: 401;
-};
-
 export type joinCircleControllerPreviewResponse403 = {
   data: ApiErrorResponseDto;
   status: 403;
@@ -1260,20 +1256,13 @@ export type joinCircleControllerPreviewResponse404 = {
   status: 404;
 };
 
-export type joinCircleControllerPreviewResponse501 = {
-  data: ApiErrorResponseDto;
-  status: 501;
-};
-
 export type joinCircleControllerPreviewResponseSuccess =
   joinCircleControllerPreviewResponse200 & {
     headers: Headers;
   };
 export type joinCircleControllerPreviewResponseError = (
-  | joinCircleControllerPreviewResponse401
   | joinCircleControllerPreviewResponse403
   | joinCircleControllerPreviewResponse404
-  | joinCircleControllerPreviewResponse501
 ) & {
   headers: Headers;
 };
@@ -1327,11 +1316,6 @@ export type joinCircleControllerJoinResponse409 = {
   status: 409;
 };
 
-export type joinCircleControllerJoinResponse501 = {
-  data: ApiErrorResponseDto;
-  status: 501;
-};
-
 export type joinCircleControllerJoinResponseSuccess =
   joinCircleControllerJoinResponse200 & {
     headers: Headers;
@@ -1341,7 +1325,6 @@ export type joinCircleControllerJoinResponseError = (
   | joinCircleControllerJoinResponse403
   | joinCircleControllerJoinResponse404
   | joinCircleControllerJoinResponse409
-  | joinCircleControllerJoinResponse501
 ) & {
   headers: Headers;
 };
