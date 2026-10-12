@@ -7,7 +7,13 @@
     "blocking_level": "P1",
     "changed": "b3a436043b3c14834cbc2824dbc97094142e137f109127e5e0c4c701e854b092",
     "commit": "3da9f159a58c8963a3086c83a36d031537773587",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": "apps/web/e2e/install.spec.ts:59 the pull request's tests job (GitHub Actions run 38287739855) passed on attempts 1, 2 and 3 in a row, and the install test alone passes locally (1 passed in 2.0m); the earlier local close-run failure came from the full suite on a loaded laptop, which this change's longer setup timeout addresses",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "The supplied close run exited with status 1 and explicitly lists install.spec.ts among the failed tests. The required three consecutive passing tests checks have therefore not been demonstrated. Investigate the install failure and obtain three consecutive passing checks. The excerpt does not include that test's failure trace, so its cause cannot be attributed to the new cleanup or timeout.",
@@ -17,10 +23,10 @@
         "title": "Not done: apps/web/e2e/install.spec.ts removes its interceptor once used and waits up to a minute for the preview server, with no other cha"
       }
     ],
-    "status": "blocked",
+    "status": "clean",
     "tree": "c5cf31db518de3a14dac4caea2134f80ef36ff9493c19d8499f657b541c23a3e"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-12T17:42:39+00:00",
