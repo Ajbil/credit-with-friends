@@ -2,22 +2,36 @@
   "branch": "task/CWF-2-T4A",
   "review": {
     "blocking_level": "P1",
-    "changed": "1a830238556b79c76e1c23c3be1f44d04df002aad5061100ada067c9cbcbf6c4",
-    "commit": "46a626b7e99171f3f09b45cf1b64e0f5601da830",
+    "changed": "f52e79ab506a3595bd2890e616572ba0d6da9dd2d5696ef37882cda427932771",
+    "commit": "19a0e380e4b0c68bdfe0a6d80b0359fcae013a84",
     "dismissals": [],
     "findings": [
       {
-        "body": "The branch still adds this task-status JSON file outside the permitted paths. It is not needed to deliver the circles home or create flow; remove it from the change.",
+        "body": "When creation fails because the member already belongs to 20 circles, the error handler only sets a specific message for a `name` field error. Otherwise this line shows the generic \u201cPlease try again\u201d message, which does not tell the member why another circle was refused. The new end-to-end test expects \u201cYou can belong to at most 20 circles.\u201d Handle the limit error explicitly.",
+        "file": "apps/web/src/routes/circles/home/home-page.tsx",
+        "line": 81,
+        "priority": "P1",
+        "title": "Not done: explain the 20-circle creation limit"
+      },
+      {
+        "body": "The supplied evidence says the last commit message has no `Functional check:` paragraph. This user-facing part requires a recorded walkthrough of creating and listing circles, name validation, and the 20-circle refusal, with what the worker observed.",
+        "file": "apps/web/e2e/circles-home.spec.ts",
+        "line": 5,
+        "priority": "P1",
+        "title": "Not done: functional check"
+      },
+      {
+        "body": "The branch adds this task-status JSON outside the permitted paths. It is not needed for the circles home or create flow and remains open from the previous review.",
         "file": ".factory/stories/CWF-2/tasks/T4A.json",
         "line": 1,
         "priority": "P2",
         "title": "Remove the out-of-scope task status file"
       }
     ],
-    "status": "clean",
-    "tree": "bf984b7e3255792d925e0d42b2d21edb73e00668d8aca6a4d3575913f491600e"
+    "status": "blocked",
+    "tree": "44b9141b4af535357f317956e295abec72d524e7ff406a404368eb61df2e58c6"
   },
-  "status": "waiting for checks",
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-07T14:00:43+00:00",
@@ -33,6 +47,10 @@
     },
     {
       "at": "2026-10-07T16:53:54+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-12T17:07:37+00:00",
       "step": "review"
     }
   ]
