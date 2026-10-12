@@ -3,11 +3,32 @@
   "branch": "fix/the-web-install-browser-test-fails-at-ra",
   "done_when": "apps/web/e2e/install.spec.ts removes its interceptor once used and waits up to a minute for the preview server, with no other change to what the test proves; the pull request's tests check passes on three consecutive runs",
   "kind": "fix",
-  "status": "started",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "b3a436043b3c14834cbc2824dbc97094142e137f109127e5e0c4c701e854b092",
+    "commit": "3da9f159a58c8963a3086c83a36d031537773587",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The supplied close run exited with status 1 and explicitly lists install.spec.ts among the failed tests. The required three consecutive passing tests checks have therefore not been demonstrated. Investigate the install failure and obtain three consecutive passing checks. The excerpt does not include that test's failure trace, so its cause cannot be attributed to the new cleanup or timeout.",
+        "file": "apps/web/e2e/install.spec.ts",
+        "line": 59,
+        "priority": "P1",
+        "title": "Not done: apps/web/e2e/install.spec.ts removes its interceptor once used and waits up to a minute for the preview server, with no other cha"
+      }
+    ],
+    "status": "blocked",
+    "tree": "c5cf31db518de3a14dac4caea2134f80ef36ff9493c19d8499f657b541c23a3e"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-12T17:42:39+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-12T17:57:51+00:00",
+      "step": "review"
     }
   ],
   "why": "The web install browser test fails at random: its request interceptor stays active after use and an in-flight request outlives the test, and its preview server gets only 5 seconds to start"
