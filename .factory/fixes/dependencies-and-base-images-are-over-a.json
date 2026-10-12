@@ -3,11 +3,32 @@
   "branch": "fix/dependencies-and-base-images-are-over-a",
   "done_when": "Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes",
   "kind": "fix",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "6a1f6a3c9073dbdb3fcd62e43d13a0c0cec27bc4877ffdfacfe1ea0d0c6fde0e",
+    "commit": "dafdf420b4aa5ae6ede7381497d4d224c8e28747",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The CI job runs `pnpm build`, which the supplied close-run output shows builds the web and API projects. It does not build a container image. The updated Compose service specifies a prebuilt Postgres image and has no build step. Add and pass a check that builds the required image so the image-build acceptance criterion is verified.",
+        "file": ".github/workflows/ci.yml",
+        "line": 58,
+        "priority": "P1",
+        "title": "Not done: Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes"
+      }
+    ],
+    "status": "blocked",
+    "tree": "433e5db8709e4df1f6dd52d3f9b38d97b9ef0f642c5ebd23cbe5773d7a299e53"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-12T18:23:32+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-12T19:03:24+00:00",
+      "step": "review"
     }
   ],
   "why": "Dependencies and base images are over a week old, so new security advisories fail the image scan"
