@@ -1,0 +1,14 @@
+{
+  "base": "bd05d6f7ee645cd80f97c9eaabc31ba2438bd50f",
+  "branch": "fix/the-web-install-browser-test-fails-at-ra",
+  "done_when": "apps/web/e2e/install.spec.ts removes its interceptor once used and waits up to a minute for the preview server, with no other change to what the test proves; the pull request's tests check passes on three consecutive runs",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-12T17:42:39+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "The web install browser test fails at random: its request interceptor stays active after use and an in-flight request outlives the test, and its preview server gets only 5 seconds to start"
+}
