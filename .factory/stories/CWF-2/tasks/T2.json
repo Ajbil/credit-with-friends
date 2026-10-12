@@ -1,0 +1,57 @@
+{
+  "branch": "task/CWF-2-T2",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "9e8de3d1246aa93ba4afc0cc00e6080f36d1898af8012e8ed72f00cead394355",
+    "commit": "88b6a5dc692c7dd285da01593f8f3ddd12f00fd7",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "INCOMPLETE_ACCOUNT_ROUTE and the existing PENDING_ROUTE have the same effect in the guard: either lets a pending caller reach the handler. The join endpoint can use PENDING_ROUTE and still return its specific ACCOUNT_INCOMPLETE refusal. Remove the new flag and its guard branch.",
+        "file": "apps/api/src/modules/sessions/session.guard.ts",
+        "line": 11,
+        "priority": "P2",
+        "title": "Simpler: reuse the pending-route flag \u2192 remove the duplicate incomplete-account flag"
+      },
+      {
+        "body": "The new service-bus request checks only whether a member exists, then the transaction repeats that check against the Member row. The code states that this row exists only after onboarding. The transaction check supplies the required join-time decision; remove the redundant request before it.",
+        "file": "apps/api/src/modules/circles/join/join-circle.service.ts",
+        "line": 33,
+        "priority": "P2",
+        "title": "Simpler: remove the pre-transaction account lookup \u2192 use the locked Member check"
+      },
+      {
+        "body": "This new Forge task-status file is outside the permitted paths and supplies no code, API contract, or test needed for the invite work. Omit it from this branch.",
+        "file": ".factory/stories/CWF-2/tasks/T2.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the task-status file outside this part's scope"
+      }
+    ],
+    "status": "clean",
+    "tree": "972dfad403f335f7c5b759142b865f120a1131cb82bb1a7e44f2107a2f34e734"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-07T14:00:26+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-07T15:12:08+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T15:32:53+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T16:32:58+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T17:00:38+00:00",
+      "step": "review"
+    }
+  ]
+}
