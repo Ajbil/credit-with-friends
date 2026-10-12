@@ -3,7 +3,7 @@
   "branch": "fix/dependencies-and-base-images-are-over-a",
   "done_when": "Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes",
   "kind": "fix",
-  "status": "started",
+  "status": "working",
   "steps": [
     {
       "at": "2026-10-12T18:23:32+00:00",
