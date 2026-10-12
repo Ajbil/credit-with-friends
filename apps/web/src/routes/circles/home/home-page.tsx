@@ -78,7 +78,9 @@ export function CirclesHomePage() {
         {nameError && <p id="circle-name-error" className="field-error" role="alert">{nameError}</p>}
         <Button type="submit" disabled={create.isPending}>{create.isPending ? 'Creating circle…' : 'Create circle'}</Button>
         {create.isSuccess && <p className="circle-create-status" role="status">Your circle is created. It’s in your list.</p>}
-        {create.isError && !nameError && <p role="alert" className="field-error">We couldn’t create your circle. Please try again.</p>}
+        {create.isError && !nameError && <p role="alert" className="field-error">{create.error instanceof ApiError && create.error.failure.code === 'TOO_MANY_CIRCLES'
+          ? 'You can belong to at most 20 circles.'
+          : 'We couldn’t create your circle. Please try again.'}</p>}
       </form>
     </div>
   </section></PageFrame>;

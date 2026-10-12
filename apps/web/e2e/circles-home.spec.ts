@@ -81,6 +81,7 @@ test('done-when-1: a member creates named circles, sees all of them and is told 
   await name.fill('One too many');
   await page.getByRole('button', { name: 'Create circle', exact: true }).click();
   await expect(page.getByText('You can belong to at most 20 circles.')).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath('mobile-limit.png'), fullPage: true });
   await page.reload();
   await expect(page.getByRole('list', { name: 'Your circles' }).getByRole('link')).toHaveCount(20);
   await expect(first).toBeVisible();
