@@ -9,6 +9,11 @@
         "because": "apps/api/test/accounts.integration.spec.ts:204 The Google start and callback flow is proven at the API layer with a fake Google issuer: a new person from /circles/join/google is redirected to /onboarding?returnTo=%2Fcircles%2Fjoin%2Fgoogle, and a returning member to the invite (line 215). The browser test covers the web half (pending session goes to onboarding and returns to the invite); the browser suite has no fake Google issuer and adding one is shared test configuration outside this part.",
         "finding": 1,
         "from_base": false
+      },
+      {
+        "because": "apps/api/test/circles-join.integration.spec.ts:148 Simultaneous joins are enforced and proven by the API against the real database: overlapping joins stop at 20 circles per member (line 148) and at 100 members (line 260). This part is the web invite page and owns no server logic; the browser test covers how the page shows the refusals.",
+        "finding": 2,
+        "from_base": false
       }
     ],
     "findings": [
