@@ -2,26 +2,40 @@
   "branch": "task/CWF-2-T5",
   "review": {
     "blocking_level": "P1",
-    "changed": "dff8e7f484734ccadc09dde4460c968d4ee71f4580bde45b8aa5101e710be758",
-    "commit": "d8e0472b44d7c7fcbfceff728cbf3ba216c9832b",
+    "changed": "9b64cc8acd87b5813080eae1a051b1b2c52986695c63f55b6dcbc94f7091f598",
+    "commit": "5e208d9b23663d45f3b132dea44800e92345ca2f",
     "dismissals": [],
     "findings": [
       {
-        "body": "The test installs a session through `test-auth/sign-in` and reloads the page. It checks the Google link\u2019s URL but never follows the app\u2019s sign-in and callback flow. A broken return path in that flow would leave a visitor off the invite without failing this test. Exercise the app flow, substituting only Google\u2019s identity verification.",
+        "body": "The test reads the Google link\u2019s return path, then calls `test-auth/sign-in` and installs its cookie directly. It never follows the app\u2019s Google start and callback flow, so a callback that loses the invite path would still pass. Follow the app flow and substitute only Google\u2019s identity verification.",
         "file": "apps/web/e2e/join.spec.ts",
         "line": 69,
         "priority": "P1",
         "title": "Not done: invite sign-in and onboarding return test"
       },
       {
-        "body": "A 429 `RATE_LIMIT_EXCEEDED` response falls through to advice to check the connection and retry. The refusal is a rate limit, so the message gives the wrong cause and recovery step. Tell the person to wait before trying again.",
-        "file": "apps/web/src/routes/circles/join/join-error.helper.ts",
-        "line": 7,
-        "priority": "P2",
-        "title": "Explain rate-limit refusals accurately"
+        "body": "The limit test creates circles and admits members sequentially. It can pass if simultaneous joins exceed either the 20-circle or 100-member limit. Exercise overlapping join requests against the real database at both boundaries and assert that only one admission succeeds.",
+        "file": "apps/web/e2e/join.spec.ts",
+        "line": 149,
+        "priority": "P1",
+        "title": "Not done: concurrent join limit test"
       },
       {
-        "body": "This new branch status file is outside both permitted paths and is not needed to deliver or test the invite page.",
+        "body": "After Join, the test checks membership but never checks that exactly one usage event records the member and circle. It also never forces event recording to fail and verifies that the join remains committed with that event uncounted. Those required behaviours could break while this test passes.",
+        "file": "apps/web/e2e/join.spec.ts",
+        "line": 97,
+        "priority": "P1",
+        "title": "Not done: join usage event test"
+      },
+      {
+        "body": "A failed Join leaves `join.error` set. If the admin then resets the link, a preview refetch can return `INVITE_LINK_INVALID`, but this expression selects the older Join error first. The page shows the generic load error instead of the required invalid-link message. TanStack Query [refetches stale queries on focus](https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults) and [retains mutation errors until reset](https://tanstack.com/query/latest/docs/framework/react/reference/interfaces/MutationObserverBaseResult).",
+        "file": "apps/web/src/routes/circles/join/join-page.tsx",
+        "line": 58,
+        "priority": "P2",
+        "title": "Show the invalid-link message after an earlier Join error"
+      },
+      {
+        "body": "This branch adds a task status file outside both permitted paths. It is not needed to deliver or test the invite page.",
         "file": ".factory/stories/CWF-2/tasks/T5.json",
         "line": 1,
         "priority": "P2",
@@ -29,7 +43,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "417324ac94778d6a3b4e4af4ab399b68120b20b77fe385a4fbf24c647f5de3d1"
+    "tree": "b50bd8420229be0b1902db7f667a8b20cbcbb278cf4ffa75d32c4c8508049e78"
   },
   "status": "fixing",
   "steps": [
@@ -43,6 +57,10 @@
     },
     {
       "at": "2026-10-13T10:11:33+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-13T10:51:18+00:00",
       "step": "review"
     }
   ]
