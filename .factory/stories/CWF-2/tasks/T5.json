@@ -14,6 +14,11 @@
         "because": "apps/api/test/circles-join.integration.spec.ts:148 Simultaneous joins are enforced and proven by the API against the real database: overlapping joins stop at 20 circles per member (line 148) and at 100 members (line 260). This part is the web invite page and owns no server logic; the browser test covers how the page shows the refusals.",
         "finding": 2,
         "from_base": false
+      },
+      {
+        "because": "apps/api/test/circles-join.integration.spec.ts:125 Join usage events are recorded and proven by the API: exactly one join event with the member and circle (line 125), and a forced recording failure leaves the join committed with the event uncounted (line 247). This web part does not record events; the server does it on every successful join.",
+        "finding": 3,
+        "from_base": false
       }
     ],
     "findings": [
@@ -46,10 +51,10 @@
         "title": "Remove the task status file outside the allowed paths"
       }
     ],
-    "status": "blocked",
+    "status": "clean",
     "tree": "5d84d43027c09050a686bd03fddf95440057c2c57a26e97c789d233d395bb4ab"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-13T08:22:25+00:00",
