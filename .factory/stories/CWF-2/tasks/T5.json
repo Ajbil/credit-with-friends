@@ -2,26 +2,26 @@
   "branch": "task/CWF-2-T5",
   "review": {
     "blocking_level": "P1",
-    "changed": "bb08821143acf003aff69f006d907ffbc1766ad49645922db6540c13697c9834",
-    "commit": "33292ae83a12e5b85b974344811ddd94c8c72c59",
+    "changed": "dff8e7f484734ccadc09dde4460c968d4ee71f4580bde45b8aa5101e710be758",
+    "commit": "d8e0472b44d7c7fcbfceff728cbf3ba216c9832b",
     "dismissals": [],
     "findings": [
       {
-        "body": "The browser test creates a session through `test-auth/sign-in` and then navigates to `/onboarding` itself. It never follows the Google sign-in link or checks that the app sends a signed-in person with an incomplete account to onboarding. The test could pass while the real sign-in return flow leaves that person on the invite page, unable to join.",
+        "body": "The test installs a session through `test-auth/sign-in` and reloads the page. It checks the Google link\u2019s URL but never follows the app\u2019s sign-in and callback flow. A broken return path in that flow would leave a visitor off the invite without failing this test. Exercise the app flow, substituting only Google\u2019s identity verification.",
         "file": "apps/web/e2e/join.spec.ts",
-        "line": 73,
+        "line": 69,
         "priority": "P1",
         "title": "Not done: invite sign-in and onboarding return test"
       },
       {
-        "body": "The helper maps a 429 `RATE_LIMIT_EXCEEDED` response to a message telling the person to check their connection and retry. The added test explicitly fixes that behavior, while the browser test setup notes that the API has a real admission rate limit. A rate-limited join needs a plain instruction to wait before trying again; the current message gives the wrong cause and recovery step.",
+        "body": "A 429 `RATE_LIMIT_EXCEEDED` response falls through to advice to check the connection and retry. The refusal is a rate limit, so the message gives the wrong cause and recovery step. Tell the person to wait before trying again.",
         "file": "apps/web/src/routes/circles/join/join-error.helper.ts",
         "line": 7,
         "priority": "P2",
         "title": "Explain rate-limit refusals accurately"
       },
       {
-        "body": "This new file contains only branch status and a start timestamp. It is outside both paths allowed for this part and is not needed by the invite page or its tests.",
+        "body": "This new branch status file is outside both permitted paths and is not needed to deliver or test the invite page.",
         "file": ".factory/stories/CWF-2/tasks/T5.json",
         "line": 1,
         "priority": "P2",
@@ -29,7 +29,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "ef362b7e32d552f37745fe4afa92de32acdb0dac3a89f36bbdc649bf5df65574"
+    "tree": "417324ac94778d6a3b4e4af4ab399b68120b20b77fe385a4fbf24c647f5de3d1"
   },
   "status": "fixing",
   "steps": [
@@ -39,6 +39,10 @@
     },
     {
       "at": "2026-10-13T09:37:54+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-13T10:11:33+00:00",
       "step": "review"
     }
   ]
