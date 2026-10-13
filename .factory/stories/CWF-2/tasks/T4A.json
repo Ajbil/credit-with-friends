@@ -1,0 +1,47 @@
+{
+  "branch": "task/CWF-2-T4A",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "6df0ae07ff488b50f166952cd1ef4b9dc7e09e8b4aecf595c5e8a22083d3bea4",
+    "commit": "951f1667fe19e5531b5e7e48aa61c51ab8204f2f",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The branch adds review and task-status metadata under `.factory`, outside the permitted paths. This file is not needed to deliver the circles home or create flow. The previous review flagged it, and the supplied diff shows it is still present.",
+        "file": ".factory/stories/CWF-2/tasks/T4A.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task status file"
+      }
+    ],
+    "status": "clean",
+    "tree": "633d91fe210c7d57c5294f9a3faf02ae38fff01b18e2d81f777a497ebb6ddd04"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-07T14:00:43+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-07T15:14:57+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T16:30:14+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-07T16:53:54+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-12T17:07:37+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-12T17:29:29+00:00",
+      "step": "review"
+    }
+  ]
+}

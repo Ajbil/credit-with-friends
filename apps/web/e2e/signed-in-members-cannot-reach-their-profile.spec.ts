@@ -20,7 +20,8 @@ test('a signed-in member reaches their profile, returns home, and signs out on a
 
   await page.goto('/');
   const profile = page.getByRole('link', { name: 'Your profile' });
-  await expect(page.getByRole('heading', { name: "You're signed in" })).toBeVisible();
+  // The signed-in home now lists circles; the profile round trip stays available.
+  await expect(page.getByRole('heading', { name: 'Your circles', exact: true })).toBeVisible();
   await expect(profile).toBeVisible();
   await profile.focus();
   await expect(profile).toBeFocused();
@@ -30,7 +31,7 @@ test('a signed-in member reaches their profile, returns home, and signs out on a
   await expect(page.getByText('listed@example.in')).toBeVisible();
 
   await page.getByRole('link', { name: 'Back to home' }).tap();
-  await expect(page.getByRole('heading', { name: "You're signed in" })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Your circles', exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Your profile' }).tap();
   await expect(page.getByRole('heading', { name: 'Your profile' })).toBeVisible();
   await page.getByRole('button', { name: 'Sign out of this device' }).tap();

@@ -40,7 +40,8 @@ test('done-when-1: onboarding creates a member only after explicit consent', asy
   await expect(consent).toBeChecked();
   await page.getByRole('button', { name: 'Create my account' }).click();
   await expect(page).toHaveURL(/\/circles\/join\/example$/);
-  await expect(page.getByText('Your account is ready.')).toBeVisible();
+  // Circle routes now have their own screens; onboarding still returns to the exact invite.
+  await expect(page.getByRole('heading', { name: 'Circle invite', exact: true })).toBeVisible();
   const profile = await page.request.get('http://localhost:3104/api/v1/members/me');
   expect(profile.ok()).toBeTruthy();
   expect((await profile.json()).data).toMatchObject({ displayName: 'Listed Person', whatsappE164: '+447911123456' });

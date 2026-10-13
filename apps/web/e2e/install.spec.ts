@@ -60,6 +60,6 @@ test('done-when-3: the app installs with an offline shell and does not cache mem
   expect(cached.some(({ body }) => body.includes('web-install') || body.includes(memberBody))).toBe(false);
   await page.context().setOffline(true);
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Find the card. Ask a friend.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'CreditWithFriends home', exact: true })).toBeVisible();
   await page.context().setOffline(false);
 });
