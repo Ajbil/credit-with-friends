@@ -8,11 +8,13 @@ const vite = fileURLToPath(new URL('../node_modules/vite/bin/vite.js', import.me
 let preview: ChildProcess;
 
 test.beforeAll(async () => {
+  // Building the app and starting its preview can take well over the default hook time on a busy machine.
+  test.setTimeout(180_000);
   execFileSync(process.execPath, [vite, 'build'], { cwd: webRoot, env: { ...process.env, VITE_API_ORIGIN: 'http://localhost:3104' } });
   preview = spawn(process.execPath, [vite, 'preview', '--host', 'localhost', '--port', '5174', '--strictPort'], { cwd: webRoot });
   await expect.poll(async () => {
     try { return (await fetch(origin)).ok; } catch { return false; }
-  }).toBeTruthy();
+  }, { timeout: 60_000 }).toBeTruthy();
 });
 
 test.afterAll(() => preview?.kill());
@@ -52,7 +54,9 @@ test('done-when-3: the app installs with an offline shell and does not cache mem
   const browserBody = await page.evaluate(async (url) => (await (await fetch(url, { credentials: 'include' })).text()), `${api}/members/me`);
   expect((await requested).url()).toBe(`${api}/members/me`);
   expect(browserBody).toContain('web-install');
-  const cached = await page.evaluate(async () => Promise.all((await caches.keys()).map(async (key) => {
+  // Stop intercepting before going offline, so no bridged request is still in flight when the test ends.
+  await page.unrouteAll({ behavior: 'wait' });
+  const cached =await page.evaluate(async () => Promise.all((await caches.keys()).map(async (key) => {
     const cache = await caches.open(key);
     return Promise.all((await cache.keys()).map(async (request) => ({ url: request.url, body: await (await cache.match(request))!.text() })));
   })).then((groups) => groups.flat()));
