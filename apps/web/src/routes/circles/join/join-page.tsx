@@ -55,7 +55,7 @@ function InvitePage({ code }: { code: string }) {
     }
   }, [accountRequired, pending.isSuccess, pending.isFetching, invite.data, invite.error, invite.isFetching, invite.isSuccess, returnPath]);
 
-  const error = join.error ?? invite.error;
+  const error = invite.error ?? join.error;
   const invalid = error instanceof ApiError && error.failure.code === 'INVITE_LINK_INVALID';
   const signInError = accountRequired && pending.isError && !(pending.error instanceof ApiError && pending.error.status === 401);
   let content;
