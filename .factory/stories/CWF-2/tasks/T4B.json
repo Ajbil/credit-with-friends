@@ -1,0 +1,31 @@
+{
+  "branch": "task/CWF-2-T4B",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "9614703d3f6e8db6b073907c9fc859cd3f8c952f59e830504bb1a289612b2e2e",
+    "commit": "7224a3286eddbc7b1151f1966ed3920f7c40911e",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This new task-status JSON is outside the two paths allowed for this part. It is bookkeeping, and the circle screen and its tests do not need it. Remove it from the branch.",
+        "file": ".factory/stories/CWF-2/tasks/T4B.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove task metadata outside the allowed paths"
+      }
+    ],
+    "status": "clean",
+    "tree": "ecaa030910f8c8da3061acc87b4d8090f3c2461d23d2f84be1a30e0f4d6ac7e8"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-13T08:21:45+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-13T10:27:13+00:00",
+      "step": "review"
+    }
+  ]
+}

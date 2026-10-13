@@ -59,7 +59,8 @@ test('done-when-1: a member creates named circles, sees all of them and is told 
   await page.screenshot({ path: test.info().outputPath('desktop.png'), fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await first.click();
-  await expect(page.getByRole('heading', { name: 'Circle', exact: true })).toBeVisible();
+  // The old route showed a "Circle" placeholder; the member screen now shows the actual circle name.
+  await expect(page.getByRole('heading', { name: 'College batch', exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Back to your circles' }).click();
   await page.getByRole('link', { name: 'Your profile' }).click();
   await expect(page.getByRole('heading', { name: 'Your profile', exact: true })).toBeVisible();
