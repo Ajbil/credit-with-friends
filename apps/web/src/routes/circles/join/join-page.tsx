@@ -1,11 +1,88 @@
-import { Link } from '@tanstack/react-router';
+import { useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link, useParams } from '@tanstack/react-router';
+import { accountsControllerPending, joinCircleControllerJoin, joinCircleControllerPreview } from '../../../api/generated';
+import { ApiError, googleStartUrl } from '../../../api/fetcher';
 import { PageFrame } from '../../../components/page-frame';
+import { Button } from '../../../components/ui/button';
+import { joinErrorMessage } from './join-error.helper';
+import './join.css';
 
-// Filled by the invite page and joining task.
 export function JoinPage() {
-  return <PageFrame><section className="narrow-page">
+  const { code } = useParams({ from: '/circles/join/$code' });
+  return <InvitePage key={code} code={code} />;
+}
+
+function InvitePage({ code }: { code: string }) {
+  const client = useQueryClient();
+  const returnPath = `/circles/join/${encodeURIComponent(code)}`;
+  const invite = useQuery({
+    queryKey: ['circle-invite', code], networkMode: 'always', refetchOnMount: 'always',
+    queryFn: async () => (await joinCircleControllerPreview(encodeURIComponent(code))).data.data!,
+  });
+  const accountRequired = invite.isSuccess && !invite.isFetching && invite.data.status === 'account_required';
+  const pending = useQuery({
+    queryKey: ['invite-sign-in', code], queryFn: accountsControllerPending,
+    enabled: accountRequired, networkMode: 'always', refetchOnMount: 'always',
+  });
+  const join = useMutation({
+    networkMode: 'always',
+    mutationFn: () => joinCircleControllerJoin(encodeURIComponent(code)),
+    onSuccess: (response) => {
+      void client.invalidateQueries({ queryKey: ['circles'] });
+      location.assign(`/circles/${response.data.data!.circleId}`);
+    },
+    onError: (error) => {
+      if (error instanceof ApiError && (error.status === 401 || error.failure.code === 'ACCOUNT_INCOMPLETE')) {
+        // Reload the invite to validate the link before offering sign-in again.
+        location.replace(returnPath);
+      }
+      if (error instanceof ApiError && error.failure.code === 'PRIVACY_NOTICE_REQUIRED') {
+        location.replace(`/notice?returnTo=${encodeURIComponent(returnPath)}`);
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (accountRequired && pending.isSuccess && !pending.isFetching) {
+      location.replace(`/onboarding?returnTo=${encodeURIComponent(returnPath)}`);
+    }
+    if (invite.isSuccess && !invite.isFetching && invite.data?.status === 'already_member') {
+      location.replace(`/circles/${invite.data.circleId}`);
+    }
+    if (invite.error instanceof ApiError && invite.error.failure.code === 'PRIVACY_NOTICE_REQUIRED') {
+      location.replace(`/notice?returnTo=${encodeURIComponent(returnPath)}`);
+    }
+  }, [accountRequired, pending.isSuccess, pending.isFetching, invite.data, invite.error, invite.isFetching, invite.isSuccess, returnPath]);
+
+  const error = invite.error ?? join.error;
+  const invalid = error instanceof ApiError && error.failure.code === 'INVITE_LINK_INVALID';
+  const signInError = accountRequired && pending.isError && !(pending.error instanceof ApiError && pending.error.status === 401);
+  let content;
+  if (invalid) content = <>
     <h1>Circle invite</h1>
-    <p>Joining a circle is coming next.</p>
+    <p role="alert">{error.message}</p>
     <Link className="button button--quiet" to="/">Back to home</Link>
+  </>;
+  else if (invite.isPending || invite.isFetching || join.isSuccess || invite.data?.status === 'already_member' || (accountRequired && (pending.isPending || pending.isFetching || pending.isSuccess))) content = <>
+    <h1>Circle invite</h1><p role="status">{join.isSuccess || invite.data?.status === 'already_member' ? 'Opening your circle…' : 'Checking this invite…'}</p>
+  </>;
+  else if (invite.isError || signInError) content = <>
+    <h1>Circle invite</h1><p role="alert">We couldn’t load this invite. Check your connection and try again.</p>
+    <Button variant="quiet" onClick={() => { void invite.refetch(); if (accountRequired) void pending.refetch(); }}>Try again</Button>
+  </>;
+  else if (invite.data?.status === 'account_required') content = <>
+    <h1>Circle invite</h1><p>Sign in with Google and finish your account to join. We’ll bring you back to this invite.</p>
+    <a className="button button--primary" href={googleStartUrl(returnPath)}>Continue with Google</a>
+  </>;
+  else content = <>
+    <h1>You’re about to join {invite.data?.name}</h1>
+    <p>{new Intl.NumberFormat('en-IN').format(invite.data?.memberCount ?? 0)} {invite.data?.memberCount === 1 ? 'member' : 'members'}</p>
+    <Button disabled={join.isPending} aria-busy={join.isPending} onClick={() => { if (!join.isPending) join.mutate(); }}>{join.isPending ? 'Joining…' : 'Join'}</Button>
+    {join.isPending && <p role="status">Joining your circle…</p>}
+    {join.isError && <p role="alert">{joinErrorMessage(join.error)}</p>}
+  </>;
+
+  return <PageFrame><section className="narrow-page join-page">{content}
   </section></PageFrame>;
 }
