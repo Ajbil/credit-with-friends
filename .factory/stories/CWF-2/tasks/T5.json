@@ -4,7 +4,13 @@
     "blocking_level": "P1",
     "changed": "1ee9849582bb4400c4b2a937374024b2d7afefc497da90f95867fcdfedfb0c97",
     "commit": "9cf8394cdcde4264451ac2ebc24ca6cbb76ccab0",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": "apps/api/test/accounts.integration.spec.ts:204 The Google start and callback flow is proven at the API layer with a fake Google issuer: a new person from /circles/join/google is redirected to /onboarding?returnTo=%2Fcircles%2Fjoin%2Fgoogle, and a returning member to the invite (line 215). The browser test covers the web half (pending session goes to onboarding and returns to the invite); the browser suite has no fake Google issuer and adding one is shared test configuration outside this part.",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "The browser test reads the Google link\u2019s return path, then calls `test-auth/sign-in` and installs the session cookie directly. It never follows the app\u2019s Google start and callback flow. A callback that loses the invite path would still pass this test.",
