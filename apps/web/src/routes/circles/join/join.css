@@ -1,0 +1,11 @@
+.join-page { margin-bottom: 48px; overflow-wrap: anywhere; }
+.join-page h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); text-wrap: balance; }
+.join-page .button { width: 100%; transition: none; }
+.join-page .button:disabled { opacity: 1; }
+.join-page .button:hover:not(:disabled) { transform: none; }
+.join-page .button:active:not(:disabled) { filter: brightness(.9); }
+.join-page p[role="alert"] { color: inherit; margin-top: 24px; }
+@media (hover: none), (pointer: coarse) {
+  .join-page .button--primary:hover:not(:disabled) { background: #175d47; }
+  .join-page .button--quiet:hover:not(:disabled) { background: transparent; }
+}
