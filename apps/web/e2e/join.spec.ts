@@ -65,12 +65,13 @@ test('done-when-3: an invite returns through sign-in and onboarding, joins only 
     expect(googleUrl.searchParams.get('returnTo')).toBe(invite.path);
     await expect(page.getByText('College batch', { exact: true })).toHaveCount(0);
 
-    // The existing test route substitutes only Google's identity verification.
+    // Only Google's identity verification is substituted; the app must send the person to setup.
     await signIn(page.context(), googleUrl.searchParams.get('returnTo')!, 'New member', false);
     await page.reload();
-    await expect(google).toHaveAttribute('href', googleUrl.toString());
+    await expect(page).toHaveURL(`/onboarding?returnTo=${encodeURIComponent(invite.path)}`);
+    await expect(page.getByRole('heading', { name: 'Finish your account' })).toBeVisible();
+    await expect(google).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Join', exact: true })).toHaveCount(0);
-    await page.goto('/onboarding');
     await page.getByLabel('WhatsApp number').fill('9876543210');
     await page.getByLabel('I confirm I am 18 or older.').check();
     await page.getByLabel('I agree to the privacy notice.').check();
@@ -118,6 +119,11 @@ test('done-when-3: an invite returns through sign-in and onboarding, joins only 
     await page.goto(invite.path);
     await expect(page.getByRole('alert')).toHaveText(invalidMessage);
     await expect(page.getByRole('link', { name: 'Continue with Google' })).toHaveCount(0);
+    await signIn(page.context(), invite.path, 'Pending visitor', false);
+    await page.reload();
+    await expect(page.getByRole('alert')).toHaveText(invalidMessage);
+    await expect(page).toHaveURL(invite.path);
+    await expect(page.getByRole('heading', { name: 'Finish your account' })).toHaveCount(0);
   } finally { await adminContext.close(); }
 });
 

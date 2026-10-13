@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
-import { joinCircleControllerJoin, joinCircleControllerPreview } from '../../../api/generated';
+import { accountsControllerPending, joinCircleControllerJoin, joinCircleControllerPreview } from '../../../api/generated';
 import { ApiError, googleStartUrl } from '../../../api/fetcher';
 import { PageFrame } from '../../../components/page-frame';
 import { Button } from '../../../components/ui/button';
@@ -19,6 +19,11 @@ function InvitePage({ code }: { code: string }) {
   const invite = useQuery({
     queryKey: ['circle-invite', code], networkMode: 'always', refetchOnMount: 'always',
     queryFn: async () => (await joinCircleControllerPreview(encodeURIComponent(code))).data.data!,
+  });
+  const accountRequired = invite.isSuccess && !invite.isFetching && invite.data.status === 'account_required';
+  const pending = useQuery({
+    queryKey: ['invite-sign-in', code], queryFn: accountsControllerPending,
+    enabled: accountRequired, networkMode: 'always', refetchOnMount: 'always',
   });
   const join = useMutation({
     networkMode: 'always',
@@ -39,28 +44,32 @@ function InvitePage({ code }: { code: string }) {
   });
 
   useEffect(() => {
+    if (accountRequired && pending.isSuccess && !pending.isFetching) {
+      location.replace(`/onboarding?returnTo=${encodeURIComponent(returnPath)}`);
+    }
     if (invite.isSuccess && !invite.isFetching && invite.data?.status === 'already_member') {
       location.replace(`/circles/${invite.data.circleId}`);
     }
     if (invite.error instanceof ApiError && invite.error.failure.code === 'PRIVACY_NOTICE_REQUIRED') {
       location.replace(`/notice?returnTo=${encodeURIComponent(returnPath)}`);
     }
-  }, [invite.data, invite.error, invite.isFetching, invite.isSuccess, returnPath]);
+  }, [accountRequired, pending.isSuccess, pending.isFetching, invite.data, invite.error, invite.isFetching, invite.isSuccess, returnPath]);
 
   const error = join.error ?? invite.error;
   const invalid = error instanceof ApiError && error.failure.code === 'INVITE_LINK_INVALID';
+  const signInError = accountRequired && pending.isError && !(pending.error instanceof ApiError && pending.error.status === 401);
   let content;
   if (invalid) content = <>
     <h1>Circle invite</h1>
     <p role="alert">{error.message}</p>
     <Link className="button button--quiet" to="/">Back to home</Link>
   </>;
-  else if (invite.isPending || invite.isFetching || join.isSuccess || invite.data?.status === 'already_member') content = <>
+  else if (invite.isPending || invite.isFetching || join.isSuccess || invite.data?.status === 'already_member' || (accountRequired && (pending.isPending || pending.isFetching || pending.isSuccess))) content = <>
     <h1>Circle invite</h1><p role="status">{join.isSuccess || invite.data?.status === 'already_member' ? 'Opening your circle…' : 'Checking this invite…'}</p>
   </>;
-  else if (invite.isError) content = <>
+  else if (invite.isError || signInError) content = <>
     <h1>Circle invite</h1><p role="alert">We couldn’t load this invite. Check your connection and try again.</p>
-    <Button variant="quiet" onClick={() => invite.refetch()}>Try again</Button>
+    <Button variant="quiet" onClick={() => { void invite.refetch(); if (accountRequired) void pending.refetch(); }}>Try again</Button>
   </>;
   else if (invite.data?.status === 'account_required') content = <>
     <h1>Circle invite</h1><p>Sign in with Google and finish your account to join. We’ll bring you back to this invite.</p>
