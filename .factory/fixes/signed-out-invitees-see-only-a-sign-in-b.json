@@ -3,7 +3,7 @@
   "branch": "fix/signed-out-invitees-see-only-a-sign-in-b",
   "done_when": "The signed-out invite page explains the app, its safety and sign-in in plain words with a link to the privacy notice, and a shared link shows a title, description and image preview in WhatsApp",
   "kind": "fix",
-  "status": "started",
+  "status": "working",
   "steps": [
     {
       "at": "2026-10-14T10:27:45+00:00",
