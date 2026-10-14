@@ -1,5 +1,7 @@
 .join-page { margin-bottom: 48px; overflow-wrap: anywhere; }
 .join-page h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); text-wrap: balance; }
+.join-page .join-page__invitation { font-size: clamp(1.65rem, 5.2vw, 3rem); overflow-wrap: normal; }
+.join-page .join-page__note { margin: 30px 0 12px; font-size: .9rem; color: #547064; }
 .join-page .button { width: 100%; transition: none; }
 .join-page .button:disabled { opacity: 1; }
 .join-page .button:hover:not(:disabled) { transform: none; }
