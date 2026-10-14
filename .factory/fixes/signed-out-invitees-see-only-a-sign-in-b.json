@@ -1,0 +1,14 @@
+{
+  "base": "c82d3b8779402b9634ca6c83ce580560dfd895a1",
+  "branch": "fix/signed-out-invitees-see-only-a-sign-in-b",
+  "done_when": "The signed-out invite page explains the app, its safety and sign-in in plain words with a link to the privacy notice, and a shared link shows a title, description and image preview in WhatsApp",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-14T10:27:45+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "Signed-out invitees see only a sign-in button, and shared links have no WhatsApp preview"
+}
