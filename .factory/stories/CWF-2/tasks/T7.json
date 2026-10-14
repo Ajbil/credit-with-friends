@@ -2,34 +2,20 @@
   "branch": "task/CWF-2-T7",
   "review": {
     "blocking_level": "P1",
-    "changed": "49cc7371ad2f459dca5af3b0a6bb8b409b5bc8d450d7e728c55761448ef3bd27",
-    "commit": "4d716d04dc3a6a425a1a1057af7bcabc7dd22cc1",
+    "changed": "cc8316db7798595afac4d0146090061ea38f0500705cc16568e8da88de71064a",
+    "commit": "f69c6d2d63fe57d1bef6cd660674848d09323dc5",
     "dismissals": [],
     "findings": [
       {
-        "body": "The supplied commit-message evidence says the last commit has no `Functional check:` paragraph. This user-facing part requires that paragraph to state what was exercised and observed across the live circle, join, and invite-reset walk-through. Pass claims in the runbook do not satisfy the commit-message requirement.",
-        "file": "docs/architecture/deployment.md",
-        "line": 100,
-        "priority": "P1",
-        "title": "Not done: functional check"
-      },
-      {
-        "body": "This branch adds `.factory/stories/CWF-2/tasks/T7.json`, although this part may change only `docs/architecture/deployment.md`. The task-state file is neither the required runbook check nor an allowed test change. Remove it from the branch.",
+        "body": "The branch adds `.factory/stories/CWF-2/tasks/T7.json`, but this part may change only `docs/architecture/deployment.md`. The task-state file is neither the required production check nor an allowed test change. Remove it from the branch.",
         "file": ".factory/stories/CWF-2/tasks/T7.json",
         "line": 1,
         "priority": "P1",
         "title": "Remove the task-state file outside the allowed scope"
-      },
-      {
-        "body": "The new evidence beyond the coordinator's blank-results ruling is that each added row contains `|| Pass, ...`: the third, labelled result cell is blank and the Pass claim occupies a fourth cell. [GitHub Flavored Markdown ignores excess table cells](https://github.github.com/gfm/), so these claims disappear from the rendered runbook while remaining in its source. Remove the fourth-cell claims for this preparatory round; results can be entered in the third cell when the owner reports them.",
-        "file": "docs/architecture/deployment.md",
-        "line": 104,
-        "priority": "P2",
-        "title": "Remove hidden Pass claims from the blank checklist"
       }
     ],
     "status": "blocked",
-    "tree": "31af67c477030de8d45656ee60ba82e9defe42feab4b0748ea844325f31a0f81"
+    "tree": "8d8bf154352c9d08122a93ee4931049340838251d19cd1b7d009cc4dda406841"
   },
   "status": "fixing",
   "steps": [
@@ -39,6 +25,10 @@
     },
     {
       "at": "2026-10-14T10:41:07+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-14T10:50:10+00:00",
       "step": "review"
     }
   ]
