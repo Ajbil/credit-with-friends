@@ -1,0 +1,16 @@
+{
+  "base": "9b9df5959caeef5f000b1b273d2d53c304f8a8a6",
+  "branch": "fix/cwf-2-done",
+  "done_when": "The board shows the story as finished, with its outcome.",
+  "kind": "story-done",
+  "outcome": "Members can create circles, share one invite link into WhatsApp, and let trusted people join with one tap; the owner verified create, share, join and link reset live on two devices on 2026-10-14.",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-14T11:56:14+00:00",
+      "step": "start"
+    }
+  ],
+  "touches": 0,
+  "why": "Record that Create and join circles is finished, and what it achieved."
+}
