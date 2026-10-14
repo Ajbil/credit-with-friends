@@ -52,6 +52,8 @@ test('signed-out invite explains the app and privacy before Google sign-in', asy
   await expect(page.getByText('Only people in your circles see which cards you hold. You sign in with Google, so we never see your password.')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Read our privacy notice' })).toHaveAttribute('href', '/privacy');
   await expect(page.getByText('Free · takes about a minute')).toBeVisible();
+  await expect(page.getByRole('contentinfo').getByRole('link', { name: 'support.creditwithfriends@gmail.com' })).toHaveAttribute('href', 'mailto:support.creditwithfriends@gmail.com');
+  await expect(page.getByRole('contentinfo')).toContainText('We reply within 24 hours.');
   const google = page.getByRole('link', { name: 'Continue with Google' });
   await expect(google).toBeVisible();
   expect(new URL((await google.getAttribute('href'))!).searchParams.get('returnTo')).toBe(path);
