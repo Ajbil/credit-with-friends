@@ -1,6 +1,15 @@
 {
+  "approval": {
+    "at": "2026-10-14T16:53:16+00:00",
+    "by": "human-via-Claude",
+    "event": "toolu_01TejZAdMrRncU5x7aq2Xqas",
+    "hash": "01b8f4381000f03ec61fd6c2331ee15b6abe15beb0b053f80bc10cb169a778b7",
+    "round": 5,
+    "runtime": "claude",
+    "session": "a63f68e8-a558-49cf-9fac-cfa8b0ff293c"
+  },
   "doc": "plans/CWF-7.md",
-  "status": "read",
+  "status": "approved",
   "steps": [
     {
       "at": "2026-10-14T12:17:51+00:00",
@@ -25,8 +34,12 @@
     {
       "at": "2026-10-14T12:48:00+00:00",
       "step": "read"
+    },
+    {
+      "at": "2026-10-14T16:53:16+00:00",
+      "step": "approved"
     }
   ],
   "title": "Leave, remove and run a circle",
-  "touches": 0
+  "touches": 1
 }
