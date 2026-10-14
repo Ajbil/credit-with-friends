@@ -1,0 +1,12 @@
+{
+  "doc": "plans/CWF-7.md",
+  "status": "planning",
+  "steps": [
+    {
+      "at": "2026-10-14T12:17:51+00:00",
+      "step": "start"
+    }
+  ],
+  "title": "Leave, remove and run a circle",
+  "touches": 0
+}
