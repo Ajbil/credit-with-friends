@@ -3,11 +3,32 @@
   "branch": "fix/signed-out-invitees-see-only-a-sign-in-b",
   "done_when": "The signed-out invite page explains the app, its safety and sign-in in plain words with a link to the privacy notice, and a shared link shows a title, description and image preview in WhatsApp",
   "kind": "fix",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "b1c4053a408bcfee5bbccb8ef55752f9817d326bccbc8011c513b88a6be7f798",
+    "commit": "02e09f7db82640cfc05893dc9247a25d0a10928c",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The supplied close run stopped before either new Playwright test executed: its web server could not reach the database at localhost:5433 (P1001). The signed-out invite flow and shared-link preview therefore still need a successful browser check with the API and database running. The log shows an environment failure, not a demonstrated failure in the page code.",
+        "file": "apps/web/e2e/signed-out-invitees-see-only-a-sign-in-b.spec.ts",
+        "line": 47,
+        "priority": "P1",
+        "title": "Not done: the invite and shared-preview Playwright checks complete against a real database"
+      }
+    ],
+    "status": "blocked",
+    "tree": "fc74a02fb518fe9bd47cdb62083999ef5ea5aa0162dd667e14e9b029cc55adda"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-14T10:27:45+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-14T11:22:55+00:00",
+      "step": "review"
     }
   ],
   "why": "Signed-out invitees see only a sign-in button, and shared links have no WhatsApp preview"
