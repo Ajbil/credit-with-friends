@@ -72,7 +72,11 @@ function InvitePage({ code }: { code: string }) {
     <Button variant="quiet" onClick={() => { void invite.refetch(); if (accountRequired) void pending.refetch(); }}>Try again</Button>
   </>;
   else if (invite.data?.status === 'account_required') content = <>
-    <h1>Circle invite</h1><p>Sign in with Google and finish your account to join. We’ll bring you back to this invite.</p>
+    <h1 className="join-page__invitation">You’re invited to a circle on CreditWithFriends</h1>
+    <p>See which friends hold the card a shop’s offer needs, and ask them on WhatsApp in one tap. Card numbers are never shared.</p>
+    <p>Only people in your circles see which cards you hold. You sign in with Google, so we never see your password.</p>
+    <p><Link className="text-link" to="/privacy">Read our privacy notice</Link></p>
+    <p className="join-page__note">Free · takes about a minute</p>
     <a className="button button--primary" href={googleStartUrl(returnPath)}>Continue with Google</a>
   </>;
   else content = <>
