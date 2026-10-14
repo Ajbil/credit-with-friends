@@ -3,8 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { ApiConfig } from '../../../common/config/config.module';
 import { PrismaService } from '../../../common/database/prisma.service';
 import { ServiceBus } from '../../../service-bus/service-bus.service';
-import { lockCircleMembershipRows } from './circle-lock.helper';
+import { lockAdminCircle, lockCircleMembershipRows } from './circle-lock.helper';
 import { createInviteCode, isOwnerCreated, normalizeCircleName } from './circle-create.rules';
+import { deleteCircle, endCircleMembership } from './circle-membership-end.helper';
 
 const MAX_CIRCLES_PER_MEMBER = 20;
 
@@ -28,6 +29,17 @@ export class CirclesCoreService {
         memberships: { create: { memberId: creator.id } },
       }, select: { id: true, name: true } });
       return circle;
+    });
+  }
+
+  endMembership(circleId: string, memberId: string) {
+    return this.db.$transaction((tx) => endCircleMembership(tx, circleId, memberId));
+  }
+
+  delete(circleId: string, memberId: string) {
+    return this.db.$transaction(async (tx) => {
+      await lockAdminCircle(tx, circleId, memberId);
+      await deleteCircle(tx, circleId, memberId);
     });
   }
 }

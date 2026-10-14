@@ -18,35 +18,36 @@ const request = (memberId: string) => ({ caller: { memberId } }) as Authenticate
 function setup(publish: () => Promise<void> = async () => {}) {
   const circle = { id: circleId, name: 'College batch', inviteCode: code, adminMemberId: adminId, deletedAtUtc: null };
   const findUnique = vi.fn(async () => circle);
-  const updateMany = vi.fn(async ({ data }: { data: { inviteCode: string } }) => {
+  const update = vi.fn(async ({ data }: { data: { inviteCode: string } }) => {
     circle.inviteCode = data.inviteCode;
-    return { count: 1 };
+    return circle;
   });
-  const db = { circle: { findUnique, updateMany } } as unknown as PrismaService;
+  const tx = { $queryRaw: vi.fn(async () => [{ id: circleId }]), circle: { findUnique, update } };
+  const db = { $transaction: async (action: (transaction: typeof tx) => Promise<unknown>) => action(tx) } as unknown as PrismaService;
   const bus = { publish: vi.fn(publish) } as unknown as ServiceBus;
   const config = { getOrThrow: () => 'http://localhost:5173' } as unknown as ConfigService<ApiConfig, true>;
   const logger = { warn: vi.fn() } as unknown as PinoLogger;
-  return { controller: new CircleInviteController(db, bus, config, logger), findUnique, updateMany, bus };
+  return { controller: new CircleInviteController(db, bus, config, logger), findUnique, update, bus };
 }
 
 describe('circle invite controller', () => {
   test('refuses non-admin access to get, reset, and record', async () => {
-    const { controller, updateMany, bus } = setup();
+    const { controller, update, bus } = setup();
     await expect(controller.get(circleId, request(otherId))).rejects.toBeInstanceOf(ForbiddenException);
     await expect(controller.reset(circleId, request(otherId))).rejects.toBeInstanceOf(ForbiddenException);
     await expect(controller.record(circleId, request(otherId), { action: 'copy' })).rejects.toBeInstanceOf(ForbiddenException);
-    expect(updateMany).not.toHaveBeenCalled();
+    expect(update).not.toHaveBeenCalled();
     expect(bus.publish).not.toHaveBeenCalled();
   });
 
   test('resets the link and prepares WhatsApp text with the circle name and active link', async () => {
-    const { controller, updateMany } = setup();
+    const { controller, update } = setup();
     const previous = await controller.get(circleId, request(adminId));
     const reset = await controller.reset(circleId, request(adminId));
     expect(reset.url).not.toBe(previous.url);
     expect(reset.url).toMatch(/^http:\/\/localhost:5173\/circles\/join\/[A-Za-z0-9_-]{22}$/);
     expect((await controller.get(circleId, request(adminId))).url).toBe(reset.url);
-    expect(updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: circleId, adminMemberId: adminId, deletedAtUtc: null }, data: expect.objectContaining({ modifiedByAccountId: adminId }) }));
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: circleId }, data: expect.objectContaining({ modifiedByAccountId: adminId }) }));
     const share = await controller.record(circleId, request(adminId), { action: 'whatsapp' });
     const text = new URL(share.whatsappUrl!).searchParams.get('text');
     expect(text).toContain('College batch');
