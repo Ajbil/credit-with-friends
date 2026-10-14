@@ -1,0 +1,41 @@
+{
+  "branch": "task/CWF-2-T7",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "cc8316db7798595afac4d0146090061ea38f0500705cc16568e8da88de71064a",
+    "commit": "f69c6d2d63fe57d1bef6cd660674848d09323dc5",
+    "dismissals": [
+      {
+        "because": ".factory/stories/CWF-2/tasks/T7.json:1 This is Forge's own task-state file, written by forge task start on every task branch; main already carries the same file for every merged CWF-2 part (T1A to T5). Removing it would break Forge's tracking of this part.",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
+    "findings": [
+      {
+        "body": "The branch adds `.factory/stories/CWF-2/tasks/T7.json`, but this part may change only `docs/architecture/deployment.md`. The task-state file is neither the required production check nor an allowed test change. Remove it from the branch.",
+        "file": ".factory/stories/CWF-2/tasks/T7.json",
+        "line": 1,
+        "priority": "P1",
+        "title": "Remove the task-state file outside the allowed scope"
+      }
+    ],
+    "status": "clean",
+    "tree": "8d8bf154352c9d08122a93ee4931049340838251d19cd1b7d009cc4dda406841"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-13T18:33:14+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-14T10:41:07+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-14T10:50:10+00:00",
+      "step": "review"
+    }
+  ]
+}
