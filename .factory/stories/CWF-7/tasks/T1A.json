@@ -1,10 +1,52 @@
 {
   "branch": "task/CWF-7-T1A",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "80fa68931865e27e9e2fd5c6644e3011f1132f92f651e149925e924e6219781d",
+    "commit": "0418d8049d6bb2505cc90de429ba0dfa9157fa79",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This branch adds plans/CWF-7.md, plans/CWF-7.read.md, and two .factory/stories/CWF-7 records outside T1A's allowed paths. These files do not deliver the removal table or shared helpers. Move those changes to the story setup change or remove them from this part.",
+        "file": "plans/CWF-7.md",
+        "line": 1,
+        "priority": "P2",
+        "title": "Keep story records and plans out of the scoped API part"
+      },
+      {
+        "body": "T1A exercises endMembership through the application service. T1D owns the leave endpoint and its end-to-end proof that the last member's departure invalidates the old link and keeps usage rows, plus the leave-versus-join race. Those checks cannot run through the endpoint in this part.",
+        "file": "apps/api/src/modules/circles/core/circles-core.service.ts",
+        "line": 36,
+        "priority": "P2",
+        "title": "Later: T1D must prove last-member deletion through leave"
+      },
+      {
+        "body": "The deletion helper erases removal blocks, but T1A's test creates no block. T1B owns the removal endpoint, the endpoint proof that a block disappears when the last member later leaves, and the removal-versus-join and removal-versus-leave races.",
+        "file": "apps/api/src/modules/circles/core/circle-membership-end.helper.ts",
+        "line": 8,
+        "priority": "P2",
+        "title": "Later: T1B must prove block erasure and removal races"
+      },
+      {
+        "body": "The new race test proves that invite reset rejects an old admin after a handover simulated by a database update. T1C owns the handover action and the remaining endpoint races between handover, admin departure, and an old admin's action.",
+        "file": "apps/api/test/circles-membership-end.integration.spec.ts",
+        "line": 118,
+        "priority": "P2",
+        "title": "Later: T1C must prove handover races for admin actions"
+      }
+    ],
+    "status": "clean",
+    "tree": "ed189a62c31905bb740e01611873f3387205a4425342e142a4bddc3e2c598c27"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-14T16:59:58+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-14T17:26:04+00:00",
+      "step": "review"
     }
   ]
 }
