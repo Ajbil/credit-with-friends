@@ -1,0 +1,29 @@
+{
+  "base": "9b9df5959caeef5f000b1b273d2d53c304f8a8a6",
+  "branch": "fix/cwf-2-done",
+  "done_when": "The board shows the story as finished, with its outcome.",
+  "kind": "story-done",
+  "outcome": "Members can create circles, share one invite link into WhatsApp, and let trusted people join with one tap; the owner verified create, share, join and link reset live on two devices on 2026-10-14.",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "1274b330f7b3f0e1663cfc0e1048412d52fed4213911399d2ca4b483b22dfc0b",
+    "commit": "9e1a4822f8a14e3ddcfab2515d54aba3c98eb21f",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "e8d0cc511159ca64d09e1fed48bf84d562578c72787bf08c0e7c66123b8e38fe"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-14T11:56:14+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-14T12:04:04+00:00",
+      "step": "review"
+    }
+  ],
+  "touches": 0,
+  "why": "Record that Create and join circles is finished, and what it achieved."
+}
