@@ -6,6 +6,7 @@ import { ListCirclesController } from './list/list-circles.controller';
 import { ViewCircleController } from './view/view-circle.controller';
 import { CircleInviteController } from './invite/circle-invite.controller';
 import { JoinCircleController } from './join/join-circle.controller';
+import { LeaveCircleController } from './leave/leave-circle.controller';
 
-@Module({ imports: [ServiceBusModule], controllers: [CreateCircleController, ListCirclesController, ViewCircleController, CircleInviteController, JoinCircleController], providers: [CirclesCoreService] })
+@Module({ imports: [ServiceBusModule], controllers: [CreateCircleController, ListCirclesController, ViewCircleController, CircleInviteController, JoinCircleController, LeaveCircleController], providers: [CirclesCoreService] })
 export class CirclesModule {}
