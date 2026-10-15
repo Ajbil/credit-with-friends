@@ -25,6 +25,8 @@ export async function previewInvite(db: PrismaService, code: string, memberId?: 
   if (!memberId) return { status: 'account_required' as const };
   const membership = await db.circleMembership.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
   if (membership) return { status: 'already_member' as const, circleId: circle.id };
+  const block = await db.circleRemovalBlock.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
+  if (block) return { status: 'blocked' as const };
   return { status: 'preview' as const, name: circle.name, memberCount: await db.circleMembership.count({ where: { circleId: circle.id } }) };
 }
 
@@ -41,6 +43,8 @@ export async function joinCircle(db: PrismaService, bus: ServiceBus, logger: Pin
     if (!locked || !await tx.member.findUnique({ where: { id: memberId }, select: { id: true } })) throw new ForbiddenException({ code: 'ACCOUNT_INCOMPLETE' });
     const existing = await tx.circleMembership.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
     if (existing) return false;
+    const block = await tx.circleRemovalBlock.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
+    if (block) throw new ForbiddenException({ code: 'CIRCLE_REMOVED' });
     if (await tx.circleMembership.count({ where: { circleId: circle.id } }) >= MAX_MEMBERS) {
       throw new ConflictException({ code: 'CIRCLE_FULL' });
     }
