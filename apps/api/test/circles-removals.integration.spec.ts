@@ -171,7 +171,9 @@ describe('circle removals API', () => {
         expect(denied.response.status).toBe(cookie === outsider.cookie ? 404 : 403);
       }
     }
-    expect((await call(`/circles/${only.id}/members/${admin.id}/remove`, 'POST', admin.cookie)).response.status).toBe(403);
+    const selfRemoval = await call(`/circles/${only.id}/members/${admin.id}/remove`, 'POST', admin.cookie);
+    expect(selfRemoval.response.status).toBe(403);
+    expect(selfRemoval.payload.error).toMatchObject({ code: 'ADMIN_CANNOT_REMOVE_SELF', message: "You're the admin. To step away, leave the circle instead." });
     for (const path of ['/circles/bad-id/removals/clear', `/circles/${only.id}/members/bad-id/remove`]) {
       const invalid = await call(path, 'POST', outsider.cookie);
       expect(invalid.payload.error).toMatchObject({ code: 'VALIDATION_ERROR' });
@@ -232,6 +234,31 @@ describe('circle removals API', () => {
     expect(leaving.response.status).toBe(404);
     expect(await db.circleMembership.count({ where: { circleId: target.id, memberId: departing.id } })).toBe(0);
     expect(await db.circleRemovalBlock.count({ where: { circleId: target.id, memberId: departing.id } })).toBe(1);
+  }, 60_000);
+
+  test.each(['remove', 'leave'] as const)('done-when-3 and 6: admin leaving and removal serialize with one successor when %s waits first', async (first) => {
+    const admin = await member(`admin-leave-${first}-admin`);
+    const targetMember = await member(`admin-leave-${first}-target`);
+    const survivor = await member(`admin-leave-${first}-survivor`);
+    const target = await circle(admin.cookie, `Admin leave remove ${first}`);
+    await join(target.code, targetMember.cookie);
+    await join(target.code, survivor.cookie);
+    const remove = { name: `${schemaName}_${first}_ar`, path: `/circles/${target.id}/members/${targetMember.id}/remove`, cookie: admin.cookie };
+    const leave = { name: `${schemaName}_${first}_al`, path: `/circles/${target.id}/leave`, cookie: admin.cookie };
+    const [firstResult, secondResult] = await raceOnCircleLock(target.id, first === 'remove' ? [remove, leave] : [leave, remove]);
+    expect(firstResult.response.status).toBe(200);
+    expect(secondResult.response.status).toBe(first === 'remove' ? 200 : 404);
+    const viewed = await call(`/circles/${target.id}`, 'GET', survivor.cookie);
+    expect(viewed.response.status).toBe(200);
+    const expectedMembers = first === 'remove' ? [survivor.id] : [targetMember.id, survivor.id];
+    const expectedAdmin = first === 'remove' ? survivor.id : targetMember.id;
+    expect(viewed.payload.data.members.map(({ id }: { id: string }) => id).sort()).toEqual(expectedMembers.sort());
+    expect(viewed.payload.data.members.filter(({ isAdmin }: { isAdmin: boolean }) => isAdmin)).toEqual([expect.objectContaining({ id: expectedAdmin })]);
+    const saved = await db.circle.findUniqueOrThrow({ where: { id: target.id }, include: { memberships: true } });
+    expect(saved.deletedAtUtc).toBeNull();
+    expect(saved.adminMemberId).toBe(expectedAdmin);
+    expect(saved.memberships.map(({ memberId }: { memberId: string }) => memberId).sort()).toEqual(expectedMembers);
+    expect(await db.circleRemovalBlock.count({ where: { circleId: target.id, memberId: targetMember.id } })).toBe(first === 'remove' ? 1 : 0);
   }, 60_000);
 
   test('done-when-3: clearing a block before a waiting Join permits only that explicit Join', async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
-import type { CircleRemovalsService } from './circle-removals.service';
+import type { PrismaService } from '../../../common/database/prisma.service';
 import { CircleRemovalsController } from './circle-removals.controller';
 import type { AuthenticatedRequest } from '../../sessions/session.guard';
 
@@ -13,16 +13,16 @@ describe('removal input boundary', () => {
     { circleId, memberId: 'bad', field: 'memberId' },
     { circleId: 'a'.repeat(36), memberId, field: 'circleId' },
   ])('rejects a malformed $field before invoking removal', async ({ circleId: candidateCircle, memberId: candidateMember, field }) => {
-    const remove = vi.fn();
-    const controller = new CircleRemovalsController({ remove } as unknown as CircleRemovalsService);
+    const transaction = vi.fn();
+    const controller = new CircleRemovalsController({ $transaction: transaction } as unknown as PrismaService);
     await expect(controller.remove(candidateCircle, candidateMember, request)).rejects.toMatchObject({ status: 400, response: { code: 'VALIDATION_ERROR', details: { fieldErrors: [{ field, reason: 'invalid_value' }] } } });
-    expect(remove).not.toHaveBeenCalled();
+    expect(transaction).not.toHaveBeenCalled();
   });
 
   test('rejects a malformed clear request before invoking the service', async () => {
-    const clear = vi.fn();
-    const controller = new CircleRemovalsController({ clear } as unknown as CircleRemovalsService);
+    const transaction = vi.fn();
+    const controller = new CircleRemovalsController({ $transaction: transaction } as unknown as PrismaService);
     await expect(controller.clear('bad', request)).rejects.toMatchObject({ status: 400, response: { code: 'VALIDATION_ERROR', details: { fieldErrors: [{ field: 'circleId', reason: 'invalid_value' }] } } });
-    expect(clear).not.toHaveBeenCalled();
+    expect(transaction).not.toHaveBeenCalled();
   });
 });

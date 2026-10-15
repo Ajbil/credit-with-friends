@@ -1,10 +1,11 @@
 import { BadRequestException, Controller, HttpCode, Inject, Param, Post, Req } from '@nestjs/common';
 import { ApiCookieAuth, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResponseDto } from '../../../common/api/api.dto';
+import { PrismaService } from '../../../common/database/prisma.service';
 import { AuthenticatedRequest } from '../../sessions/session.guard';
 import { CIRCLE_ID } from '../core/circle-lock.helper';
 import { CircleRemovalsResponseDto } from './circle-removals.dto';
-import { CircleRemovalsService } from './circle-removals.service';
+import { clearCircleRemovals, removeCircleMember } from './circle-removals.service';
 
 function validateId(field: string, value: string): void {
   if (!CIRCLE_ID.test(value)) throw new BadRequestException({ code: 'VALIDATION_ERROR', details: { fieldErrors: [{ field, reason: 'invalid_value' }] } });
@@ -14,7 +15,7 @@ function validateId(field: string, value: string): void {
 @ApiCookieAuth('cwf_session')
 @Controller('circles')
 export class CircleRemovalsController {
-  constructor(@Inject(CircleRemovalsService) private readonly removals: CircleRemovalsService) {}
+  constructor(@Inject(PrismaService) private readonly db: PrismaService) {}
 
   @Post(':circleId/members/:memberId/remove')
   @HttpCode(200)
@@ -24,12 +25,12 @@ export class CircleRemovalsController {
   @ApiOkResponse({ type: CircleRemovalsResponseDto })
   @ApiResponse({ status: 400, type: ApiErrorResponseDto, description: 'VALIDATION_ERROR: circleId and memberId must be UUIDs.' })
   @ApiResponse({ status: 401, type: ApiErrorResponseDto, description: 'UNAUTHORIZED: sign in before removing a member.' })
-  @ApiResponse({ status: 403, type: ApiErrorResponseDto, description: 'FORBIDDEN: only the admin can remove another member; the admin must leave instead.' })
+  @ApiResponse({ status: 403, type: ApiErrorResponseDto, description: 'FORBIDDEN or ADMIN_CANNOT_REMOVE_SELF: only the admin can remove another member; the admin must leave instead of removing themselves.' })
   @ApiResponse({ status: 404, type: ApiErrorResponseDto, description: 'NOT_FOUND: the circle or member is unavailable.' })
   async remove(@Param('circleId') circleId: string, @Param('memberId') memberId: string, @Req() request: AuthenticatedRequest): Promise<null> {
     validateId('circleId', circleId);
     validateId('memberId', memberId);
-    await this.removals.remove(circleId, request.caller.memberId!, memberId);
+    await removeCircleMember(this.db, circleId, request.caller.memberId!, memberId);
     return null;
   }
 
@@ -44,7 +45,7 @@ export class CircleRemovalsController {
   @ApiResponse({ status: 404, type: ApiErrorResponseDto, description: 'NOT_FOUND: the circle is unavailable.' })
   async clear(@Param('circleId') circleId: string, @Req() request: AuthenticatedRequest): Promise<null> {
     validateId('circleId', circleId);
-    await this.removals.clear(circleId, request.caller.memberId!);
+    await clearCircleRemovals(this.db, circleId, request.caller.memberId!);
     return null;
   }
 }
