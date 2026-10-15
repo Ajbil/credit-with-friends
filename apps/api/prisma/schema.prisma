@@ -37,6 +37,7 @@ model Member {
   createdCircles      Circle[] @relation("CircleCreator")
   modifiedCircles     Circle[] @relation("CircleModifier")
   circleMemberships   CircleMembership[]
+  circleRemovalBlocks  CircleRemovalBlock[]
   usageEvents         UsageEvent[]
 }
 
@@ -55,6 +56,7 @@ model Circle {
   creator            Member? @relation("CircleCreator", fields: [createdByAccountId], references: [id], onDelete: SetNull)
   modifier           Member? @relation("CircleModifier", fields: [modifiedByAccountId], references: [id], onDelete: SetNull)
   memberships        CircleMembership[]
+  removalBlocks       CircleRemovalBlock[]
   usageEventCircles  UsageEventCircle[]
 
   @@index([adminMemberId], map: "idx_Circle_adminMemberId")
@@ -75,6 +77,20 @@ model CircleMembership {
   @@unique([circleId, memberId])
   @@index([circleId], map: "idx_CircleMembership_circleId")
   @@index([memberId], map: "idx_CircleMembership_memberId")
+}
+
+model CircleRemovalBlock {
+  id           String @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  circleId     String @db.Uuid
+  memberId     String @db.Uuid
+  createdAtUtc DateTime @default(now())
+  updatedAtUtc DateTime @updatedAt
+  circle       Circle @relation(fields: [circleId], references: [id], onDelete: Cascade)
+  member       Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([circleId, memberId])
+  @@index([circleId], map: "idx_CircleRemovalBlock_circleId")
+  @@index([memberId], map: "idx_CircleRemovalBlock_memberId")
 }
 
 model UsageEvent {

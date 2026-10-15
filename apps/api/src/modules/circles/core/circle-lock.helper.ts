@@ -1,4 +1,7 @@
 import { Prisma } from '@prisma/client';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
+
+export const CIRCLE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function lockCircleMembershipRows(tx: Prisma.TransactionClient, memberIds: readonly string[], circleId?: string): Promise<boolean> {
   if (circleId) {
@@ -10,4 +13,12 @@ export async function lockCircleMembershipRows(tx: Prisma.TransactionClient, mem
     if (!memberRows.length) return false;
   }
   return true;
+}
+
+export async function lockAdminCircle(tx: Prisma.TransactionClient, circleId: string, memberId: string) {
+  if (!CIRCLE_ID.test(circleId) || !await lockCircleMembershipRows(tx, [], circleId)) throw new NotFoundException();
+  const circle = await tx.circle.findUnique({ where: { id: circleId }, select: { id: true, name: true, inviteCode: true, adminMemberId: true } });
+  if (!circle) throw new NotFoundException();
+  if (circle.adminMemberId !== memberId) throw new ForbiddenException();
+  return circle;
 }

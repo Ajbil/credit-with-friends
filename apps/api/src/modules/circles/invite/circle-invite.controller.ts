@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, ForbiddenException, Get, HttpCode, Inject, NotFoundException, Param, Post, Req } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, Inject, Param, Post, Req } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { randomBytes, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import { PinoLogger } from 'nestjs-pino';
 import { ApiBody, ApiCookieAuth, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResponseDto } from '../../../common/api/api.dto';
@@ -8,6 +8,8 @@ import { ApiConfig } from '../../../common/config/config.module';
 import { PrismaService } from '../../../common/database/prisma.service';
 import { ServiceBus } from '../../../service-bus/service-bus.service';
 import { AuthenticatedRequest } from '../../sessions/session.guard';
+import { createInviteCode } from '../core/circle-create.rules';
+import { lockAdminCircle } from '../core/circle-lock.helper';
 import { CircleInviteResponseDto, RecordInviteDto, RecordedInviteResponseDto } from './circle-invite.dto';
 
 @ApiTags('Circle invites')
@@ -22,11 +24,7 @@ export class CircleInviteController {
   ) {}
 
   private async adminCircle(circleId: string, memberId: string) {
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(circleId)) throw new NotFoundException();
-    const circle = await this.db.circle.findUnique({ where: { id: circleId }, select: { id: true, name: true, inviteCode: true, adminMemberId: true, deletedAtUtc: true } });
-    if (!circle || circle.deletedAtUtc) throw new NotFoundException();
-    if (circle.adminMemberId !== memberId) throw new ForbiddenException();
-    return circle;
+    return this.db.$transaction((tx) => lockAdminCircle(tx, circleId, memberId));
   }
 
   private url(code: string): string {
@@ -55,10 +53,12 @@ export class CircleInviteController {
   @ApiResponse({ status: 404, type: ApiErrorResponseDto, description: 'NOT_FOUND: the circle does not exist.' })
   async reset(@Param('circleId') circleId: string, @Req() request: AuthenticatedRequest) {
     const memberId = request.caller.memberId!;
-    await this.adminCircle(circleId, memberId);
-    const inviteCode = randomBytes(16).toString('base64url');
-    const changed = await this.db.circle.updateMany({ where: { id: circleId, adminMemberId: memberId, deletedAtUtc: null }, data: { inviteCode, modifiedByAccountId: memberId } });
-    if (!changed.count) throw new ForbiddenException();
+    const inviteCode = await this.db.$transaction(async (tx) => {
+      await lockAdminCircle(tx, circleId, memberId);
+      const inviteCode = createInviteCode();
+      await tx.circle.update({ where: { id: circleId }, data: { inviteCode, modifiedByAccountId: memberId } });
+      return inviteCode;
+    });
     return { url: this.url(inviteCode) };
   }
 
