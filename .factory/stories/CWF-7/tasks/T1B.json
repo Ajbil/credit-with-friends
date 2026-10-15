@@ -1,10 +1,66 @@
 {
   "branch": "task/CWF-7-T1B",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "187818a2989a2890f0376ecdb08bc19ee282b906e33d6e6cf219e71e0a6a7b25",
+    "commit": "cbc14abab6d8ffe442dd95176a8f0570c968327d",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "Removing oneself throws a bare ForbiddenException. The changed exception filter turns that into the generic message \u201cThis request is not allowed,\u201d so the admin is never told that they must leave the circle instead. The integration test checks only the 403 status. Return a specific reason and assert it through the API.",
+        "file": "apps/api/src/modules/circles/removals/circle-removals.service.ts",
+        "line": 16,
+        "priority": "P1",
+        "title": "Not done: self-removal refusal gives a reason"
+      },
+      {
+        "body": "The added leave race uses the member being removed as the person leaving. It never races removal against the admin leaving, the case the story explicitly calls out for admin succession. Add a real API/database race test that checks the resulting membership and exactly one admin when members remain.",
+        "file": "apps/api/test/circles-removals.integration.spec.ts",
+        "line": 222,
+        "priority": "P1",
+        "title": "Not done: admin-leave versus removal race test"
+      },
+      {
+        "body": "The branch registers a new CircleRemovalsService solely to hold the two removal transactions, although its declared new-moving-parts allowance is none. The adjacent Join controller already calls transaction functions with PrismaService. Use that pattern for remove and clear and drop the extra provider.",
+        "file": "apps/api/src/modules/circles/circles.module.ts",
+        "line": 12,
+        "priority": "P1",
+        "title": "Simpler: cut the new injectable removal service \u2192 use transaction functions with PrismaService"
+      },
+      {
+        "body": "The branch adds the blocked preview status but no web changes or T4B browser tests. T4B still needs to verify cancel and confirm, the self-row control, blocked copy before and at Join, clearing, and explicit rejoining. Those checks are assigned to T4B rather than this API task.",
+        "file": "apps/api/src/modules/circles/join/join-circle.dto.ts",
+        "line": 4,
+        "priority": "P2",
+        "title": "Later: T4B removal and blocked-invite browser flows"
+      },
+      {
+        "body": "The changed module registers removals but no rename, hand-over, or delete controller. Their non-admin and non-member refusals and the deletion visibility tests in item 6 remain for T1C, which the story assigns that work to.",
+        "file": "apps/api/src/modules/circles/circles.module.ts",
+        "line": 14,
+        "priority": "P2",
+        "title": "Later: T1C admin operations and deletion visibility"
+      },
+      {
+        "body": "This committed \u201cworking\u201d task-state record is outside every allowed path and is unrelated to the removal API, its contract, or its tests. Remove it from the branch unless the workflow requires it.",
+        "file": ".factory/stories/CWF-7/tasks/T1B.json",
+        "line": 3,
+        "priority": "P2",
+        "title": "Remove the unrelated task-state file from this scoped change"
+      }
+    ],
+    "status": "blocked",
+    "tree": "82b219bc734b957165239858898cdf467ade169980b0e498f43151f1ea16a5e5"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-15T11:29:01+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-15T12:26:39+00:00",
+      "step": "review"
     }
   ]
 }
