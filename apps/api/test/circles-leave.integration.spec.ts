@@ -19,19 +19,21 @@ let app: Awaited<ReturnType<typeof start>>;
 let db: PrismaService;
 let url: string;
 
-async function start() {
+async function start(database?: PrismaService) {
   const [{ AppModule }, { configureApi }] = await Promise.all([import('../src/app.module'), import('../src/common/api/api.config')]);
-  const module = await Test.createTestingModule({ imports: [AppModule] }).compile();
+  const builder = Test.createTestingModule({ imports: [AppModule] });
+  if (database) builder.overrideProvider(PrismaService).useValue(database);
+  const module = await builder.compile();
   const application = module.createNestApplication();
   configureApi(application, application.get(ConfigService<ApiConfig, true>));
   await application.listen(0, '127.0.0.1');
   return application;
 }
 
-async function call(path: string, method = 'GET', cookie = '', body?: unknown) {
+async function call(path: string, method = 'GET', cookie = '', body?: unknown, apiUrl = url) {
   const headers: Record<string, string> = { cookie };
   if (method !== 'GET') Object.assign(headers, { origin, 'x-requested-with': 'cwf', 'content-type': 'application/json' });
-  const response = await fetch(`${url}/api/v1${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+  const response = await fetch(`${apiUrl}/api/v1${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
   return { response, payload: await response.json() };
 }
 
@@ -60,13 +62,18 @@ describe('circle leave API', () => {
   beforeAll(async () => {
     for (const [name, value] of Object.entries({ API_ORIGIN: 'http://localhost:3000', WEB_ORIGIN: origin, DATABASE_URL: databaseUrl.toString(), OWNER_CONTACT_EMAIL: 'owner@example.in', SESSION_SECRET: 'integration-test-secret-with-enough-entropy', PRELAUNCH_ALLOWED_EMAILS: 'listed@example.in', LAUNCH_OPEN: 'false', TEST_AUTH_ENABLED: 'true', NODE_ENV: 'test' })) vi.stubEnv(name, value);
     execFileSync(process.execPath, [fileURLToPath(new URL('../node_modules/prisma/build/index.js', import.meta.url)), 'migrate', 'deploy'], { cwd: fileURLToPath(new URL('../', import.meta.url)), env: { ...process.env, DATABASE_URL: databaseUrl.toString() } });
-    app = await start();
+    const leaveDatabaseUrl = new URL(databaseUrl);
+    leaveDatabaseUrl.searchParams.set('application_name', `${schemaName}_leave`);
+    app = await start(new PrismaService({ datasources: { db: { url: leaveDatabaseUrl.toString() } } }));
     db = app.get(PrismaService);
     url = `http://127.0.0.1:${(app.getHttpServer().address() as AddressInfo).port}`;
   }, 60_000);
 
   afterAll(async () => {
-    if (app) await app.close();
+    if (app) {
+      await app.close();
+      await db.$disconnect();
+    }
     const admin = new PrismaClient({ datasources: { db: { url: baseDatabaseUrl } } });
     await admin.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`);
     await admin.$disconnect();
@@ -150,6 +157,11 @@ describe('circle leave API', () => {
     const joining = await member('race-leave-joining');
     const target = await circle(owner.cookie, 'Leave join race');
     const lockDb = new PrismaClient({ datasources: { db: { url: databaseUrl.toString() } } });
+    const joinDatabaseUrl = new URL(databaseUrl);
+    joinDatabaseUrl.searchParams.set('application_name', `${schemaName}_join`);
+    const joinDb = new PrismaService({ datasources: { db: { url: joinDatabaseUrl.toString() } } });
+    const joinApp = await start(joinDb);
+    const joinUrl = `http://127.0.0.1:${(joinApp.getHttpServer().address() as AddressInfo).port}`;
     let release!: () => void;
     let ready!: (pid: number) => void;
     const released = new Promise<void>((resolve) => { release = resolve; });
@@ -163,28 +175,42 @@ describe('circle leave API', () => {
     let leaveRequest: ReturnType<typeof call> | undefined;
     let joinRequest: ReturnType<typeof call> | undefined;
     try {
-      const blockerPid = await locked;
-      leaveRequest = call(`/circles/${target.id}/leave`, 'POST', owner.cookie);
-      joinRequest = call(`/circle-invites/${target.code}/join`, 'POST', joining.cookie);
-      await vi.waitFor(async () => {
-        const [{ waiting }] = await db.$queryRaw<Array<{ waiting: number }>>`SELECT COUNT(*)::int AS waiting FROM pg_stat_activity WHERE ${blockerPid} = ANY(pg_blocking_pids(pid)) AND wait_event_type = 'Lock'`;
-        expect(waiting).toBeGreaterThan(0);
-      }, { timeout: 10_000 });
+      try {
+        const blockerPid = await locked;
+        leaveRequest = call(`/circles/${target.id}/leave`, 'POST', owner.cookie);
+        joinRequest = call(`/circle-invites/${target.code}/join`, 'POST', joining.cookie, undefined, joinUrl);
+        await vi.waitFor(async () => {
+          const waiting = await db.$queryRaw<Array<{ pid: number; application_name: string; blockers: number[] }>>`
+            SELECT pid, application_name, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
+            WHERE application_name IN (${`${schemaName}_leave`}, ${`${schemaName}_join`}) AND wait_event_type = 'Lock'`;
+          expect(waiting.map(({ application_name }) => application_name)).toEqual(expect.arrayContaining([`${schemaName}_leave`, `${schemaName}_join`]));
+          expect(new Set(waiting.map(({ pid }) => pid)).size).toBe(2);
+          const leaveWait = waiting.find(({ application_name }) => application_name === `${schemaName}_leave`)!;
+          const joinWait = waiting.find(({ application_name }) => application_name === `${schemaName}_join`)!;
+          expect([blockerPid, joinWait.pid].some((pid) => leaveWait.blockers.includes(pid))).toBe(true);
+          expect([blockerPid, leaveWait.pid].some((pid) => joinWait.blockers.includes(pid))).toBe(true);
+          expect(waiting.some(({ blockers }) => blockers.includes(blockerPid))).toBe(true);
+        }, { timeout: 10_000 });
+      } finally {
+        release();
+        try { await blocker; } finally { await lockDb.$disconnect(); }
+      }
+      const [left, joined] = await Promise.all([leaveRequest!, joinRequest!]);
+      expect(left.response.status).toBe(200);
+      expect([200, 404]).toContain(joined.response.status);
+      const current = await db.circle.findUniqueOrThrow({ where: { id: target.id }, include: { memberships: true } });
+      if (current.memberships.length) {
+        expect(current.memberships).toHaveLength(1);
+        expect(current.adminMemberId).toBe(current.memberships[0].memberId);
+        expect(current.deletedAtUtc).toBeNull();
+      } else {
+        expect(current.adminMemberId).toBeNull();
+        expect(current.deletedAtUtc).not.toBeNull();
+      }
     } finally {
-      release();
-      try { await blocker; } finally { await lockDb.$disconnect(); }
-    }
-    const [left, joined] = await Promise.all([leaveRequest!, joinRequest!]);
-    expect(left.response.status).toBe(200);
-    expect([200, 404]).toContain(joined.response.status);
-    const current = await db.circle.findUniqueOrThrow({ where: { id: target.id }, include: { memberships: true } });
-    if (current.memberships.length) {
-      expect(current.memberships).toHaveLength(1);
-      expect(current.adminMemberId).toBe(current.memberships[0].memberId);
-      expect(current.deletedAtUtc).toBeNull();
-    } else {
-      expect(current.adminMemberId).toBeNull();
-      expect(current.deletedAtUtc).not.toBeNull();
+      await Promise.allSettled([leaveRequest, joinRequest].filter((request): request is ReturnType<typeof call> => request !== undefined));
+      await joinApp.close();
+      await joinDb.$disconnect();
     }
   }, 30_000);
 });
