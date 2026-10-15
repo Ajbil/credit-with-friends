@@ -2,43 +2,29 @@
   "branch": "task/CWF-7-T1D",
   "review": {
     "blocking_level": "P1",
-    "changed": "67c109752c62b3f4b169b9f3602750dabd75f7ab933f76f80080ab55e4d8e55e",
-    "commit": "764fda5a652636211377d2b38c082707cf2d75a3",
+    "changed": "f8be417d874ec8a875684fcab3e3004e59f250342616b565b3690da96e6f26e4",
+    "commit": "e8d082762d75364ddda1ee69503629b88ec54906",
     "dismissals": [],
     "findings": [
       {
-        "body": "The wait checks only that some connection is blocked by the test transaction. The leave request alone can satisfy it even if join never takes the circle lock. The test can then pass without exercising the required join-against-leave lock race. Identify the competing connections and verify the join and leave waits before releasing the lock.",
-        "file": "apps/api/test/circles-leave.integration.spec.ts",
-        "line": 157,
-        "priority": "P1",
-        "title": "Not done: leave-against-join lock race test"
-      },
-      {
-        "body": "This branch adds the leave controller and integration spec, but no spec under apps/api/src/modules/circles/leave/**/*.spec.ts, which the task explicitly requires. Add a meaningful test in that path that runs in the repository suite.",
-        "file": "apps/api/src/modules/circles/leave/leave-circle.controller.ts",
-        "line": 24,
-        "priority": "P1",
-        "title": "Not done: the required leave source spec"
-      },
-      {
-        "body": "The API endpoint is added, but this branch changes no web circle screen. T4A still needs to show Leave circle to every member, display the circle name and applicable succession or deletion warning before sending the request, support cancellation, and return a departing member to the circles list. This UI work is assigned to T4A, so it is later work for this scoped API branch.",
+        "body": "The endpoint is added, but this branch does not change the web circle screen. T4A still needs to show Leave circle to every member, name the circle and show the applicable succession or deletion warning before sending a request, support cancellation, and return the departing member to the circles list. That UI work is assigned to T4A.",
         "file": "apps/api/src/modules/circles/leave/leave-circle.controller.ts",
         "line": 15,
         "priority": "P2",
         "title": "Later: T4A leave confirmation and navigation"
       },
       {
-        "body": "The new .factory task-status file is outside every permitted path and is not needed to deliver or test the leave endpoint. Remove it from this change.",
+        "body": "This new task-status file is outside every permitted path and is not needed to deliver or test the leave endpoint. Remove it from the branch.",
         "file": ".factory/stories/CWF-7/tasks/T1D.json",
         "line": 2,
         "priority": "P2",
         "title": "Remove task status metadata outside the allowed scope"
       }
     ],
-    "status": "blocked",
-    "tree": "07ccafcadf0789a28fa361524a7a5dbb42a2d2a7daa1822c9612772a0af33bb6"
+    "status": "clean",
+    "tree": "ff8b9b3d4a41a85c9f02043d22d27d08fd4ee753e0bfefc3a10cbe5e7aa8b888"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-15T08:33:58+00:00",
@@ -46,6 +32,10 @@
     },
     {
       "at": "2026-10-15T09:11:32+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-15T09:25:35+00:00",
       "step": "review"
     }
   ]
