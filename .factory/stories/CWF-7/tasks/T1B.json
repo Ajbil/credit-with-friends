@@ -2,26 +2,26 @@
   "branch": "task/CWF-7-T1B",
   "review": {
     "blocking_level": "P1",
-    "changed": "754cdbaaadc8d2474d73b9eed0c2d3251f7893b2ab27da818b34ff053aadc683",
-    "commit": "75b00269dcb6dbf478f31fadb74c79b2bbbafcc3",
+    "changed": "a0a86f15ec8c368492234bc9422ffe4cf3f76ecdf09176f54e9320cdd5ef7306",
+    "commit": "49e96a5febf49d6c348f17587453402894900ba3",
     "dismissals": [],
     "findings": [
       {
-        "body": "The API adds the blocked preview status, but this branch has no web changes or browser tests. T4B still needs to verify removal confirmation and cancellation, the missing Remove control on the admin's own row, the blocked message, clearing, and explicit rejoining. Those checks are assigned to T4B.",
+        "body": "This branch adds the blocked API preview status but no web changes or browser tests. T4B still needs to verify removal confirmation and cancellation, the absence of a Remove control on the admin's own row, the blocked message before and at Join, clearing removals, and rejoining only after an explicit Join tap. These checks are assigned to T4B.",
         "file": "apps/api/src/modules/circles/join/join-circle.dto.ts",
         "line": 4,
         "priority": "P2",
         "title": "Later: T4B removal and blocked-invite browser flows"
       },
       {
-        "body": "The changed module registers the removal controller but no rename, hand-over, or delete controller. Their authorization checks and deletion visibility tests remain assigned to T1C.",
+        "body": "The changed module registers removal endpoints, while rename, hand-over, and delete endpoints are not part of this branch. Their admin-only refusals, malformed rename check, and deletion visibility tests remain assigned to T1C.",
         "file": "apps/api/src/modules/circles/circles.module.ts",
         "line": 12,
         "priority": "P2",
         "title": "Later: T1C admin operations and deletion visibility"
       },
       {
-        "body": "This new task-state record contains review bookkeeping and is outside every allowed path. It is not needed for the removal API, contract, or tests.",
+        "body": "This new review-bookkeeping record is outside every allowed path and is not needed for the removal API, contract, or tests.",
         "file": ".factory/stories/CWF-7/tasks/T1B.json",
         "line": 3,
         "priority": "P2",
@@ -29,7 +29,7 @@
       }
     ],
     "status": "clean",
-    "tree": "db634a566684a92a9b17065cbbc8132eed1a0247c2ac47171b4d349a2023e0a3"
+    "tree": "77971b90bdf3a0391ceff227faa6d5ce36902da16c0e11fe94995d10d56c7a49"
   },
   "status": "waiting for checks",
   "steps": [
@@ -43,6 +43,10 @@
     },
     {
       "at": "2026-10-15T12:42:56+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-16T07:25:10+00:00",
       "step": "review"
     }
   ]
