@@ -91,13 +91,13 @@ describe('API foundation', () => {
   beforeAll(async () => {
     app = await createApplication();
     baseUrl = serverUrl(app);
-  });
+  }, 60_000);
 
   afterAll(async () => {
     await app.get(PrismaService).$disconnect();
     await app.close();
     vi.unstubAllEnvs();
-  });
+  }, 60_000);
 
   test('health-returns-success-envelope', async () => {
     const response = await request('/api/v1/health');

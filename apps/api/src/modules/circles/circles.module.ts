@@ -8,6 +8,7 @@ import { CircleInviteController } from './invite/circle-invite.controller';
 import { JoinCircleController } from './join/join-circle.controller';
 import { LeaveCircleController } from './leave/leave-circle.controller';
 import { CircleRemovalsController } from './removals/circle-removals.controller';
+import { CircleManageController } from './manage/circle-manage.controller';
 
-@Module({ imports: [ServiceBusModule], controllers: [CreateCircleController, ListCirclesController, ViewCircleController, CircleInviteController, JoinCircleController, LeaveCircleController, CircleRemovalsController], providers: [CirclesCoreService] })
+@Module({ imports: [ServiceBusModule], controllers: [CreateCircleController, ListCirclesController, ViewCircleController, CircleInviteController, JoinCircleController, LeaveCircleController, CircleRemovalsController, CircleManageController], providers: [CirclesCoreService] })
 export class CirclesModule {}
