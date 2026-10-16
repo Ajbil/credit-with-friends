@@ -1,10 +1,45 @@
 {
   "branch": "task/CWF-7-T4B",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "15dbb06d6050426443f0fcd16ecc1c00c713b3f71fe1f489738d4311628848bb",
+    "commit": "45215e81286d9c6120eff763deab2b5360edc27e",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The supplied Functional check says the real browser walkthrough of removal, blocked Join, clearing, and non-admin visibility remains unverified because API startup timed out. This Playwright test records those flows, but writing it does not establish what the client saw. Run the flow against the API and database and record the observed result.",
+        "file": "apps/web/e2e/circle-removals.spec.ts",
+        "line": 37,
+        "priority": "P1",
+        "title": "Not done: functional check"
+      },
+      {
+        "body": "The supplied handoff explicitly leaves mobile and desktop visual checks unverified. The changed removal controls and blocked invite screen therefore lack the required visual audit and polish pass before demo. The Playwright screenshots capture the screens but do not check their visual quality or complete the specified batched interaction review.",
+        "file": "apps/web/src/routes/circles/circle/circle-member-removal.tsx",
+        "line": 42,
+        "priority": "P1",
+        "title": "Not done: impeccable visual pass"
+      },
+      {
+        "body": "This new branch-status and timestamp record is outside the permitted paths and does not implement removal or blocked-invite behavior. Remove it from this change.",
+        "file": ".factory/stories/CWF-7/tasks/T4B.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Simpler: drop task-status record \u2192 keep the scoped web change"
+      }
+    ],
+    "status": "blocked",
+    "tree": "6208d38299014e9fdcb949727703c118519ee11eb1d3f013496084d26c81e773"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-16T13:49:13+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-16T14:16:56+00:00",
+      "step": "review"
     }
   ]
 }
