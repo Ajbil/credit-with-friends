@@ -1,4 +1,5 @@
 {
+  "allow_large": "The owner allowed this fix to change the test-only sign-in route, which exists only when test sign-in is enabled and never in production",
   "base": "edb822cae286e0828f5d66e4b85775ffe5caff77",
   "branch": "fix/the-test-only-sign-in-is-rate-limited-to",
   "done_when": "Browser tests can sign in as many test people as they need, while the test sign-in still does not exist in production",
