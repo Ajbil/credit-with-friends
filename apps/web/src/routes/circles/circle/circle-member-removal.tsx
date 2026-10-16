@@ -22,12 +22,12 @@ export function CircleMemberRemoval({ circleId, member }: { circleId: string; me
     return null;
   }
 
-  return <div>
+  return <div style={{ maxWidth: '60%', textAlign: 'right' }}>
     <Button variant="quiet" aria-label={`Remove ${member.displayName}`} aria-busy={remove.isPending} disabled={remove.isPending || remove.isSuccess} onClick={() => {
       if (remove.isPending || remove.isSuccess) return;
       if (window.confirm(`Remove “${member.displayName}” from this circle? They’ll lose access immediately and can’t rejoin until you use Clear all removals. They’ll then need a valid invite link and must tap Join.`)) remove.mutate();
     }}>{remove.isPending || remove.isSuccess ? 'Removing…' : 'Remove'}</Button>
-    {remove.isError && <div className="field-error" role="alert">{remove.error instanceof ApiError ? remove.error.message : 'We couldn’t remove this member. Check your connection and try again.'}</div>}
+    {remove.isError && <div className="field-error" role="alert" style={{ fontWeight: 400, textAlign: 'left' }}>{remove.error instanceof ApiError ? remove.error.message : 'We couldn’t remove this member. Check your connection and try again.'}</div>}
   </div>;
 }
 
@@ -46,7 +46,7 @@ export function CircleClearRemovals({ circleId }: { circleId: string }) {
       if (clear.isPending) return;
       if (window.confirm('Clear all removals? This lets every removed person rejoin through a valid invite link by tapping Join. This can’t be undone. Nobody is added back automatically.')) clear.mutate();
     }}>{clear.isPending ? 'Clearing…' : 'Clear all removals'}</Button>
-    {clear.isSuccess && <p role="status">All removals cleared. People can rejoin through a valid invite link by tapping Join.</p>}
+    {clear.isSuccess && <p role="status" style={{ marginTop: 16 }}>All removals cleared. People can rejoin through a valid invite link by tapping Join.</p>}
     {clear.isError && <div className="field-error" role="alert">{clear.error instanceof ApiError ? clear.error.message : 'We couldn’t clear removals. Check your connection and try again.'}</div>}
   </section>;
 }
