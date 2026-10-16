@@ -2,24 +2,10 @@
   "branch": "task/CWF-7-T4C",
   "review": {
     "blocking_level": "P1",
-    "changed": "7fc4324d86bf9365188044880a5b18aaeff1a186a59a969a27ea01e3d0aa49b5",
-    "commit": "f8075861d692f36c6eb6ab883e9b0cc26f7339c7",
+    "changed": "f819dcf45321126e95092f3ad673608b3898943ce531bab0be2f8e05787dfae8",
+    "commit": "0bf19bfc22e539545f4ef83ae4991af3f4112c7c",
     "dismissals": [],
     "findings": [
-      {
-        "body": "The handoff says browser startup timed out before the new Playwright flows ran. The completed component checks use a stubbed transport, so they do not exercise successful rename, handover, or deletion through the running API and browser. Run those flows and record what happened to complete the required functional check.",
-        "file": "apps/web/e2e/circle-admin.spec.ts",
-        "line": 26,
-        "priority": "P1",
-        "title": "Not done: functional check"
-      },
-      {
-        "body": "The handoff explicitly leaves the mobile and desktop visual walkthrough unfinished; the browser startup timeout also prevented the new screenshot checks from running. The required impeccable audit and polish pass, including Emil's interaction checklist for these new controls, remains outstanding.",
-        "file": "apps/web/src/routes/circles/circle/circle-admin-settings.tsx",
-        "line": 71,
-        "priority": "P1",
-        "title": "Not done: impeccable and emil-design-eng review"
-      },
       {
         "body": "This new working-status file is outside the three permitted paths and is not needed to deliver or test the web controls. Remove it from this change.",
         "file": ".factory/stories/CWF-7/tasks/T4C.json",
@@ -28,10 +14,10 @@
         "title": "Remove the task-status file outside the allowed scope"
       }
     ],
-    "status": "blocked",
-    "tree": "76c80f320128a8e83d3cc7d62ddb3d03abe65a38d63812777d80012097c9408b"
+    "status": "clean",
+    "tree": "333b0bdcffdc1a25459f26c43194f9ad83eaf7a210b991073d9f2e3b8e27ea5b"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-16T13:50:07+00:00",
@@ -39,6 +25,10 @@
     },
     {
       "at": "2026-10-16T14:34:24+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-16T21:45:06+00:00",
       "step": "review"
     }
   ]
