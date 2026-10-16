@@ -1,0 +1,23 @@
+{
+  "branch": "task/CWF-7-T4A",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "e84b4de0568001422943e4023ca3b4214838ca77c9ae32d89e6a4d0a8a686d97",
+    "commit": "d2a7fd3e5a99e049ed52e25afd20ac06a981625d",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "5f758712acee6351c00b52742f98cb57b5572d9de0f9d203db13245801ee3a9f"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-16T11:39:22+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-16T12:33:32+00:00",
+      "step": "review"
+    }
+  ]
+}

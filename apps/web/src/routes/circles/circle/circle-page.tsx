@@ -6,12 +6,16 @@ import { ApiError } from '../../../api/fetcher';
 import { Button } from '../../../components/ui/button';
 import { PageFrame } from '../../../components/page-frame';
 import { CircleInviteControls } from './circle-invite-controls';
+import { CircleLeave } from './circle-leave';
+import { CircleClearRemovals, CircleMemberRemoval } from './circle-member-removal';
+import { CircleAdminSettings } from './circle-admin-settings';
 import './circle.css';
 
 export function CirclePage() {
   const { circleId } = useParams({ from: '/circles/$circleId' });
   const circle = useQuery({ queryKey: ['circle', circleId], networkMode: 'always', queryFn: async () => (await viewCircleControllerView(circleId)).data.data! });
   const account = useQuery({ queryKey: ['member'], networkMode: 'always', queryFn: async () => (await accountsControllerMe()).data.data! });
+  const currentMember = account.isSuccess ? circle.data?.members.find((member) => member.id === account.data.id) : undefined;
   useEffect(() => {
     document.title = circle.isSuccess ? `${circle.data.name} | CreditWithFriends` : 'Circle | CreditWithFriends';
     return () => { document.title = 'CreditWithFriends'; };
@@ -34,10 +38,16 @@ export function CirclePage() {
         <section aria-labelledby="members-heading"><h2 id="members-heading">Members</h2>
           {circle.data.members.length === 0 ? <><p>No members to show. Try loading your circle again.</p><Button variant="quiet" onClick={() => circle.refetch()}>Try again</Button></> : <ul className="circle-members" aria-label="Circle members">{circle.data.members.map((member) => <li key={member.id}>
             <span>{member.displayName}</span>{member.isAdmin && <span className="circle-admin">Admin</span>}
+            {currentMember?.isAdmin && member.id !== currentMember.id && <CircleMemberRemoval circleId={circleId} member={member} />}
           </li>)}</ul>}
+          {currentMember?.isAdmin && <CircleClearRemovals circleId={circleId} />}
         </section>
-        {account.isPending ? <p role="status">Checking your invite access…</p> : account.isError ? <div role="alert"><p>We couldn’t check your invite access. Please try again.</p><Button variant="quiet" onClick={() => account.refetch()}>Try again</Button></div> : circle.data.members.some((member) => member.id === account.data.id && member.isAdmin) && <CircleInviteControls circleId={circleId} name={circle.data.name} />}
+        {account.isPending ? <p role="status">Checking your circle access…</p> : account.isError ? <div role="alert"><p>We couldn’t check your circle access. Please try again.</p><Button variant="quiet" onClick={() => account.refetch()}>Try again</Button></div> : currentMember?.isAdmin && <div className="circle-management">
+          <CircleInviteControls circleId={circleId} name={circle.data.name} />
+          <CircleAdminSettings circle={circle.data} />
+        </div>}
       </div>
+      {account.isSuccess && currentMember && <CircleLeave key={circleId} circleId={circleId} name={circle.data.name} isAdmin={currentMember.isAdmin} memberCount={circle.data.members.length} />}
     </>}
   </section></PageFrame>;
 }
