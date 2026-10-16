@@ -42,16 +42,19 @@ test('done-when-4: rename validates like creation and updates the circle screen 
     await expect(name).toHaveAttribute('aria-invalid', 'true');
     expect(writes).toBe(0);
   }
+  await page.screenshot({ path: test.info().outputPath('rename-validation-phone.png'), fullPage: true });
   await expect(page.getByRole('textbox', { name: 'Invite link', exact: true })).toBeVisible();
   await name.fill('  College friends  ');
   await page.context().setOffline(true);
-  await rename.click();
+  await rename.tap();
   await expect(settings.getByRole('alert')).toContainText('Check your connection and try again.');
   await expect(name).toHaveValue('  College friends  ');
+  await page.screenshot({ path: test.info().outputPath('rename-recovery-phone.png'), fullPage: true });
   await page.context().setOffline(false);
   await rename.click();
   await expect(page.getByRole('heading', { name: 'College friends', exact: true })).toBeVisible();
   await expect(settings.getByRole('status')).toContainText('Circle renamed.');
+  await page.screenshot({ path: test.info().outputPath('rename-success-phone.png'), fullPage: true });
   await page.getByRole('link', { name: 'Back to your circles' }).click();
   await expect(page.getByRole('link', { name: /^College friends/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /^Family/ })).toHaveCount(0);
@@ -104,11 +107,38 @@ test('done-when-4 and done-when-6: cancelling keeps the admin; confirming moves 
     expect(writes).toBe(0);
     for (const width of [390, 1280]) {
       await page.setViewportSize({ width, height: 900 });
+      await page.getByRole('textbox', { name: 'Circle name', exact: true }).focus();
+      await page.keyboard.press('Tab');
+      await expect(page.getByRole('button', { name: 'Rename circle', exact: true })).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(select).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(handover).toBeFocused();
       await page.screenshot({ path: test.info().outputPath(`settings-${width}.png`), fullPage: true });
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.keyboard.press('Tab');
+      await expect(page.getByRole('button', { name: 'Delete circle', exact: true })).toBeFocused();
+      const settings = page.getByRole('region', { name: 'Circle settings' });
+      for (const control of await settings.locator('input, select, button').all()) {
+        const bounds = await control.boundingBox();
+        expect(bounds?.width).toBeGreaterThanOrEqual(44);
+        expect(bounds?.height).toBeGreaterThanOrEqual(44);
+      }
+      await test.info().attach(`settings-${width}-styles`, {
+        contentType: 'application/json',
+        body: JSON.stringify(await settings.evaluate((region) => ({
+          surface: getComputedStyle(region).backgroundColor,
+          text: getComputedStyle(region).color,
+          controls: Array.from(region.querySelectorAll('input, select, button')).map((element) => {
+            const style = getComputedStyle(element);
+            return { label: element.getAttribute('id') || element.textContent, color: style.color, background: style.backgroundColor, fontSize: style.fontSize, transition: style.transition, transform: style.transform };
+          }),
+        }))),
+      });
     }
+    await page.setViewportSize({ width: 390, height: 844 });
     page.once('dialog', (dialog) => dialog.accept());
-    await handover.click();
+    await handover.tap();
     await expect(page.getByRole('listitem').filter({ hasText: 'Dev Member' }).getByText('Admin', { exact: true })).toBeVisible();
     expect(writes).toBe(1);
     for (const control of adminControls(page)) await expect(control).toHaveCount(0);
@@ -143,7 +173,7 @@ test('done-when-5: deletion warns it is permanent, cancellation keeps the circle
   await expect(page.getByRole('heading', { name: 'Throwaway circle', exact: true })).toBeVisible();
   expect(writes).toBe(0);
   page.once('dialog', (dialog) => dialog.accept());
-  await remove.click();
+  await remove.tap();
   await expect(page.getByRole('heading', { name: 'Your circles', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: /^Throwaway circle/ })).toHaveCount(0);
   await expect(page.getByRole('link', { name: /^Family/ })).toBeVisible();
