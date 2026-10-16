@@ -10,7 +10,7 @@ type ValidationResponse = { code?: string; details?: { fieldErrors?: Array<{ fie
 
 const INVITE_ERRORS: Record<string, { status: number; message: string }> = {
   INVITE_LINK_INVALID: { status: 404, message: 'This invite link is no longer valid. Ask the person who shared it for a new one.' },
-  CIRCLE_REMOVED: { status: 403, message: "You can't join this circle." },
+  JOIN_BLOCKED: { status: 403, message: "You can't join this circle." },
   ADMIN_CANNOT_REMOVE_SELF: { status: 403, message: "You're the admin. To step away, leave the circle instead." },
   ACCOUNT_INCOMPLETE: { status: 403, message: 'Finish onboarding before joining this circle.' },
   CIRCLE_FULL: { status: 409, message: 'This circle is full. Ask the admin for another circle.' },

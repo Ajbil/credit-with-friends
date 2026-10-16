@@ -29,7 +29,7 @@ export class JoinCircleController {
   @ApiParam({ name: 'code', type: String, example: 'ZJUnCsFn69xUJxhBPxJg6A' })
   @ApiOkResponse({ type: JoinCircleResponseDto })
   @ApiResponse({ status: 401, type: ApiErrorResponseDto, description: 'UNAUTHORIZED: sign in before joining.' })
-  @ApiResponse({ status: 403, type: ApiErrorResponseDto, description: 'ACCOUNT_INCOMPLETE or CIRCLE_REMOVED: finish onboarding or the person is blocked from joining.' })
+  @ApiResponse({ status: 403, type: ApiErrorResponseDto, description: 'ACCOUNT_INCOMPLETE or JOIN_BLOCKED: finish onboarding or the person is blocked from joining.' })
   @ApiResponse({ status: 404, type: ApiErrorResponseDto, description: 'INVITE_LINK_INVALID: the link is unknown, malformed, reset or deleted.' })
   @ApiResponse({ status: 409, type: ApiErrorResponseDto, description: 'CIRCLE_FULL or TOO_MANY_CIRCLES: joining would exceed the 100-member or 20-circle limit.' })
   join(@Param('code') code: string, @Req() request: AuthenticatedRequest) { return joinCircle(this.db, this.bus, this.logger, code, request.caller.memberId); }

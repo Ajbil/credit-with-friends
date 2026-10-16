@@ -92,7 +92,7 @@ describe('circle join refusals', () => {
   test('a removal block found under the join lock refuses membership', async () => {
     const { db, bus, logger, findBlock, create } = setup();
     findBlock.mockResolvedValueOnce({ id: 'block' });
-    await expect(joinCircle(db, bus, logger, code, memberId)).rejects.toMatchObject({ status: 403, response: { code: 'CIRCLE_REMOVED' } });
+    await expect(joinCircle(db, bus, logger, code, memberId)).rejects.toMatchObject({ status: 403, response: { code: 'JOIN_BLOCKED' } });
     expect(create).not.toHaveBeenCalled();
   });
 

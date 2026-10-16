@@ -44,7 +44,7 @@ export async function joinCircle(db: PrismaService, bus: ServiceBus, logger: Pin
     const existing = await tx.circleMembership.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
     if (existing) return false;
     const block = await tx.circleRemovalBlock.findUnique({ where: { circleId_memberId: { circleId: circle.id, memberId } }, select: { id: true } });
-    if (block) throw new ForbiddenException({ code: 'CIRCLE_REMOVED' });
+    if (block) throw new ForbiddenException({ code: 'JOIN_BLOCKED' });
     if (await tx.circleMembership.count({ where: { circleId: circle.id } }) >= MAX_MEMBERS) {
       throw new ConflictException({ code: 'CIRCLE_FULL' });
     }
