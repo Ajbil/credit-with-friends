@@ -356,6 +356,7 @@ export const InvitePreviewDataDtoStatus = {
   account_required: 'account_required',
   preview: 'preview',
   already_member: 'already_member',
+  blocked: 'blocked',
 } as const;
 
 export interface InvitePreviewDataDto {
@@ -404,6 +405,122 @@ export interface JoinCircleResponseDto {
   data: JoinCircleDataDto;
   /** @nullable */
   error: JoinCircleResponseDtoError;
+}
+
+/**
+ * @nullable
+ */
+export type LeaveCircleResponseDtoData =
+  | (typeof LeaveCircleResponseDtoData)[keyof typeof LeaveCircleResponseDtoData]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LeaveCircleResponseDtoData = {} as const;
+
+/**
+ * @nullable
+ */
+export type LeaveCircleResponseDtoError =
+  | (typeof LeaveCircleResponseDtoError)[keyof typeof LeaveCircleResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LeaveCircleResponseDtoError = {} as const;
+
+export interface LeaveCircleResponseDto {
+  success: boolean;
+  /** @nullable */
+  data: LeaveCircleResponseDtoData;
+  /** @nullable */
+  error: LeaveCircleResponseDtoError;
+}
+
+/**
+ * @nullable
+ */
+export type CircleRemovalsResponseDtoData =
+  | (typeof CircleRemovalsResponseDtoData)[keyof typeof CircleRemovalsResponseDtoData]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CircleRemovalsResponseDtoData = {} as const;
+
+/**
+ * @nullable
+ */
+export type CircleRemovalsResponseDtoError =
+  | (typeof CircleRemovalsResponseDtoError)[keyof typeof CircleRemovalsResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CircleRemovalsResponseDtoError = {} as const;
+
+export interface CircleRemovalsResponseDto {
+  success: boolean;
+  /** @nullable */
+  data: CircleRemovalsResponseDtoData;
+  /** @nullable */
+  error: CircleRemovalsResponseDtoError;
+}
+
+export interface RenameCircleDto {
+  /** A circle name, 1 to 40 characters after trimming. */
+  name: string;
+}
+
+export interface RenameCircleDataDto {
+  id: string;
+  name: string;
+}
+
+/**
+ * @nullable
+ */
+export type RenameCircleResponseDtoError =
+  | (typeof RenameCircleResponseDtoError)[keyof typeof RenameCircleResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RenameCircleResponseDtoError = {} as const;
+
+export interface RenameCircleResponseDto {
+  success: boolean;
+  data: RenameCircleDataDto;
+  /** @nullable */
+  error: RenameCircleResponseDtoError;
+}
+
+export interface HandOverCircleDto {
+  /** The ID of a current circle member who will become admin. */
+  memberId: string;
+}
+
+/**
+ * @nullable
+ */
+export type ManageCircleResponseDtoData =
+  | (typeof ManageCircleResponseDtoData)[keyof typeof ManageCircleResponseDtoData]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ManageCircleResponseDtoData = {} as const;
+
+/**
+ * @nullable
+ */
+export type ManageCircleResponseDtoError =
+  | (typeof ManageCircleResponseDtoError)[keyof typeof ManageCircleResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ManageCircleResponseDtoError = {} as const;
+
+export interface ManageCircleResponseDto {
+  success: boolean;
+  /** @nullable */
+  data: ManageCircleResponseDtoData;
+  /** @nullable */
+  error: ManageCircleResponseDtoError;
 }
 
 export interface HealthDataDto {
@@ -1062,6 +1179,134 @@ export const viewCircleControllerView = async (
 };
 
 /**
+ * @summary Rename a circle as admin
+ */
+export type circleManageControllerRenameResponse200 = {
+  data: RenameCircleResponseDto;
+  status: 200;
+};
+
+export type circleManageControllerRenameResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type circleManageControllerRenameResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type circleManageControllerRenameResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type circleManageControllerRenameResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type circleManageControllerRenameResponseSuccess =
+  circleManageControllerRenameResponse200 & {
+    headers: Headers;
+  };
+export type circleManageControllerRenameResponseError = (
+  | circleManageControllerRenameResponse400
+  | circleManageControllerRenameResponse401
+  | circleManageControllerRenameResponse403
+  | circleManageControllerRenameResponse404
+) & {
+  headers: Headers;
+};
+
+export type circleManageControllerRenameResponse =
+  | circleManageControllerRenameResponseSuccess
+  | circleManageControllerRenameResponseError;
+
+export const getCircleManageControllerRenameUrl = (circleId: string) => {
+  return `/api/v1/circles/${circleId}`;
+};
+
+export const circleManageControllerRename = async (
+  circleId: string,
+  renameCircleDto: RenameCircleDto,
+  options?: RequestInit,
+): Promise<circleManageControllerRenameResponse> => {
+  return apiFetch<circleManageControllerRenameResponse>(
+    getCircleManageControllerRenameUrl(circleId),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(renameCircleDto),
+    },
+  );
+};
+
+/**
+ * Ends every membership and invite link while keeping past usage events.
+ * @summary Permanently delete a circle as admin
+ */
+export type circleManageControllerDeleteResponse200 = {
+  data: ManageCircleResponseDto;
+  status: 200;
+};
+
+export type circleManageControllerDeleteResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type circleManageControllerDeleteResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type circleManageControllerDeleteResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type circleManageControllerDeleteResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type circleManageControllerDeleteResponseSuccess =
+  circleManageControllerDeleteResponse200 & {
+    headers: Headers;
+  };
+export type circleManageControllerDeleteResponseError = (
+  | circleManageControllerDeleteResponse400
+  | circleManageControllerDeleteResponse401
+  | circleManageControllerDeleteResponse403
+  | circleManageControllerDeleteResponse404
+) & {
+  headers: Headers;
+};
+
+export type circleManageControllerDeleteResponse =
+  | circleManageControllerDeleteResponseSuccess
+  | circleManageControllerDeleteResponseError;
+
+export const getCircleManageControllerDeleteUrl = (circleId: string) => {
+  return `/api/v1/circles/${circleId}`;
+};
+
+export const circleManageControllerDelete = async (
+  circleId: string,
+  options?: RequestInit,
+): Promise<circleManageControllerDeleteResponse> => {
+  return apiFetch<circleManageControllerDeleteResponse>(
+    getCircleManageControllerDeleteUrl(circleId),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  );
+};
+
+/**
  * @summary Get the active invite link as circle admin
  */
 export type circleInviteControllerGetResponse200 = {
@@ -1246,11 +1491,6 @@ export type joinCircleControllerPreviewResponse200 = {
   status: 200;
 };
 
-export type joinCircleControllerPreviewResponse403 = {
-  data: ApiErrorResponseDto;
-  status: 403;
-};
-
 export type joinCircleControllerPreviewResponse404 = {
   data: ApiErrorResponseDto;
   status: 404;
@@ -1260,12 +1500,10 @@ export type joinCircleControllerPreviewResponseSuccess =
   joinCircleControllerPreviewResponse200 & {
     headers: Headers;
   };
-export type joinCircleControllerPreviewResponseError = (
-  | joinCircleControllerPreviewResponse403
-  | joinCircleControllerPreviewResponse404
-) & {
-  headers: Headers;
-};
+export type joinCircleControllerPreviewResponseError =
+  joinCircleControllerPreviewResponse404 & {
+    headers: Headers;
+  };
 
 export type joinCircleControllerPreviewResponse =
   | joinCircleControllerPreviewResponseSuccess
@@ -1346,6 +1584,258 @@ export const joinCircleControllerJoin = async (
     {
       ...options,
       method: 'POST',
+    },
+  );
+};
+
+/**
+ * Ends your membership. A valid invite link can be used to join again. The admin role passes to another member, or the empty circle is deleted.
+ * @summary Leave a circle
+ */
+export type leaveCircleControllerLeaveResponse200 = {
+  data: LeaveCircleResponseDto;
+  status: 200;
+};
+
+export type leaveCircleControllerLeaveResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type leaveCircleControllerLeaveResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type leaveCircleControllerLeaveResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type leaveCircleControllerLeaveResponseSuccess =
+  leaveCircleControllerLeaveResponse200 & {
+    headers: Headers;
+  };
+export type leaveCircleControllerLeaveResponseError = (
+  | leaveCircleControllerLeaveResponse400
+  | leaveCircleControllerLeaveResponse401
+  | leaveCircleControllerLeaveResponse404
+) & {
+  headers: Headers;
+};
+
+export type leaveCircleControllerLeaveResponse =
+  | leaveCircleControllerLeaveResponseSuccess
+  | leaveCircleControllerLeaveResponseError;
+
+export const getLeaveCircleControllerLeaveUrl = (circleId: string) => {
+  return `/api/v1/circles/${circleId}/leave`;
+};
+
+export const leaveCircleControllerLeave = async (
+  circleId: string,
+  options?: RequestInit,
+): Promise<leaveCircleControllerLeaveResponse> => {
+  return apiFetch<leaveCircleControllerLeaveResponse>(
+    getLeaveCircleControllerLeaveUrl(circleId),
+    {
+      ...options,
+      method: 'POST',
+    },
+  );
+};
+
+/**
+ * The circle admin ends a membership and blocks that member from rejoining through any later invite link.
+ * @summary Remove a circle member
+ */
+export type circleRemovalsControllerRemoveResponse200 = {
+  data: CircleRemovalsResponseDto;
+  status: 200;
+};
+
+export type circleRemovalsControllerRemoveResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type circleRemovalsControllerRemoveResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type circleRemovalsControllerRemoveResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type circleRemovalsControllerRemoveResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type circleRemovalsControllerRemoveResponseSuccess =
+  circleRemovalsControllerRemoveResponse200 & {
+    headers: Headers;
+  };
+export type circleRemovalsControllerRemoveResponseError = (
+  | circleRemovalsControllerRemoveResponse400
+  | circleRemovalsControllerRemoveResponse401
+  | circleRemovalsControllerRemoveResponse403
+  | circleRemovalsControllerRemoveResponse404
+) & {
+  headers: Headers;
+};
+
+export type circleRemovalsControllerRemoveResponse =
+  | circleRemovalsControllerRemoveResponseSuccess
+  | circleRemovalsControllerRemoveResponseError;
+
+export const getCircleRemovalsControllerRemoveUrl = (
+  circleId: string,
+  memberId: string,
+) => {
+  return `/api/v1/circles/${circleId}/members/${memberId}/remove`;
+};
+
+export const circleRemovalsControllerRemove = async (
+  circleId: string,
+  memberId: string,
+  options?: RequestInit,
+): Promise<circleRemovalsControllerRemoveResponse> => {
+  return apiFetch<circleRemovalsControllerRemoveResponse>(
+    getCircleRemovalsControllerRemoveUrl(circleId, memberId),
+    {
+      ...options,
+      method: 'POST',
+    },
+  );
+};
+
+/**
+ * The circle admin lifts every removal block. Former members must still open an active invite and press Join.
+ * @summary Clear all circle removals
+ */
+export type circleRemovalsControllerClearResponse200 = {
+  data: CircleRemovalsResponseDto;
+  status: 200;
+};
+
+export type circleRemovalsControllerClearResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type circleRemovalsControllerClearResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type circleRemovalsControllerClearResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type circleRemovalsControllerClearResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type circleRemovalsControllerClearResponseSuccess =
+  circleRemovalsControllerClearResponse200 & {
+    headers: Headers;
+  };
+export type circleRemovalsControllerClearResponseError = (
+  | circleRemovalsControllerClearResponse400
+  | circleRemovalsControllerClearResponse401
+  | circleRemovalsControllerClearResponse403
+  | circleRemovalsControllerClearResponse404
+) & {
+  headers: Headers;
+};
+
+export type circleRemovalsControllerClearResponse =
+  | circleRemovalsControllerClearResponseSuccess
+  | circleRemovalsControllerClearResponseError;
+
+export const getCircleRemovalsControllerClearUrl = (circleId: string) => {
+  return `/api/v1/circles/${circleId}/removals/clear`;
+};
+
+export const circleRemovalsControllerClear = async (
+  circleId: string,
+  options?: RequestInit,
+): Promise<circleRemovalsControllerClearResponse> => {
+  return apiFetch<circleRemovalsControllerClearResponse>(
+    getCircleRemovalsControllerClearUrl(circleId),
+    {
+      ...options,
+      method: 'POST',
+    },
+  );
+};
+
+/**
+ * @summary Hand circle admin role to another member
+ */
+export type circleManageControllerHandoverResponse200 = {
+  data: ManageCircleResponseDto;
+  status: 200;
+};
+
+export type circleManageControllerHandoverResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type circleManageControllerHandoverResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type circleManageControllerHandoverResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type circleManageControllerHandoverResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type circleManageControllerHandoverResponseSuccess =
+  circleManageControllerHandoverResponse200 & {
+    headers: Headers;
+  };
+export type circleManageControllerHandoverResponseError = (
+  | circleManageControllerHandoverResponse400
+  | circleManageControllerHandoverResponse401
+  | circleManageControllerHandoverResponse403
+  | circleManageControllerHandoverResponse404
+) & {
+  headers: Headers;
+};
+
+export type circleManageControllerHandoverResponse =
+  | circleManageControllerHandoverResponseSuccess
+  | circleManageControllerHandoverResponseError;
+
+export const getCircleManageControllerHandoverUrl = (circleId: string) => {
+  return `/api/v1/circles/${circleId}/handover`;
+};
+
+export const circleManageControllerHandover = async (
+  circleId: string,
+  handOverCircleDto: HandOverCircleDto,
+  options?: RequestInit,
+): Promise<circleManageControllerHandoverResponse> => {
+  return apiFetch<circleManageControllerHandoverResponse>(
+    getCircleManageControllerHandoverUrl(circleId),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(handOverCircleDto),
     },
   );
 };
