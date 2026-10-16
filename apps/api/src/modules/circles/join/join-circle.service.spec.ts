@@ -12,21 +12,22 @@ const circle = { id: circleId, name: 'College batch', inviteCode: code, deletedA
 function setup() {
   const findFirst = vi.fn(async () => circle);
   const findUnique = vi.fn(async () => null as { id: string } | null);
+  const findBlock = vi.fn(async () => null as { id: string } | null);
   const count = vi.fn(async () => 1);
   const create = vi.fn(async () => ({ id: 'membership' }));
   const queryRaw = vi.fn(async (_parts: TemplateStringsArray, id: string) => [{ id }]);
   const currentCircle = vi.fn(async () => circle);
   const findMember = vi.fn(async () => ({ id: memberId } as { id: string } | null));
-  const tx = { $queryRaw: queryRaw, circle: { findUnique: currentCircle }, member: { findUnique: findMember }, circleMembership: { findUnique, count, create } };
+  const tx = { $queryRaw: queryRaw, circle: { findUnique: currentCircle }, member: { findUnique: findMember }, circleMembership: { findUnique, count, create }, circleRemovalBlock: { findUnique: findBlock } };
   const db = {
-    circle: { findFirst }, circleMembership: { findUnique, count },
+    circle: { findFirst }, circleMembership: { findUnique, count }, circleRemovalBlock: { findUnique: findBlock },
     $transaction: async (action: (client: typeof tx) => Promise<unknown>) => action(tx),
   } as unknown as PrismaService;
   const request = vi.fn(async () => ({ id: memberId, googleAccountId: 'google' }) as { id: string; googleAccountId: string } | null);
   const publish = vi.fn(async () => {});
   const bus = { request, publish } as unknown as ServiceBus;
   const logger = { warn: vi.fn() } as unknown as PinoLogger;
-  return { db, bus, logger, findFirst, findUnique, count, create, queryRaw, currentCircle, findMember, request, publish };
+  return { db, bus, logger, findFirst, findUnique, findBlock, count, create, queryRaw, currentCircle, findMember, request, publish };
 }
 
 describe('circle invite preview', () => {
@@ -57,6 +58,13 @@ describe('circle invite preview', () => {
     findFirst.mockResolvedValueOnce({ ...circle, memberNames: ['Private name'], whatsappE164: '+919876543210' } as typeof circle);
     await expect(previewInvite(db, code, memberId)).resolves.toEqual({ status: 'preview', name: 'College batch', memberCount: 1 });
   });
+
+  test('a removed member sees only blocked status even when the link has a name', async () => {
+    const { db, findBlock, count } = setup();
+    findBlock.mockResolvedValueOnce({ id: 'block' });
+    await expect(previewInvite(db, code, memberId)).resolves.toEqual({ status: 'blocked' });
+    expect(count).not.toHaveBeenCalled();
+  });
 });
 
 describe('circle join refusals', () => {
@@ -78,6 +86,13 @@ describe('circle join refusals', () => {
     const { db, bus, logger, currentCircle, create } = setup();
     currentCircle.mockResolvedValueOnce({ ...circle, inviteCode: 'A'.repeat(22) });
     await expect(joinCircle(db, bus, logger, code, memberId)).rejects.toMatchObject({ status: 404, response: { code: 'INVITE_LINK_INVALID' } });
+    expect(create).not.toHaveBeenCalled();
+  });
+
+  test('a removal block found under the join lock refuses membership', async () => {
+    const { db, bus, logger, findBlock, create } = setup();
+    findBlock.mockResolvedValueOnce({ id: 'block' });
+    await expect(joinCircle(db, bus, logger, code, memberId)).rejects.toMatchObject({ status: 403, response: { code: 'JOIN_BLOCKED' } });
     expect(create).not.toHaveBeenCalled();
   });
 

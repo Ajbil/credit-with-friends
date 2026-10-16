@@ -17,8 +17,7 @@ export class JoinCircleController {
   @SetMetadata(OPTIONAL_SESSION_ROUTE, true)
   @ApiOperation({ summary: 'Preview an invite' })
   @ApiParam({ name: 'code', type: String, example: 'ZJUnCsFn69xUJxhBPxJg6A' })
-  @ApiOkResponse({ type: InvitePreviewResponseDto, description: 'Valid link: require an account, preview name and member count, or return the circle ID for an existing member.' })
-  @ApiResponse({ status: 403, type: ApiErrorResponseDto, description: 'FORBIDDEN: a removed member cannot rejoin.' })
+  @ApiOkResponse({ type: InvitePreviewResponseDto, description: 'Valid link: require an account, preview name and member count, return the circle ID for an existing member, or show only blocked status.' })
   @ApiResponse({ status: 404, type: ApiErrorResponseDto, description: 'INVITE_LINK_INVALID: This invite link is no longer valid. Ask the person who shared it for a new one.' })
   preview(@Param('code') code: string, @Req() request: OptionalSessionRequest) { return previewInvite(this.db, code, request.caller?.memberId ?? undefined); }
 
@@ -30,7 +29,7 @@ export class JoinCircleController {
   @ApiParam({ name: 'code', type: String, example: 'ZJUnCsFn69xUJxhBPxJg6A' })
   @ApiOkResponse({ type: JoinCircleResponseDto })
   @ApiResponse({ status: 401, type: ApiErrorResponseDto, description: 'UNAUTHORIZED: sign in before joining.' })
-  @ApiResponse({ status: 403, type: ApiErrorResponseDto, description: 'ACCOUNT_INCOMPLETE: sign in and finish onboarding before joining.' })
+  @ApiResponse({ status: 403, type: ApiErrorResponseDto, description: 'ACCOUNT_INCOMPLETE or JOIN_BLOCKED: finish onboarding or the person is blocked from joining.' })
   @ApiResponse({ status: 404, type: ApiErrorResponseDto, description: 'INVITE_LINK_INVALID: the link is unknown, malformed, reset or deleted.' })
   @ApiResponse({ status: 409, type: ApiErrorResponseDto, description: 'CIRCLE_FULL or TOO_MANY_CIRCLES: joining would exceed the 100-member or 20-circle limit.' })
   join(@Param('code') code: string, @Req() request: AuthenticatedRequest) { return joinCircle(this.db, this.bus, this.logger, code, request.caller.memberId); }
