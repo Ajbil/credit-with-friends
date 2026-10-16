@@ -1,10 +1,38 @@
 {
   "branch": "task/CWF-7-T1C",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "e056d89231304b8b7ffcce52a63f626178424db107c7b8ab6b04bba93a75dbe3",
+    "commit": "ac5b5278281ee5d0607e888505bb52c4750c2199",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This new task-state file is outside the allowed paths and does not implement or test the API work. Remove it from the branch unless the change requires it.",
+        "file": ".factory/stories/CWF-7/tasks/T1C.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove unrelated task-state metadata from the branch"
+      },
+      {
+        "body": "The API deletion route cannot provide the permanent warning, cancellation, or return to the circles list. The rename and handover screen behavior and browser tests are also absent from this API branch. These are assigned to T4C, so they remain later story work rather than a blocker for this branch.",
+        "file": "apps/api/src/modules/circles/manage/circle-manage.controller.ts",
+        "line": 55,
+        "priority": "P2",
+        "title": "Later: T4C web confirmations and management flows"
+      }
+    ],
+    "status": "clean",
+    "tree": "3d623d36089ea5117865e807c7fd4299a429a49904c2bed6454d4b163af573cb"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-16T07:41:03+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-16T09:40:02+00:00",
+      "step": "review"
     }
   ]
 }
