@@ -1,0 +1,14 @@
+{
+  "base": "edb822cae286e0828f5d66e4b85775ffe5caff77",
+  "branch": "fix/the-test-only-sign-in-is-rate-limited-to",
+  "done_when": "Browser tests can sign in as many test people as they need, while the test sign-in still does not exist in production",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-16T21:49:11+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "The test-only sign-in is rate limited to 10 a minute, so the browser test suite fails once it signs in more people than that"
+}
