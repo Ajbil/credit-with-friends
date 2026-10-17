@@ -1,0 +1,16 @@
+{
+  "base": "15693435b274ae2c828d1318eb93f48a2d97917b",
+  "branch": "fix/cwf-7-done",
+  "done_when": "The board shows the story as finished, with its outcome.",
+  "kind": "story-done",
+  "outcome": "Members can leave a circle and admins can remove people, clear removals, rename, hand over and delete circles, with exactly one admin kept under concurrent changes; the owner verified every action live on two devices on 2026-10-17.",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-17T11:24:28+00:00",
+      "step": "start"
+    }
+  ],
+  "touches": 0,
+  "why": "Record that Leave, remove and run a circle is finished, and what it achieved."
+}
