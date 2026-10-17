@@ -1,0 +1,35 @@
+{
+  "branch": "task/CWF-7-T4C",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "f819dcf45321126e95092f3ad673608b3898943ce531bab0be2f8e05787dfae8",
+    "commit": "0bf19bfc22e539545f4ef83ae4991af3f4112c7c",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This new working-status file is outside the three permitted paths and is not needed to deliver or test the web controls. Remove it from this change.",
+        "file": ".factory/stories/CWF-7/tasks/T4C.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the task-status file outside the allowed scope"
+      }
+    ],
+    "status": "clean",
+    "tree": "e6378ff73822bfaa0aef01726aff516b3395bf6f16cd31dced2055d2199aaed9"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-16T13:50:07+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-16T14:34:24+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-16T21:45:06+00:00",
+      "step": "review"
+    }
+  ]
+}
