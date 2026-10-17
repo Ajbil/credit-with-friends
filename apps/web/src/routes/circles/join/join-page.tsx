@@ -57,11 +57,17 @@ function InvitePage({ code }: { code: string }) {
 
   const error = invite.error ?? join.error;
   const invalid = error instanceof ApiError && error.failure.code === 'INVITE_LINK_INVALID';
+  const blockedError = join.error instanceof ApiError && join.error.failure.code === 'JOIN_BLOCKED' ? join.error : null;
   const signInError = accountRequired && pending.isError && !(pending.error instanceof ApiError && pending.error.status === 401);
   let content;
   if (invalid) content = <>
     <h1>Circle invite</h1>
     <p role="alert">{error.message}</p>
+    <Link className="button button--quiet" to="/">Back to home</Link>
+  </>;
+  else if (invite.data?.status === 'blocked' || blockedError) content = <>
+    <h1>Circle invite</h1>
+    <p role="alert">{blockedError ? blockedError.message : "You can't join this circle."}</p>
     <Link className="button button--quiet" to="/">Back to home</Link>
   </>;
   else if (invite.isPending || invite.isFetching || join.isSuccess || invite.data?.status === 'already_member' || (accountRequired && (pending.isPending || pending.isFetching || pending.isSuccess))) content = <>

@@ -12,7 +12,7 @@ vi.mock('../../../api/generated', () => ({
 
 afterEach(() => { cleanup(); vi.resetAllMocks(); vi.unstubAllGlobals(); });
 
-test('done-when-3: an invalid preview refetch replaces an earlier Join failure and hides circle details', async () => {
+test.each(['invalid', 'blocked'])('done-when-3: a %s preview refetch replaces an earlier Join failure and hides circle details', async (status) => {
   vi.stubGlobal('scrollTo', vi.fn());
   preview.mockResolvedValue({ data: { data: { status: 'preview', name: 'Family', memberCount: 1 } } });
   join.mockRejectedValue(new TypeError('Failed to fetch'));
@@ -30,11 +30,13 @@ test('done-when-3: an invalid preview refetch replaces an earlier Join failure a
     expect((await screen.findByRole('alert')).textContent).toBe('We couldn’t join this circle. Check your connection and try again.');
 
     const invalidMessage = 'This invite link is no longer valid. Ask the person who shared it for a new one.';
-    preview.mockRejectedValue(new ApiError(404, { code: 'INVITE_LINK_INVALID', message: invalidMessage }));
+    const message = status === 'invalid' ? invalidMessage : "You can't join this circle.";
+    if (status === 'invalid') preview.mockRejectedValue(new ApiError(404, { code: 'INVITE_LINK_INVALID', message }));
+    else preview.mockResolvedValue({ data: { data: { status: 'blocked' } } });
     // Refetch without remounting: the real query and mutation observers retain their independent states.
     await act(async () => { await client.refetchQueries(); });
 
-    expect((await screen.findByText(invalidMessage)).getAttribute('role')).toBe('alert');
+    expect((await screen.findByText(message)).getAttribute('role')).toBe('alert');
     expect(screen.queryByRole('heading', { name: 'You’re about to join Family' })).toBeNull();
     expect(screen.queryByText('1 member')).toBeNull();
     expect(screen.queryByRole('button', { name: /^Join$/ })).toBeNull();
