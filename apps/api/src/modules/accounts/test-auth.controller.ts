@@ -1,6 +1,6 @@
 import { Body, Controller, Inject, Post, Req, Res, SetMetadata } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { ApiConfig } from '../../common/config/config.module';
@@ -15,7 +15,8 @@ export class TestAuthController {
   constructor(@Inject(AccountsService) private readonly accounts: AccountsService, @Inject(SessionsService) private readonly sessions: SessionsService, @Inject(ConfigService) private readonly config: ConfigService<ApiConfig, true>) {}
 
   @Post('sign-in')
-  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  // This route exists only when test sign-in is enabled (never in production), and browser tests sign in many people at once.
+  @SkipThrottle()
   @SetMetadata(PUBLIC_ROUTE, true)
   async signIn(@Body() input: TestSignInDto, @Req() request: Request, @Res({ passthrough: true }) response: Response) {
     const result = await this.accounts.signIn({ googleAccountId: input.googleAccountId, email: input.email, name: input.name, emailVerified: true }, request.headers['user-agent'], input.returnPath);

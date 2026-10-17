@@ -310,4 +310,11 @@ describe('sign-in and onboarding API', () => {
       vi.stubEnv('NODE_ENV', 'test');
     }
   });
+
+  test('the test-only sign-in is not rate limited, so browser tests can sign in many people', async () => {
+    for (let index = 0; index < 12; index += 1) {
+      const { response } = await signIn({ ...identity, googleAccountId: `rate-limit-${index}`, name: `Rate ${index}` });
+      expect(response.status).toBe(201);
+    }
+  });
 });

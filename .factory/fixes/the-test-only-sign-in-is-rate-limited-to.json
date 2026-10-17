@@ -1,0 +1,28 @@
+{
+  "allow_large": "The owner allowed this fix to change the test-only sign-in route, which exists only when test sign-in is enabled and never in production",
+  "base": "edb822cae286e0828f5d66e4b85775ffe5caff77",
+  "branch": "fix/the-test-only-sign-in-is-rate-limited-to",
+  "done_when": "Browser tests can sign in as many test people as they need, while the test sign-in still does not exist in production",
+  "kind": "fix",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "9082e4a5b43e4906860e8cd58a046dd0e1c2fc6890f10668305a38d05d3a799d",
+    "commit": "77c27eb4fc3c295459fc480dac1e60d3f09b5411",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "36f5f97ebb6677f817e7a0b43a2f46badbf5924facd24d1d09bcdad3dc0028e8"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-16T21:49:11+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-17T06:57:39+00:00",
+      "step": "review"
+    }
+  ],
+  "why": "The test-only sign-in is rate limited to 10 a minute, so the browser test suite fails once it signs in more people than that"
+}
