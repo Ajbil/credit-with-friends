@@ -58,3 +58,18 @@ and the Rules below, and leave the flow and the approval steps to the agent coor
   `## For the builders` needs no new approval. There is no other approval step.
 - Run long `forge work` runs in the background and keep watching them.
 <!-- forge:end -->
+
+## Known traps
+
+- A new API refusal code needs one entry in the code map in
+  `apps/api/src/common/api/api-exception.filter.ts`, or the client gets the generic "This request
+  is not allowed." Any part that adds a refusal lists that file in its Scope. (CWF-7: removals and
+  manage parts.)
+- A race test must name each competing connection (application name or backend pid) and wait until
+  `pg_stat_activity` shows every competitor blocked on the lock before releasing it, failing if one
+  never waits. A test that only sees "some connection waiting" passes without a real race.
+  (CWF-7: leave and removals parts, one extra review round each.)
+- This machine is slow, and the browser tests use fixed local ports. Two parts with browser tests
+  built side by side collide and time out before any assertion runs. Plan web parts that each need
+  a browser run to finish one after another, and leave full-suite runs to the pull-request checks
+  rather than loosening shared timeouts. (CWF-7: both web parts, one extra round each.)
