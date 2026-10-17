@@ -4,7 +4,13 @@
     "blocking_level": "P1",
     "changed": "176dbe30a7a11ea36b85ca1a1fe3ac318cc1a4b323d146bcc3b739e08bf355a6",
     "commit": "db20629d3a89cc983f6044f67fcbf1d40b89137c",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": ".factory/stories/CWF-7/tasks/T7.json:2 This is Forge's own task-state file, written by forge task start on every task branch; main already carries the same file for every merged CWF-7 part (T1A to T4C). Removing it would break Forge's tracking of this part.",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "This branch adds `.factory/stories/CWF-7/tasks/T7.json`, which only records branch status and a start timestamp. The part is limited to `docs/architecture/deployment.md`, and this metadata is unnecessary for the production check. Remove it from the change.",
@@ -14,10 +20,10 @@
         "title": "Remove the out-of-scope task metadata file"
       }
     ],
-    "status": "blocked",
+    "status": "clean",
     "tree": "5fb991081cf58755765162cb9c13a39b1b73d4ddc29e21dbe31ae8d84b3afc3f"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-17T10:45:26+00:00",
