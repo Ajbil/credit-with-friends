@@ -9,7 +9,19 @@
     "session": "a63f68e8-a558-49cf-9fac-cfa8b0ff293c"
   },
   "doc": "plans/CWF-7.md",
-  "status": "approved",
+  "finished": "2026-10-17T11:23:34+00:00",
+  "merged": {
+    "T1A": "2026-10-15T08:26:11+00:00",
+    "T1B": "2026-10-16T07:33:26+00:00",
+    "T1C": "2026-10-16T11:10:43+00:00",
+    "T1D": "2026-10-15T11:27:33+00:00",
+    "T4A": "2026-10-16T13:17:13+00:00",
+    "T4B": "2026-10-17T09:13:00+00:00",
+    "T4C": "2026-10-17T10:40:36+00:00",
+    "T7": "2026-10-17T11:23:34+00:00"
+  },
+  "outcome": "Members can leave a circle and admins can remove people, clear removals, rename, hand over and delete circles, with exactly one admin kept under concurrent changes; the owner verified every action live on two devices on 2026-10-17.",
+  "status": "done",
   "steps": [
     {
       "at": "2026-10-14T12:17:51+00:00",
@@ -38,6 +50,10 @@
     {
       "at": "2026-10-14T16:53:16+00:00",
       "step": "approved"
+    },
+    {
+      "at": "2026-10-17T11:24:27+00:00",
+      "step": "done"
     }
   ],
   "title": "Leave, remove and run a circle",

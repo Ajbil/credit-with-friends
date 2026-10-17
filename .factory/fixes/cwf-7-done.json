@@ -1,0 +1,29 @@
+{
+  "base": "15693435b274ae2c828d1318eb93f48a2d97917b",
+  "branch": "fix/cwf-7-done",
+  "done_when": "The board shows the story as finished, with its outcome.",
+  "kind": "story-done",
+  "outcome": "Members can leave a circle and admins can remove people, clear removals, rename, hand over and delete circles, with exactly one admin kept under concurrent changes; the owner verified every action live on two devices on 2026-10-17.",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "1eda30e3781e7309a2839700cec95f966d0b08ffac39685da5eac24aa83e08b4",
+    "commit": "d65f2bd562ac401bf8eaafa195d9eea54dd3ebfb",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "b441aca14ecc39512c8ecc4d0d5ceb5aa253724e977e8c3d5b762ba0b525bd91"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-17T11:24:28+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-17T11:30:18+00:00",
+      "step": "review"
+    }
+  ],
+  "touches": 0,
+  "why": "Record that Leave, remove and run a circle is finished, and what it achieved."
+}
