@@ -29,4 +29,18 @@ describe('usage event recorder', () => {
     await expect(bus.publish('CircleInviteEvent', { id: randomUUID(), version: 1, timestampUtc: new Date(), initiatedByAccountId: randomUUID(), data: { circleId: randomUUID() } })).resolves.toBeUndefined();
     expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ context: expect.objectContaining({ outcome: 'failed' }) }), 'Usage event recording failed');
   });
+
+  test('records a card-listed event with its complete circle snapshot', async () => {
+    const create = vi.fn(async () => ({}));
+    const bus = new ServiceBus();
+    const logger = { info: vi.fn(), warn: vi.fn() } as unknown as PinoLogger;
+    new UsageEventRecorder({ usageEvent: { create } } as unknown as PrismaService, bus, logger).onModuleInit();
+    const circleIds = [randomUUID(), randomUUID()];
+    const event = { id: randomUUID(), version: 1, timestampUtc: new Date(), initiatedByAccountId: randomUUID(), data: { circleIds } };
+    await bus.publish('CardListedEvent', event);
+    expect(create).toHaveBeenCalledWith({ data: {
+      id: event.id, type: 'card_listed', memberId: event.initiatedByAccountId, occurredAtUtc: event.timestampUtc,
+      circles: { create: circleIds.map((circleId) => ({ circleId })) },
+    } });
+  });
 });
