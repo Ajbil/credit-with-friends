@@ -1,0 +1,35 @@
+{
+  "base": "cc320220d4654e98d73d65403e9e1aab54adffab",
+  "branch": "fix/real-card-names-with-a-number-such-as-ko",
+  "done_when": "The cards spec allows listed product numbers, starting with 811, as whole words in a variant while still refusing every other run of three or more digits",
+  "kind": "fix",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "1a7c60fd2297cd700b01ade82dec290bdf96c8bd315f812297d341ee20f2fb90",
+    "commit": "4d20cc6e4e3d5f4d8278a25420d564a674051c22",
+    "dismissals": [],
+    "findings": [],
+    "status": "clean",
+    "tree": "b83393bc565784d104d5f98b4c2c51c05dba4fa2f827cb9a4684e3fe8baa451c"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-18T08:00:02+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-18T08:06:46+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-18T08:16:19+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-18T08:24:11+00:00",
+      "step": "review"
+    }
+  ],
+  "why": "Real card names with a number, such as Kotak 811, are refused as if they were card details"
+}
