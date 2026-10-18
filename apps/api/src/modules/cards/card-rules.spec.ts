@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { applyCardRules } from './card-rules.helper';
 
-const banks = new Set(['hdfc-bank', 'axis-bank']);
+const banks = new Set(['hdfc-bank', 'axis-bank', 'kotak-mahindra-bank']);
 const listed = [{ id: 'card-1', bankId: 'hdfc-bank', type: 'credit', variantKey: 'millennia' }];
 
 function refusal(input: { bankId?: unknown; type?: unknown; variant?: unknown }, cards = listed) {
@@ -32,23 +32,27 @@ describe('card rules shared by add and edit', () => {
   });
 
   test.each(['Kotak 811', '811 Dream Different'])('allows standalone card-product number in %s', (variant) => {
-    expect(applyCardRules({ bankId: 'hdfc-bank', type: 'credit', variant }, banks, listed).variant).toBe(variant);
+    expect(applyCardRules({ bankId: 'kotak-mahindra-bank', type: 'credit', variant }, banks, listed).variant).toBe(variant);
   });
 
-  test.each(['CVV 811', '811 cvv', 'OTP 811', 'Exp 811', 'PIN: 811', 'CVC 811', 'expiry 811'])('refuses card-detail words beside product number in %s', (variant) => {
-    expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE', details: { fieldErrors: [{ field: 'variant', reason: 'This looks like card details. Never enter card numbers, CVVs, expiry dates or OTPs.' }] } });
+  test.each(['Card number: 811', 'CVV 811', '811 cvv', 'OTP 811', 'Exp 811', 'PIN: 811', 'CVC 811', 'expiry 811', '811 no'])('refuses card-detail words beside product number in %s', (variant) => {
+    expect(refusal({ bankId: 'kotak-mahindra-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE', details: { fieldErrors: [{ field: 'variant', reason: 'This looks like card details. Never enter card numbers, CVVs, expiry dates or OTPs.' }] } });
   });
 
   test('card-detail words must stand alone to disable a product number', () => {
-    expect(applyCardRules({ bankId: 'hdfc-bank', type: 'credit', variant: 'CVVPlus 811' }, banks, listed).variant).toBe('CVVPlus 811');
+    expect(applyCardRules({ bankId: 'kotak-mahindra-bank', type: 'credit', variant: 'CVVPlus 811' }, banks, listed).variant).toBe('CVVPlus 811');
+  });
+
+  test.each(['811', 'Kotak 811'])('refuses product number on another bank in %s', (variant) => {
+    expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE' });
   });
 
   test.each(['8110', '811 123', '811-4567', '123 811', '811/811'])('refuses product number joined to other digits in %s', (variant) => {
-    expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE' });
+    expect(refusal({ bankId: 'kotak-mahindra-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE' });
   });
 
   test.each(['811–123', '811\u00a0123', '1–2–3', '1\u00a02\u00a03'])('refuses card-like digits separated by typographic spaces or dashes in %s', (variant) => {
-    expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE' });
+    expect(refusal({ bankId: 'kotak-mahindra-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE' });
   });
 
   test('a variant over 40 characters after trimming is refused', () => {
