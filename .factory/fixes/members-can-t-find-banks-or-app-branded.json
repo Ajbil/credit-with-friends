@@ -1,0 +1,14 @@
+{
+  "base": "0bbf444489167b7192f881939b9c550f88275f64",
+  "branch": "fix/members-can-t-find-banks-or-app-branded",
+  "done_when": "The cards spec lists 57 banks, a set of brand-card shortcuts that save as their issuing bank, and a one-tap email request for a missing bank",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-18T06:10:59+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "Members can't find banks or app-branded cards missing from the cards spec's bank list, and can only see an address for a missing bank"
+}
