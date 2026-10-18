@@ -1,6 +1,15 @@
 {
+  "approval": {
+    "at": "2026-10-18T06:41:15+00:00",
+    "by": "human-via-Claude",
+    "event": "toolu_018yZfGoYoo8158FWFm8Y1qM",
+    "hash": "716d946b1ff4188d826bd1d7f33fdc5556d1b30fae73069f20032157ab77a4da",
+    "round": 9,
+    "runtime": "claude",
+    "session": "a63f68e8-a558-49cf-9fac-cfa8b0ff293c"
+  },
   "doc": "plans/CWF-3.md",
-  "status": "read",
+  "status": "approved",
   "steps": [
     {
       "at": "2026-10-17T11:37:41+00:00",
@@ -41,8 +50,12 @@
     {
       "at": "2026-10-18T06:38:40+00:00",
       "step": "read"
+    },
+    {
+      "at": "2026-10-18T06:41:15+00:00",
+      "step": "approved"
     }
   ],
   "title": "List and manage my cards",
-  "touches": 0
+  "touches": 1
 }
