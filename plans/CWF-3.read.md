@@ -1,12 +1,12 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-17T11:56:50+00:00
-read_hash: fe3dab0a056ecd57d7b336080e41fbdf500b05e6
-round: 6
+read_at: 2026-10-18T06:38:38+00:00
+read_hash: 1dc186a44a43d485c79eed80517997eef602bf28
+round: 9
 passed: yes
-doc_seen: fe3dab0a056ecd57d7b336080e41fbdf500b05e6
+doc_seen: 1dc186a44a43d485c79eed80517997eef602bf28
 spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
-notes_seen: db6ecdcb1f04cfd68d5d0de2e6898e16468dd9fb
+notes_seen: 9ab1b3263023e25e55830b34e16dcc101a8bc58c
 ---
 # Cold read notes
 
@@ -162,5 +162,49 @@ Only a genuine trade-off goes to the human, as a question with options.
     Disposition: keep amended: T1C runs the membership check and the cards request in one transaction holding both membership rows FOR SHARE; cards.memberCards takes that transaction; T1C races a leave and a removal against the read
 
 ## Round 6
+
+No findings.
+
+## Round 7
+
+34. Simpler: `CardShortcut` table and endpoint → release-owned shortcut definitions in the web app.
+    Shortcuts are never edited in the app and saved cards never refer to them. A small list of brand, bank id, type and variant would deliver the picker without a third table, migration or API endpoint.
+    Disposition: keep amended: shortcuts are a release-owned list in the web app (card-shortcuts.ts); no table, migration or endpoint
+
+35. Unproven: item 7: a corrected bank name appears in shortcut labels.
+    Shortcuts store labels such as “OneCard (Federal Bank)”. Renaming `Bank.displayName` would leave those labels stale. Derive the bank portion from the current bank name and test the picker after a rename.
+    Disposition: keep amended: labels are built from the brand and the bank's current name from GET /banks; T4E tests a rename
+
+36. Unproven: item 1: the 27 shortcuts have the specified bank, type and variant, and remain editable.
+    T1A proves only that each bank exists; T4E exercises one shortcut and changes only its variant. Those tests would miss a wrong issuer, the Jupiter debit shortcut set to credit, or a bank or type that cannot be changed before saving.
+    Disposition: keep amended: T4E checks all 27 shortcuts against the spec in a table-driven test, every shortcut bank in the live list, and a flow on the Jupiter debit shortcut changing bank, type and variant
+
+37. Unproven: item 1: a failed bank or shortcut load has a usable add screen.
+    T4E names no loading failure or retry test for either picker source. A failed request must not leave a misleading partial list or an unusable form.
+    Disposition: keep amended: T4E tests a failed bank-list load: error with retry, no partial picker, Save disabled
+
+38. Unproven: item 7: the support address is visible without an email app.
+    The spec requires the address as text as well as a `mailto:` link. T4E checks the link only.
+    Disposition: keep amended: the address is visible text beside the button; T4E tests it
+
+39. T1C conflicts with the architecture’s module ownership.
+    `docs/architecture/10-system-overview.md` assigns member card browsing to `search/`, while T1C puts its endpoint in `circles/`. Pin the chosen ownership and include the architecture correction in T1C’s Scope.
+    Disposition: keep amended: member card browsing follows the architecture: T1C creates the search module, which asks circles (circles.lockSharedMembership) and cards (cards.memberCards) through the bus on one transaction
+
+40. Unproven: item 1: a saved card appears in “Your cards” in a browser flow.
+    T1B checks the API list, while T4A names empty and failed states and T4E names saving. Add a browser assertion that the saved card appears on the list.
+    Disposition: keep amended: T4E's browser flow sees the saved card in Your cards
+
+## Round 8
+
+41. T1C’s visibility contract conflicts with the privacy architecture.
+    `docs/architecture/13-privacy-deletion-jobs.md` says one circles bus query backs member-card browsing. T1C introduces `circles.lockSharedMembership` instead. Update that architecture document in T1C’s Scope to describe the transaction-held check.
+    Disposition: keep amended: T1C updates the privacy architecture doc (in its Scope) to describe the transaction-held per-circle check for browsing; the general sharing query stays for CWF-4 search and contact
+
+42. Unproven: item 4: circle deletion racing a member-card read.
+    T1C tests deletion after it finishes, but its locking claim also covers deletion during a read. Add an observed-wait race test that accepts cards only before deletion commits, or a not-found result afterward.
+    Disposition: keep amended: T1C races a circle deletion against the read, alongside leave and removal
+
+## Round 9
 
 No findings.
