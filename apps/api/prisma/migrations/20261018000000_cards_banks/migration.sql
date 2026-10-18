@@ -1,0 +1,86 @@
+CREATE TABLE "Bank" (
+  "id" TEXT NOT NULL,
+  "displayName" TEXT NOT NULL,
+  "sortName" TEXT NOT NULL,
+  "createdAtUtc" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAtUtc" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "Bank_pkey" PRIMARY KEY ("id")
+);
+CREATE INDEX "idx_Bank_sortName" ON "Bank"("sortName");
+
+CREATE TABLE "Card" (
+  "id" UUID NOT NULL DEFAULT uuidv7(),
+  "memberId" UUID NOT NULL,
+  "bankId" TEXT NOT NULL,
+  "type" TEXT NOT NULL,
+  "variant" TEXT,
+  "variantKey" TEXT NOT NULL DEFAULT '',
+  "createdAtUtc" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAtUtc" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "Card_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "Card_type_check" CHECK ("type" IN ('credit', 'debit'))
+);
+CREATE UNIQUE INDEX "Card_memberId_bankId_type_variantKey_key" ON "Card"("memberId", "bankId", "type", "variantKey");
+CREATE INDEX "idx_Card_memberId" ON "Card"("memberId");
+CREATE INDEX "idx_Card_bankId" ON "Card"("bankId");
+ALTER TABLE "Card" ADD CONSTRAINT "Card_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Card" ADD CONSTRAINT "Card_bankId_fkey" FOREIGN KEY ("bankId") REFERENCES "Bank"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+INSERT INTO "Bank" ("id", "displayName", "sortName", "updatedAtUtc") VALUES
+('airtel-payments-bank', 'Airtel Payments Bank', 'Airtel Payments Bank', CURRENT_TIMESTAMP),
+('american-express', 'American Express', 'American Express', CURRENT_TIMESTAMP),
+('au-small-finance-bank', 'AU Small Finance Bank', 'AU Small Finance Bank', CURRENT_TIMESTAMP),
+('axis-bank', 'Axis Bank', 'Axis Bank', CURRENT_TIMESTAMP),
+('bandhan-bank', 'Bandhan Bank', 'Bandhan Bank', CURRENT_TIMESTAMP),
+('bank-of-baroda', 'Bank of Baroda', 'Bank of Baroda', CURRENT_TIMESTAMP),
+('bank-of-india', 'Bank of India', 'Bank of India', CURRENT_TIMESTAMP),
+('bank-of-maharashtra', 'Bank of Maharashtra', 'Bank of Maharashtra', CURRENT_TIMESTAMP),
+('canara-bank', 'Canara Bank', 'Canara Bank', CURRENT_TIMESTAMP),
+('capital-small-finance-bank', 'Capital Small Finance Bank', 'Capital Small Finance Bank', CURRENT_TIMESTAMP),
+('central-bank-of-india', 'Central Bank of India', 'Central Bank of India', CURRENT_TIMESTAMP),
+('city-union-bank', 'City Union Bank', 'City Union Bank', CURRENT_TIMESTAMP),
+('cosmos-co-operative-bank', 'The Cosmos Co-operative Bank', 'Cosmos Co-operative Bank', CURRENT_TIMESTAMP),
+('csb-bank', 'CSB Bank', 'CSB Bank', CURRENT_TIMESTAMP),
+('dbs-bank', 'DBS Bank', 'DBS Bank', CURRENT_TIMESTAMP),
+('dcb-bank', 'DCB Bank', 'DCB Bank', CURRENT_TIMESTAMP),
+('deutsche-bank', 'Deutsche Bank', 'Deutsche Bank', CURRENT_TIMESTAMP),
+('dhanlaxmi-bank', 'Dhanlaxmi Bank', 'Dhanlaxmi Bank', CURRENT_TIMESTAMP),
+('equitas-small-finance-bank', 'Equitas Small Finance Bank', 'Equitas Small Finance Bank', CURRENT_TIMESTAMP),
+('esaf-small-finance-bank', 'ESAF Small Finance Bank', 'ESAF Small Finance Bank', CURRENT_TIMESTAMP),
+('federal-bank', 'Federal Bank', 'Federal Bank', CURRENT_TIMESTAMP),
+('fino-payments-bank', 'Fino Payments Bank', 'Fino Payments Bank', CURRENT_TIMESTAMP),
+('hdfc-bank', 'HDFC Bank', 'HDFC Bank', CURRENT_TIMESTAMP),
+('hsbc', 'HSBC', 'HSBC', CURRENT_TIMESTAMP),
+('icici-bank', 'ICICI Bank', 'ICICI Bank', CURRENT_TIMESTAMP),
+('idbi-bank', 'IDBI Bank', 'IDBI Bank', CURRENT_TIMESTAMP),
+('idfc-first-bank', 'IDFC FIRST Bank', 'IDFC FIRST Bank', CURRENT_TIMESTAMP),
+('india-post-payments-bank', 'India Post Payments Bank', 'India Post Payments Bank', CURRENT_TIMESTAMP),
+('indian-bank', 'Indian Bank', 'Indian Bank', CURRENT_TIMESTAMP),
+('indian-overseas-bank', 'Indian Overseas Bank', 'Indian Overseas Bank', CURRENT_TIMESTAMP),
+('indusind-bank', 'IndusInd Bank', 'IndusInd Bank', CURRENT_TIMESTAMP),
+('jammu-kashmir-bank', 'Jammu & Kashmir Bank', 'Jammu & Kashmir Bank', CURRENT_TIMESTAMP),
+('jana-small-finance-bank', 'Jana Small Finance Bank', 'Jana Small Finance Bank', CURRENT_TIMESTAMP),
+('jio-payments-bank', 'Jio Payments Bank', 'Jio Payments Bank', CURRENT_TIMESTAMP),
+('karnataka-bank', 'Karnataka Bank', 'Karnataka Bank', CURRENT_TIMESTAMP),
+('karur-vysya-bank', 'Karur Vysya Bank', 'Karur Vysya Bank', CURRENT_TIMESTAMP),
+('kotak-mahindra-bank', 'Kotak Mahindra Bank', 'Kotak Mahindra Bank', CURRENT_TIMESTAMP),
+('nsdl-payments-bank', 'NSDL Payments Bank', 'NSDL Payments Bank', CURRENT_TIMESTAMP),
+('punjab-sind-bank', 'Punjab & Sind Bank', 'Punjab & Sind Bank', CURRENT_TIMESTAMP),
+('punjab-national-bank', 'Punjab National Bank', 'Punjab National Bank', CURRENT_TIMESTAMP),
+('rbl-bank', 'RBL Bank', 'RBL Bank', CURRENT_TIMESTAMP),
+('saraswat-co-operative-bank', 'The Saraswat Co-operative Bank', 'Saraswat Co-operative Bank', CURRENT_TIMESTAMP),
+('sbm-bank-india', 'SBM Bank India', 'SBM Bank India', CURRENT_TIMESTAMP),
+('shivalik-small-finance-bank', 'Shivalik Small Finance Bank', 'Shivalik Small Finance Bank', CURRENT_TIMESTAMP),
+('slice-small-finance-bank', 'slice Small Finance Bank', 'slice Small Finance Bank', CURRENT_TIMESTAMP),
+('south-indian-bank', 'South Indian Bank', 'South Indian Bank', CURRENT_TIMESTAMP),
+('standard-chartered', 'Standard Chartered', 'Standard Chartered', CURRENT_TIMESTAMP),
+('state-bank-of-india', 'State Bank of India (SBI)', 'State Bank of India (SBI)', CURRENT_TIMESTAMP),
+('suryoday-small-finance-bank', 'Suryoday Small Finance Bank', 'Suryoday Small Finance Bank', CURRENT_TIMESTAMP),
+('svc-co-operative-bank', 'SVC Co-operative Bank', 'SVC Co-operative Bank', CURRENT_TIMESTAMP),
+('tamilnad-mercantile-bank', 'Tamilnad Mercantile Bank', 'Tamilnad Mercantile Bank', CURRENT_TIMESTAMP),
+('uco-bank', 'UCO Bank', 'UCO Bank', CURRENT_TIMESTAMP),
+('ujjivan-small-finance-bank', 'Ujjivan Small Finance Bank', 'Ujjivan Small Finance Bank', CURRENT_TIMESTAMP),
+('union-bank-of-india', 'Union Bank of India', 'Union Bank of India', CURRENT_TIMESTAMP),
+('unity-small-finance-bank', 'Unity Small Finance Bank', 'Unity Small Finance Bank', CURRENT_TIMESTAMP),
+('utkarsh-small-finance-bank', 'Utkarsh Small Finance Bank', 'Utkarsh Small Finance Bank', CURRENT_TIMESTAMP),
+('yes-bank', 'YES Bank', 'YES Bank', CURRENT_TIMESTAMP);

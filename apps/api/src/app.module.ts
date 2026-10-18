@@ -21,6 +21,7 @@ import { PrivacyNoticeModule } from './modules/privacy-notice/privacy-notice.mod
 import { PrivacyNoticeGuard } from './modules/privacy-notice/privacy-notice.guard';
 import { CirclesModule } from './modules/circles/circles.module';
 import { UsageModule } from './modules/usage/usage.module';
+import { CardsModule } from './modules/cards/cards.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { UsageModule } from './modules/usage/usage.module';
     PrivacyNoticeModule,
     CirclesModule,
     UsageModule,
+    CardsModule,
     ...(TEST_AUTH_ROUTES_ENABLED ? [TestAuthModule] : []),
     HealthModule,
   ],
