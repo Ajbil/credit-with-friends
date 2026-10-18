@@ -30,25 +30,57 @@ tells members never to enter them (decision 0002).
   RuPay, Amex), limits, expiry and card images are not recorded.
 
 **Bank list**
-- The list starts with these banks, shown in alphabetical order: Airtel
-  Payments Bank, American Express, AU Small Finance Bank, Axis Bank, Bandhan
-  Bank, Bank of Baroda, Bank of India, Bank of Maharashtra, Canara Bank,
-  Central Bank of India, City Union Bank, CSB Bank, DBS Bank, DCB Bank,
-  Dhanlaxmi Bank, Equitas Small Finance Bank, Federal Bank, Fino Payments
-  Bank, HDFC Bank, HSBC, ICICI Bank, IDBI Bank, IDFC FIRST Bank, India Post
-  Payments Bank, Indian Bank, Indian Overseas Bank, IndusInd Bank, Jammu &
-  Kashmir Bank, Jana Small Finance Bank, Jio Payments Bank, Karnataka Bank,
-  Karur Vysya Bank, Kotak Mahindra Bank, Punjab & Sind Bank, Punjab National
-  Bank, RBL Bank, South Indian Bank, Standard Chartered, State Bank of India
-  (SBI), Suryoday Small Finance Bank, Tamilnad Mercantile Bank, UCO Bank,
-  Ujjivan Small Finance Bank, Union Bank of India, Utkarsh Small Finance Bank,
-  YES Bank.
+- The list starts with these 57 banks, shown in alphabetical order (a leading
+  "The" is ignored when sorting): Airtel Payments Bank, American Express, AU
+  Small Finance Bank, Axis Bank, Bandhan Bank, Bank of Baroda, Bank of India,
+  Bank of Maharashtra, Canara Bank, Capital Small Finance Bank, Central Bank of
+  India, City Union Bank, The Cosmos Co-operative Bank, CSB Bank, DBS Bank,
+  DCB Bank, Deutsche Bank, Dhanlaxmi Bank, Equitas Small Finance Bank, ESAF
+  Small Finance Bank, Federal Bank, Fino Payments Bank, HDFC Bank, HSBC, ICICI
+  Bank, IDBI Bank, IDFC FIRST Bank, India Post Payments Bank, Indian Bank,
+  Indian Overseas Bank, IndusInd Bank, Jammu & Kashmir Bank, Jana Small
+  Finance Bank, Jio Payments Bank, Karnataka Bank, Karur Vysya Bank, Kotak
+  Mahindra Bank, NSDL Payments Bank, Punjab & Sind Bank, Punjab National Bank,
+  RBL Bank, The Saraswat Co-operative Bank, SBM Bank India, Shivalik Small
+  Finance Bank, slice Small Finance Bank, South Indian Bank, Standard
+  Chartered, State Bank of India (SBI), Suryoday Small Finance Bank, SVC
+  Co-operative Bank, Tamilnad Mercantile Bank, UCO Bank, Ujjivan Small Finance
+  Bank, Union Bank of India, Unity Small Finance Bank, Utkarsh Small Finance
+  Bank, YES Bank.
+- Cards from a bank's card company count as that bank: SBI Card as State Bank
+  of India (SBI) and BOBCARD as Bank of Baroda.
 - Only the owner changes the list, by releasing a new version of the app;
   there is no in-app editing. Banks can be added and a bank's display name can
   be corrected, but a bank is never removed, so saved cards and searches keep
   working. A corrected name shows everywhere that bank appears.
-- The add-card screen tells a member whose bank is missing to ask the owner to
-  add it, and shows the owner's contact address right there.
+- The add-card screen has a "Bank not listed? Ask us to add it" button. It
+  opens the member's email app with a message to the owner's contact address,
+  the subject and a line for the bank's name already filled in. The address is
+  also shown as text, for members without an email app. Nothing typed there is
+  saved in the app.
+
+**Brand-card shortcuts**
+- Many people know a card by an app's brand rather than the bank that issues
+  it. The bank picker therefore also offers brand-card shortcuts, each naming
+  the issuing bank, for example "OneCard (Federal Bank)". Picking one fills in
+  that bank, the card type and the brand as the variant; the member can change
+  any of them before saving, and the card is saved as an ordinary card of that
+  bank, so search finds it by bank.
+- A brand issued by several banks has one shortcut per bank.
+- The first set is: OneCard (Federal Bank), OneCard (Bank of Baroda), OneCard
+  (CSB Bank), OneCard (SBM Bank India), OneCard (South Indian Bank), OneCard
+  (Indian Bank), Scapia (Federal Bank), Jupiter Edge (CSB Bank), Jupiter Edge
+  (Federal Bank), Jupiter debit card (Federal Bank), slice (slice Small
+  Finance Bank), Kiwi (YES Bank), Kiwi (Punjab National Bank), Kiwi KOSMO (AU
+  Small Finance Bank), Tata Neu (HDFC Bank), Tata Neu (SBI), Amazon Pay (ICICI
+  Bank), Flipkart (SBI), Flipkart (Axis Bank), Swiggy (HDFC Bank), Airtel (Axis
+  Bank), PhonePe (HDFC Bank), POP (YES Bank), BharatPe (Unity Small Finance
+  Bank), superCard (Axis Bank), superCard (Kotak Mahindra Bank) and superCard
+  (Utkarsh Small Finance Bank). All are credit cards except the Jupiter debit
+  card.
+- Like banks, shortcuts change only when the owner releases a new version:
+  they can be added, renamed or retired from the picker. A shortcut never
+  changes a saved card.
 
 **Add a card**
 - A member adds a card by picking the bank, picking credit or debit, and
@@ -130,6 +162,9 @@ tells members never to enter them (decision 0002).
 12. Adding a card records one "card listed" usage event carrying the member and
     the circles they belong to at that moment, or no circle.
 13. The add and edit screens show the never-enter-card-details reminder, and
-    the add screen shows the owner's contact address for a missing bank.
+    the add screen's "Bank not listed? Ask us to add it" button opens an email
+    to the owner's contact address with the request filled in.
 14. Correcting a bank's display name changes it on every existing card of that
     bank without affecting search matches.
+15. Picking a brand-card shortcut fills in its issuing bank, card type and
+    brand as the variant, and the saved card is an ordinary card of that bank.
