@@ -2,22 +2,14 @@
   "branch": "task/CWF-3-T1A",
   "review": {
     "blocking_level": "P1",
-    "changed": "82acf2407ea6a84816e24247462221d1e72c98a77533f2694cde930c6df7d909",
-    "commit": "e0979cfbf60dd27ccdba6becef0715aa0cadbbfa",
+    "changed": "6b5837012eb443e6cb415343d98645b4ecfa4c6f26b5dff6299ef94320519984",
+    "commit": "15fdcbb5dfe4d48518e0d44ce59215ed4073d022",
     "dismissals": [],
-    "findings": [
-      {
-        "body": "The new tests cover `CVV 811`, but `Card number: 811` is new evidence of the same unsafe-digit gap. Neither `card` nor `number` appears in this list, so the helper removes the standalone `811` before checking for three digits and returns the variant as valid. An explicit card-detail variant must be refused. Restrict the product-number exception to product-name contexts and test this case.",
-        "file": "apps/api/src/modules/cards/card-rules.helper.ts",
-        "line": 7,
-        "priority": "P1",
-        "title": "Not done: Refuse card-number variants with 811"
-      }
-    ],
-    "status": "blocked",
-    "tree": "b2c1dd09906e2a8685ab3db1950f070e5f4e9968191dd783cb2f3170871504b1"
+    "findings": [],
+    "status": "clean",
+    "tree": "379ed7ae4ce6f76d642bb20f08d6741464aee93ba6fdc3d7c72c5f1eda6cd85c"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-18T06:46:14+00:00",
@@ -41,6 +33,10 @@
     },
     {
       "at": "2026-10-18T08:18:04+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-18T08:28:07+00:00",
       "step": "review"
     }
   ]
