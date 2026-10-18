@@ -89,6 +89,13 @@ tells members never to enter them (decision 0002).
   or more digits in a row, ignoring spaces, dashes and slashes between them, is
   rejected with a message saying never to enter card numbers, CVVs, expiry
   dates or OTPs.
+- Some real card names contain a number. A short allow-list of such product
+  numbers is accepted when the number stands on its own as a whole word, with
+  no other digit touching it or joined to it by a space, dash or slash. The
+  list starts with "811" (Kotak 811), so "Kotak 811" and "811 Dream
+  Different" are accepted, while "8110", "811 123" and "811-4567" are still
+  rejected. The rule is applied to the rest of the variant as before. The list
+  changes only when the owner releases a new version.
 - The add and edit screens always show a reminder never to enter card
   numbers, CVV, expiry or OTPs.
 - A member cannot hold two identical cards. Cards are identical when bank,
@@ -168,3 +175,6 @@ tells members never to enter them (decision 0002).
     bank without affecting search matches.
 15. Picking a brand-card shortcut fills in its issuing bank, card type and
     brand as the variant, and the saved card is an ordinary card of that bank.
+16. A variant containing an allow-listed product number, such as "Kotak 811",
+    is accepted, while the same number joined to other digits, such as
+    "811 123", is rejected with the never-enter-card-details message.
