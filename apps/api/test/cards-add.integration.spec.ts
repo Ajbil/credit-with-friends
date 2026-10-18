@@ -6,10 +6,11 @@ import { fileURLToPath } from 'node:url';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
-import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
+import { ThrottlerStorage, ThrottlerStorageService } from '@nestjs/throttler';
+import { PinoLogger } from 'nestjs-pino';
+import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import type { ApiConfig } from '../src/common/config/config.module';
 import { PrismaService } from '../src/common/database/prisma.service';
-import { ApiExceptionFilter } from '../src/common/api/api-exception.filter';
 import { ServiceBus } from '../src/service-bus/service-bus.service';
 import { UsageEventRecorder } from '../src/modules/usage/usage-event-recorder.service';
 
@@ -93,6 +94,7 @@ async function blockedRequests(memberId: string, requests: Array<() => Promise<A
 }
 
 describe('my cards API', () => {
+  beforeEach(() => app.get<ThrottlerStorageService>(ThrottlerStorage).onApplicationShutdown());
   beforeAll(async () => {
     for (const [name, value] of Object.entries({ API_ORIGIN: 'http://localhost:3000', WEB_ORIGIN: origin, DATABASE_URL: databaseUrl.toString(), OWNER_CONTACT_EMAIL: 'owner@example.in', SESSION_SECRET: 'integration-test-secret-with-enough-entropy', PRELAUNCH_ALLOWED_EMAILS: 'listed@example.in', LAUNCH_OPEN: 'false', TEST_AUTH_ENABLED: 'true', NODE_ENV: 'test' })) vi.stubEnv(name, value);
     execFileSync(process.execPath, [fileURLToPath(new URL('../node_modules/prisma/build/index.js', import.meta.url)), 'migrate', 'deploy'], { cwd: fileURLToPath(new URL('../', import.meta.url)), env: { ...process.env, DATABASE_URL: databaseUrl.toString() } });
@@ -226,18 +228,23 @@ describe('my cards API', () => {
   test('done-when-2: a refused card-like variant is absent from cards and logs', async () => {
     const owner = await member('cards-private-refusal');
     const unsafe = 'Private 123 456 789';
-    const filter = (app as unknown as { config: { getGlobalFilters(): unknown[] } }).config.getGlobalFilters().find((value): value is ApiExceptionFilter => value instanceof ApiExceptionFilter);
-    expect(filter).toBeDefined();
-    const debug = vi.spyOn(filter!['logger'], 'debug');
+    const root = PinoLogger.root as unknown as Record<symbol, { write: (chunk: string) => boolean }>;
+    const streamSymbol = Object.getOwnPropertySymbols(root).find((symbol) => symbol.toString() === 'Symbol(pino.stream)');
+    expect(streamSymbol).toBeDefined();
+    const destination = root[streamSymbol!];
+    const lines: string[] = [];
+    const write = destination.write.bind(destination);
+    const capture = vi.spyOn(destination, 'write').mockImplementation((chunk) => { lines.push(String(chunk)); return write(chunk); });
     try {
       const refused = await add(owner.cookie, { bankId: 'hdfc-bank', type: 'credit', variant: unsafe });
       expect(refused.response.status).toBe(400);
       expect(refused.payload.error.code).toBe('CARD_VARIANT_UNSAFE');
       expect(await db.card.count({ where: { memberId: owner.id } })).toBe(0);
-      expect(debug).toHaveBeenCalled();
-      expect(JSON.stringify(debug.mock.calls)).not.toContain(unsafe);
+      await vi.waitFor(() => expect(lines.join('')).toContain(refused.payload.error.correlationId));
+      expect(lines.some((line) => line.includes('API request completed'))).toBe(true);
+      expect(lines.join('')).not.toContain(unsafe);
     } finally {
-      debug.mockRestore();
+      capture.mockRestore();
     }
   });
 
@@ -278,6 +285,68 @@ describe('my cards API', () => {
     await vi.waitFor(async () => expect(await db.usageEvent.count({ where: { memberId: target.id, type: 'card_listed' } })).toBe(1));
     const event = await db.usageEvent.findFirstOrThrow({ where: { memberId: target.id, type: 'card_listed' }, include: { circles: true } });
     expect(event.circles).toEqual([]);
+  });
+
+  test('done-when-6: a leave waits behind an add that already captured its circle', async () => {
+    const admin = await member('cards-add-first-admin');
+    const target = await member('cards-add-first-target');
+    const secondSession = await member('cards-add-first-target');
+    const circle = await call('/circles', 'POST', admin.cookie, { name: 'Add before leave' });
+    expect(circle.response.status).toBe(201);
+    const circleId = circle.payload.data.id as string;
+    const invite = await call(`/circles/${circleId}/invite`, 'GET', admin.cookie);
+    const code = (invite.payload.data.url as string).split('/').at(-1)!;
+    expect((await call(`/circle-invites/${code}/join`, 'POST', target.cookie)).response.status).toBe(200);
+
+    const lockUrl = new URL(databaseUrl);
+    lockUrl.searchParams.set('application_name', `${schemaName}_card_hold`);
+    const lockDb = new PrismaClient({ datasources: { db: { url: lockUrl.toString() } } });
+    let release!: () => void;
+    let ready!: (pid: number) => void;
+    const released = new Promise<void>((resolve) => { release = resolve; });
+    const locked = new Promise<number>((resolve) => { ready = resolve; });
+    const blocker = lockDb.$transaction(async (tx) => {
+      const [{ pid }] = await tx.$queryRaw<Array<{ pid: number }>>`SELECT pg_backend_pid() AS pid`;
+      await tx.$executeRaw`LOCK TABLE "Card" IN ACCESS EXCLUSIVE MODE`;
+      ready(pid);
+      await released;
+    }, { timeout: 30_000 });
+    let addRequest: ReturnType<typeof add> | undefined;
+    let leaveRequest: ReturnType<typeof call> | undefined;
+    let waitError: unknown;
+    try {
+      const blockerPid = await locked;
+      addRequest = add(secondSession.cookie, { bankId: 'hdfc-bank', type: 'debit' });
+      let addPid = 0;
+      await vi.waitFor(async () => {
+        const waiting = await db.$queryRaw<Array<{ pid: number; blockers: number[] }>>`
+          SELECT pid, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
+          WHERE application_name = ${`${schemaName}_api`} AND wait_event_type = 'Lock'`;
+        const addWait = waiting.find(({ blockers }) => blockers.includes(blockerPid));
+        expect(addWait, JSON.stringify(waiting)).toBeDefined();
+        addPid = addWait!.pid;
+      }, { timeout: 4_000 });
+      leaveRequest = call(`/circles/${circleId}/leave`, 'POST', target.cookie);
+      await vi.waitFor(async () => {
+        const waiting = await db.$queryRaw<Array<{ pid: number; blockers: number[] }>>`
+          SELECT pid, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
+          WHERE application_name = ${`${schemaName}_api`} AND wait_event_type = 'Lock'`;
+        expect(waiting.find(({ pid, blockers }) => pid !== addPid && blockers.includes(addPid)), JSON.stringify(waiting)).toBeDefined();
+      }, { timeout: 4_000 });
+    } catch (error) {
+      waitError = error;
+    } finally {
+      release();
+      try { await blocker; } finally { await lockDb.$disconnect(); }
+    }
+    const [added, left] = await Promise.all([addRequest, leaveRequest]);
+    if (waitError) throw waitError;
+    expect(added?.response.status).toBe(201);
+    expect(left?.response.status).toBe(200);
+    await vi.waitFor(async () => expect(await db.usageEvent.count({ where: { memberId: target.id, type: 'card_listed' } })).toBe(1));
+    const event = await db.usageEvent.findFirstOrThrow({ where: { memberId: target.id, type: 'card_listed' }, include: { circles: true } });
+    expect(event.circles.map(({ circleId: eventCircleId }) => eventCircleId)).toEqual([circleId]);
+    expect(await db.circleMembership.count({ where: { memberId: target.id, circleId } })).toBe(0);
   });
 
   test('done-when-6: recording the same event twice counts it once', async () => {
