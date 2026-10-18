@@ -39,6 +39,35 @@ model Member {
   circleMemberships   CircleMembership[]
   circleRemovalBlocks  CircleRemovalBlock[]
   usageEvents         UsageEvent[]
+  cards               Card[]
+}
+
+model Bank {
+  id           String   @id
+  displayName  String
+  sortName     String
+  createdAtUtc DateTime @default(now())
+  updatedAtUtc DateTime @updatedAt
+  cards        Card[]
+
+  @@index([sortName], map: "idx_Bank_sortName")
+}
+
+model Card {
+  id           String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  memberId     String   @db.Uuid
+  bankId       String
+  type         String
+  variant      String?
+  variantKey   String   @default("")
+  createdAtUtc DateTime @default(now())
+  updatedAtUtc DateTime @updatedAt
+  member       Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  bank         Bank     @relation(fields: [bankId], references: [id])
+
+  @@unique([memberId, bankId, type, variantKey])
+  @@index([memberId], map: "idx_Card_memberId")
+  @@index([bankId], map: "idx_Card_bankId")
 }
 
 model Circle {
