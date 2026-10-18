@@ -108,8 +108,9 @@ The spec is `docs/specs/cards.md`; the tables are `Bank` and `Card` in
      - `CARD_BANK_UNKNOWN`, 400, field error on `bankId`: "Choose a bank from the list.";
      - `CARD_VARIANT_TOO_LONG`, 400, field error on `variant`: "Use at most 40 characters.";
      - `CARD_VARIANT_UNSAFE`, 400, field error on `variant`, for three or more digits in a row
-       ignoring spaces, dashes and slashes between them: "This looks like card details. Never
-       enter card numbers, CVVs, expiry dates or OTPs.";
+       ignoring spaces, dashes and slashes between them, except the spec's bank-tied product
+       numbers (811 on a Kotak Mahindra Bank card, never next to a card-details word): "This looks
+       like card details. Never enter card numbers, CVVs, expiry dates or OTPs.";
      - `CARD_DUPLICATE`, 409, form-level, when bank, type and variant match (variants compared
        case-insensitively after trimming, empty counted as one value): "You've already listed
        this card.";
@@ -126,7 +127,10 @@ The spec is `docs/specs/cards.md`; the tables are `Bank` and `Card` in
      or OTPs." at all times, field errors beside their field, and form-level errors above the
      Save button.
    - Tests: unit tests (T1A) for every rule, including "12 34", "1-2-3" and "1/2/3" refused and
-     "2 Gold" or "Regalia 2.0" allowed; integration tests (T1B) for each refusal through the API,
+     "2 Gold" or "Regalia 2.0" allowed, and the spec's bank-tied allow-list (merged in the cards
+     spec as acceptance criterion 16): on a Kotak Mahindra Bank card "Kotak 811" and "811 Dream
+     Different" allowed; "8110", "811 123", "CVV 811" and "Card number: 811" refused; "811" on any
+     other bank refused. T1A implemented and tested this; integration tests (T1B) for each refusal through the API,
      missing and malformed bank and type, the same bank and type with a different variant
      allowed, the limit race, the identical-add race, and a refused unsafe variant leaving no
      card row and no log line containing it; web tests (T4E) for each message in its place.
@@ -196,7 +200,9 @@ The spec is `docs/specs/cards.md`; the tables are `Bank` and `Card` in
    - "Your cards" stays reachable from the home screen at any time.
    - Tests: T4E tests the add screen's return path, including an outside URL ignored. T4D tests
      the plain onboarding route (Skip lands on the circles list; adding a card lands on "Your
-     cards"), a failed invite load followed by a successful retry still showing the invitation,
+     cards"), a failed invite load followed by a successful retry still showing the invitation, a
+     failed Join followed by a successful retry still showing it, a different invite opened while
+     the first invite's flag is still set showing no invitation and clearing the flag,
      the invite route (saving a card from the invitation and skipping
      both land in the circle), a later visit or reload of the invite showing no invitation once
      the flag is cleared, and a dead or reset invite clearing the flag so a later valid invite in
@@ -294,6 +300,11 @@ member card browsing, both as the architecture overview and the modular-monolith
 require.
 
 ## Notes
+
+Decided: the three-digit rule has one owner-approved exception: a bank-tied allow-list of product
+numbers, starting with 811 on a Kotak Mahindra Bank card and never next to a card-details word.
+The general rule in "What changes for you", Risks and spec criterion 3 stays as written; spec
+criterion 16 is the specific exception and wins where they meet (owner, 2026-10-18).
 
 ### What I need from you
 
