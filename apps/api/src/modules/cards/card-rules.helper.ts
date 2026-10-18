@@ -3,6 +3,8 @@ import { BadRequestException, ConflictException } from '@nestjs/common';
 type CardInput = { bankId?: unknown; type?: unknown; variant?: unknown };
 type ExistingCard = { id: string; bankId: string; type: string; variantKey: string };
 
+export const ALLOWED_CARD_PRODUCT_NUMBERS: readonly string[] = ['811'];
+
 function fieldRefusal(code: string, field: string, reason: string): never {
   throw new BadRequestException({ code, details: { fieldErrors: [{ field, reason }] } });
 }
@@ -19,7 +21,15 @@ export function applyCardRules(input: CardInput, banks: ReadonlySet<string>, car
     fieldRefusal('VALIDATION_ERROR', 'variant', 'Enter a card variant or leave it blank.');
   }
   const variant = typeof input.variant === 'string' ? input.variant.trim() : '';
-  if (/\p{Nd}(?:[ \-/]*\p{Nd}){2}/u.test(variant)) {
+  const checkedVariant = variant.replace(/\p{Nd}+/gu, (digits, offset: number) => {
+    if (!ALLOWED_CARD_PRODUCT_NUMBERS.includes(digits)) return digits;
+    const before = variant.slice(0, offset);
+    const after = variant.slice(offset + digits.length);
+    const touchesWord = /[\p{L}\p{N}\p{M}_]$/u.test(before) || /^[\p{L}\p{N}\p{M}_]/u.test(after);
+    const joinsDigits = /\p{Nd}[\s\p{Pd}/]*$/u.test(before) || /^[\s\p{Pd}/]*\p{Nd}/u.test(after);
+    return touchesWord || joinsDigits ? digits : '';
+  });
+  if (/\p{Nd}(?:[\s\p{Pd}/]*\p{Nd}){2}/u.test(checkedVariant)) {
     fieldRefusal('CARD_VARIANT_UNSAFE', 'variant', 'This looks like card details. Never enter card numbers, CVVs, expiry dates or OTPs.');
   }
   if (Array.from(variant).length > 40) fieldRefusal('CARD_VARIANT_TOO_LONG', 'variant', 'Use at most 40 characters.');

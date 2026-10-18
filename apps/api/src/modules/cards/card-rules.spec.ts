@@ -31,6 +31,18 @@ describe('card rules shared by add and edit', () => {
     expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE', details: { fieldErrors: [{ field: 'variant', reason: 'This looks like card details. Never enter card numbers, CVVs, expiry dates or OTPs.' }] } });
   });
 
+  test.each(['Kotak 811', '811 Dream Different'])('allows standalone card-product number in %s', (variant) => {
+    expect(applyCardRules({ bankId: 'hdfc-bank', type: 'credit', variant }, banks, listed).variant).toBe(variant);
+  });
+
+  test.each(['8110', '811 123', '811-4567', '123 811', '811/811'])('refuses product number joined to other digits in %s', (variant) => {
+    expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE' });
+  });
+
+  test.each(['811–123', '811\u00a0123', '1–2–3', '1\u00a02\u00a03'])('refuses card-like digits separated by typographic spaces or dashes in %s', (variant) => {
+    expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE' });
+  });
+
   test('a variant over 40 characters after trimming is refused', () => {
     expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant: ` ${'a'.repeat(41)} ` }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_TOO_LONG', details: { fieldErrors: [{ field: 'variant', reason: 'Use at most 40 characters.' }] } });
   });
