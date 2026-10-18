@@ -2,50 +2,43 @@
   "branch": "task/CWF-3-T1B",
   "review": {
     "blocking_level": "P1",
-    "changed": "6f43aa8a337b6edb60958e55bc38d6081964f3f647ff685b01dec65630f3b8c8",
-    "commit": "d158f681e2674b17bb345366cbfc041daa438b19",
+    "changed": "2a697c255a0cbbdcbed4514ddd502ea391274fabdf6f746d83f3999ad2cf81ae",
+    "commit": "ed38ca5dac21fe3b8943a37a001d7ecf08cc5edb",
     "dismissals": [],
     "findings": [
       {
-        "body": "The leave race queues the leave before the add, then expects an empty circle snapshot. That can pass even if the add stops locking membership rows: the leave may finish before the add reads them. The observed-wait check proves both requests wait behind the external blocker, but never proves a leave waits behind an add that already holds its snapshot. Add that interleaving and assert the event retains the circle held when the add took its locks.",
-        "file": "apps/api/test/cards-add.integration.spec.ts",
-        "line": 273,
-        "priority": "P1",
-        "title": "Not done: add-first membership race test"
+        "body": "This added failed-Join retry case, together with the following different-invite case, changes the plan for Done-when 5. That item is context only for this part, and the plan file is outside the permitted paths. The API list-and-add work does not need these T4D test-plan edits.",
+        "file": "plans/CWF-3.md",
+        "line": 204,
+        "priority": "P2",
+        "title": "Out of scope: move the invite-flow plan edit to T4D"
       },
       {
-        "body": "This assertion inspects only calls to the exception filter's `debug` method. A rejected variant written by another logger method or request logger would leave this test passing, so it does not prove the required absence from log lines. Capture the emitted test logs across the request and assert the unsafe value appears in none of them.",
-        "file": "apps/api/test/cards-add.integration.spec.ts",
-        "line": 238,
-        "priority": "P1",
-        "title": "Not done: refused unsafe variant leaves no log line"
-      },
-      {
-        "body": "This branch adds the list and add API, but the Your cards screen, bank picker, brand shortcuts, and browser flow are assigned to T4A and T4E. Those tasks must complete the user-facing part of Done-when 1.",
+        "body": "This branch provides the list and add API. The Your cards screen, bank picker, 27 brand shortcuts, and browser flow remain assigned to T4A and T4E.",
         "file": "apps/api/src/modules/cards/my-cards.controller.ts",
         "line": 13,
         "priority": "P2",
         "title": "Later: T4A and T4E \u2014 complete the Your cards and shortcut flow"
       },
       {
-        "body": "The POST endpoint exposes the add refusals, while T1D owns editing and T4E and T4B own the add and edit reminders and error placement. Those later tasks must finish the screen and edit portions of Done-when 2.",
+        "body": "The POST endpoint exposes add refusals. T1D owns editing, while T4E and T4B own the add and edit reminders and placement of field and form errors.",
         "file": "apps/api/src/modules/cards/my-cards.controller.ts",
         "line": 25,
         "priority": "P2",
         "title": "Later: T1D, T4E and T4B \u2014 complete edit rules and screen refusals"
       },
       {
-        "body": "Card event publication is implemented for adds. T1D owns the edit and removal endpoints and the test that neither publishes a `CardListedEvent`; that part of Done-when 6 remains for T1D.",
+        "body": "Event publication is implemented for adds. T1D owns the edit and removal endpoints and the test that neither publishes a CardListedEvent.",
         "file": "apps/api/src/modules/cards/my-cards.service.ts",
         "line": 36,
         "priority": "P2",
         "title": "Later: T1D \u2014 prove edits and removals record no card event"
       }
     ],
-    "status": "blocked",
-    "tree": "f5adc7269377cc278cc5d036a177852b33ff44c7c99ef747f5025bcb41d6be44"
+    "status": "clean",
+    "tree": "f1fd97294b0f141afa18fa9dc32561adab8061697b6e73bf8396435da4e97476"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-18T10:07:20+00:00",
@@ -53,6 +46,10 @@
     },
     {
       "at": "2026-10-18T11:21:17+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-18T13:56:51+00:00",
       "step": "review"
     }
   ]
