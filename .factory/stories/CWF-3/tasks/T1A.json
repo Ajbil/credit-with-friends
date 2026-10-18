@@ -2,40 +2,33 @@
   "branch": "task/CWF-3-T1A",
   "review": {
     "blocking_level": "P1",
-    "changed": "562bceca2c7aec328e78539c822c02cee12034899d48b4aa12a95b10c43cc2a4",
-    "commit": "29aa51dbbb86d26163157269baf487849eed8d4c",
+    "changed": "4aa5f7e702c1e03428edc01e5a8fdd4ac2c5ddd03bdf47f656cf54c8eaac3fc1",
+    "commit": "b238d413f7f6028c315286af85b95a693f58179d",
     "dismissals": [],
     "findings": [
       {
-        "body": "The integration test checks the count, unique IDs, sort order, and two sample names. Replacing any other seeded bank with a different, correctly sorted bank would still pass. Since the migration already inserts rows in name order, removing the runtime sort may also leave this test passing. T1A's required proof of the 57-bank catalog needs assertions against the complete expected list and a case that changes sort order.",
+        "body": "The test asserts the complete sequence of display names, but checks most bank IDs only for uniqueness. Changing an unasserted slug while keeping its display name would still pass, even though cards and brand shortcuts depend on those IDs. Assert the expected ID and name pair for every seeded bank.",
         "file": "apps/api/test/cards-banks.integration.spec.ts",
-        "line": 62,
+        "line": 79,
         "priority": "P1",
-        "title": "Not done: seeded bank list and order test"
+        "title": "Not done: seeded bank IDs test"
       },
       {
-        "body": "The card-rules tests inspect exceptions directly, and the bank integration test never sends a card refusal through this filter. Removing or changing CARD_ERRORS would leave those tests passing while API responses lose the required CARD_* codes and messages. This task owns the filter contract, so its status, code, message, and field-error mapping need a test even though add and edit endpoints arrive later.",
-        "file": "apps/api/src/common/api/api-exception.filter.ts",
-        "line": 25,
-        "priority": "P1",
-        "title": "Not done: card refusal error contract test"
-      },
-      {
-        "body": "The separator class matches only an ASCII space, hyphen, or slash. Variants such as `1\u20132\u20133` and `1\u00a02\u00a03` pass even though they contain three digits separated by dashes or spaces. Extend the guard to cover those common Unicode separators before this helper is used to store variants.",
+        "body": "The separator class recognizes only ASCII spaces, hyphens and slashes. A variant such as `1\u20132\u20133` or `1\u00a02\u00a03` passes despite containing three digits separated by dashes or spaces. Include common Unicode spaces and dashes in the guard.",
         "file": "apps/api/src/modules/cards/card-rules.helper.ts",
         "line": 22,
         "priority": "P2",
         "title": "Reject card-like digits separated by typographic spaces or dashes"
       },
       {
-        "body": "This module registers only the bank controller, so the branch cannot yet refuse card submissions through add or edit endpoints or show the reminder and error placement on those screens. The Tasks table assigns the add API and race tests to T1B, edit API to T1D, and the screens to T4E and T4B. Those tasks must complete Done-when item 2.",
+        "body": "The module currently registers only the bank controller. The add and edit API refusals, concurrency guarantees, and reminder and error placement on the web screens therefore remain for T1B, T1D, T4E and T4B, as assigned in the story plan.",
         "file": "apps/api/src/modules/cards/cards.module.ts",
         "line": 4,
         "priority": "P2",
         "title": "Later: T1B, T1D, T4E and T4B complete the refusals and reminders"
       },
       {
-        "body": "GET /banks supplies the contact address and this branch tests a corrected name there, but it has no card-view endpoint or add screen. The Tasks table assigns corrected names in the holder's and another member's card views to T1C, and the visible mailto request button to T4E. Those tasks must complete Done-when item 7.",
+        "body": "This branch supplies the contact address and tests a corrected name in GET /banks, but has no card-view endpoint or add screen. T1C owns the renamed name in both card views; T4E owns the visible mailto request button.",
         "file": "apps/api/src/modules/cards/cards.module.ts",
         "line": 4,
         "priority": "P2",
@@ -43,7 +36,7 @@
       }
     ],
     "status": "blocked",
-    "tree": "8687ea834886be7f2a801e3305fdd9c8f23811603decfa43b507dc6bda27dde1"
+    "tree": "3b9b0ce03c1be1563428fdba1fe5d9d99d1502bc3d27d9456c47f2e9b44ba908"
   },
   "status": "fixing",
   "steps": [
@@ -53,6 +46,10 @@
     },
     {
       "at": "2026-10-18T07:26:59+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-18T07:39:13+00:00",
       "step": "review"
     }
   ]
