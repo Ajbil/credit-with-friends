@@ -35,6 +35,14 @@ describe('card rules shared by add and edit', () => {
     expect(applyCardRules({ bankId: 'hdfc-bank', type: 'credit', variant }, banks, listed).variant).toBe(variant);
   });
 
+  test.each(['CVV 811', '811 cvv', 'OTP 811', 'Exp 811', 'PIN: 811', 'CVC 811', 'expiry 811'])('refuses card-detail words beside product number in %s', (variant) => {
+    expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE', details: { fieldErrors: [{ field: 'variant', reason: 'This looks like card details. Never enter card numbers, CVVs, expiry dates or OTPs.' }] } });
+  });
+
+  test('card-detail words must stand alone to disable a product number', () => {
+    expect(applyCardRules({ bankId: 'hdfc-bank', type: 'credit', variant: 'CVVPlus 811' }, banks, listed).variant).toBe('CVVPlus 811');
+  });
+
   test.each(['8110', '811 123', '811-4567', '123 811', '811/811'])('refuses product number joined to other digits in %s', (variant) => {
     expect(refusal({ bankId: 'hdfc-bank', type: 'credit', variant }).getResponse()).toMatchObject({ code: 'CARD_VARIANT_UNSAFE' });
   });
