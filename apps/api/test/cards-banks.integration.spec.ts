@@ -59,12 +59,38 @@ describe('cards bank list API', () => {
     const all = await Promise.all([1, 2, 3].map((page) => call(`/banks?page=${page}`, cookie)));
     expect(all.map(({ response }) => response.status)).toEqual([200, 200, 200]);
     const banks = all.flatMap(({ payload }) => payload.data.items);
-    expect(banks).toHaveLength(57);
+    expect(banks.map(({ displayName }: { displayName: string }) => displayName)).toEqual([
+      'Airtel Payments Bank', 'American Express', 'AU Small Finance Bank', 'Axis Bank',
+      'Bandhan Bank', 'Bank of Baroda', 'Bank of India', 'Bank of Maharashtra',
+      'Canara Bank', 'Capital Small Finance Bank', 'Central Bank of India', 'City Union Bank',
+      'The Cosmos Co-operative Bank', 'CSB Bank', 'DBS Bank', 'DCB Bank',
+      'Deutsche Bank', 'Dhanlaxmi Bank', 'Equitas Small Finance Bank', 'ESAF Small Finance Bank',
+      'Federal Bank', 'Fino Payments Bank', 'HDFC Bank', 'HSBC',
+      'ICICI Bank', 'IDBI Bank', 'IDFC FIRST Bank', 'India Post Payments Bank',
+      'Indian Bank', 'Indian Overseas Bank', 'IndusInd Bank', 'Jammu & Kashmir Bank',
+      'Jana Small Finance Bank', 'Jio Payments Bank', 'Karnataka Bank', 'Karur Vysya Bank',
+      'Kotak Mahindra Bank', 'NSDL Payments Bank', 'Punjab & Sind Bank', 'Punjab National Bank',
+      'RBL Bank', 'The Saraswat Co-operative Bank', 'SBM Bank India', 'Shivalik Small Finance Bank',
+      'slice Small Finance Bank', 'South Indian Bank', 'Standard Chartered', 'State Bank of India (SBI)',
+      'Suryoday Small Finance Bank', 'SVC Co-operative Bank', 'Tamilnad Mercantile Bank', 'UCO Bank',
+      'Ujjivan Small Finance Bank', 'Union Bank of India', 'Unity Small Finance Bank',
+      'Utkarsh Small Finance Bank', 'YES Bank',
+    ]);
     expect(new Set(banks.map(({ id }: { id: string }) => id)).size).toBe(57);
     expect(all[0].payload.data).toMatchObject({ contactEmail: 'owner@example.in', pagination: { page: 1, limit: 20, totalItems: 57, totalPages: 3 } });
-    expect(banks.map(({ sortName }: { sortName: string }) => sortName)).toEqual([...banks.map(({ sortName }: { sortName: string }) => sortName)].sort((a, b) => a.localeCompare(b, 'en')));
     expect(banks.find(({ id }: { id: string }) => id === 'state-bank-of-india')).toMatchObject({ displayName: 'State Bank of India (SBI)', sortName: 'State Bank of India (SBI)' });
     expect(banks.find(({ id }: { id: string }) => id === 'cosmos-co-operative-bank')).toMatchObject({ displayName: 'The Cosmos Co-operative Bank', sortName: 'Cosmos Co-operative Bank' });
+
+    await db.bank.create({ data: { id: 'sort-probe-bank', displayName: 'Aardvark Test Bank', sortName: 'Jupiter Test Bank' } });
+    try {
+      const withProbe = await call('/banks?limit=100', cookie);
+      expect(withProbe.response.status).toBe(200);
+      const names = withProbe.payload.data.items.map(({ displayName }: { displayName: string }) => displayName);
+      expect(names.indexOf('Aardvark Test Bank')).toBe(names.indexOf('Jio Payments Bank') + 1);
+      expect(names.indexOf('Aardvark Test Bank')).toBe(names.indexOf('Karnataka Bank') - 1);
+    } finally {
+      await db.bank.delete({ where: { id: 'sort-probe-bank' } });
+    }
 
     await db.bank.update({ where: { id: 'hdfc-bank' }, data: { displayName: 'HDFC Bank corrected' } });
     const renamed = await call('/banks?limit=57', cookie);
