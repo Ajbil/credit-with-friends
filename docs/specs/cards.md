@@ -94,7 +94,9 @@ tells members never to enter them (decision 0002).
   no other digit touching it or joined to it by a space, dash or slash. The
   list starts with "811" (Kotak 811), so "Kotak 811" and "811 Dream
   Different" are accepted, while "8110", "811 123" and "811-4567" are still
-  rejected. The rule is applied to the rest of the variant as before. The list
+  rejected. The exception never applies when the variant also contains a
+  card-details word (CVV, CVC, OTP, PIN, expiry or exp, as a whole word in any
+  letter case), so "CVV 811" is rejected. The rule is applied to the rest of the variant as before. The list
   changes only when the owner releases a new version.
 - The add and edit screens always show a reminder never to enter card
   numbers, CVV, expiry or OTPs.
@@ -177,4 +179,5 @@ tells members never to enter them (decision 0002).
     brand as the variant, and the saved card is an ordinary card of that bank.
 16. A variant containing an allow-listed product number, such as "Kotak 811",
     is accepted, while the same number joined to other digits, such as
-    "811 123", is rejected with the never-enter-card-details message.
+    "811 123", or next to a card-details word, such as "CVV 811", is rejected
+    with the never-enter-card-details message.
