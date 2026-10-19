@@ -130,20 +130,33 @@ describe('edit and remove my cards API', () => {
 
   test('done-when-3: a member edits and removes their card without listing it again', async () => {
     const owner = await member('cards-edit-owner');
+    const recorderProbe = await member('cards-edit-recorder-probe');
     const id = await add(owner.cookie, 'hdfc-bank', 'Millennia');
     await vi.waitFor(async () => expect(await db.usageEvent.count({ where: { memberId: owner.id, type: 'card_listed' } })).toBe(1));
     const publish = vi.spyOn(app.get(ServiceBus), 'publish');
     try {
+      const beforeEdit = await db.usageEvent.count();
       const edited = await call(`/me/cards/${id}`, 'PATCH', owner.cookie, { bankId: 'kotak-mahindra-bank', type: 'debit', variant: 'Kotak 811' });
       expect(edited.response.status).toBe(200);
       expect(edited.payload.data).toMatchObject({ id, bankId: 'kotak-mahindra-bank', bankName: 'Kotak Mahindra Bank', type: 'debit', variant: 'Kotak 811' });
       expect((await call('/me/cards', 'GET', owner.cookie)).payload.data.items).toEqual([edited.payload.data]);
+      expect(await db.usageEvent.count()).toBe(beforeEdit);
+      expect(publish).not.toHaveBeenCalled();
+      await add(recorderProbe.cookie, 'axis-bank', 'Recorder probe one');
+      await vi.waitFor(async () => expect(await db.usageEvent.count({ where: { memberId: recorderProbe.id, type: 'card_listed' } })).toBe(1));
+      expect(await db.usageEvent.count()).toBe(beforeEdit + 1);
+      publish.mockClear();
+
+      const beforeRemoval = await db.usageEvent.count();
       const removed = await call(`/me/cards/${id}`, 'DELETE', owner.cookie);
       expect(removed.response.status).toBe(200);
       expect(removed.payload).toMatchObject({ success: true, data: null, error: null });
       expect((await call('/me/cards', 'GET', owner.cookie)).payload.data.items).toEqual([]);
-      expect(await db.usageEvent.count({ where: { memberId: owner.id, type: 'card_listed' } })).toBe(1);
-      expect(publish).not.toHaveBeenCalledWith('CardListedEvent', expect.anything());
+      expect(await db.usageEvent.count()).toBe(beforeRemoval);
+      expect(publish).not.toHaveBeenCalled();
+      await add(recorderProbe.cookie, 'canara-bank', 'Recorder probe two');
+      await vi.waitFor(async () => expect(await db.usageEvent.count({ where: { memberId: recorderProbe.id, type: 'card_listed' } })).toBe(2));
+      expect(await db.usageEvent.count()).toBe(beforeRemoval + 1);
     } finally { publish.mockRestore(); }
   });
 
