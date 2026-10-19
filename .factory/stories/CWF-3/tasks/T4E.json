@@ -2,29 +2,22 @@
   "branch": "task/CWF-3-T4E",
   "review": {
     "blocking_level": "P1",
-    "changed": "28f91daab5a209d95e71028d4cceefbe28b0a86d1ee2c2aff904e9c867da7bc6",
-    "commit": "d6c0f01d1e14ee0c2e034244dfa0ae4ac4e06187",
+    "changed": "e8781dc65d6853e3268c26efc703d6032c7facc44ccc37057fadaa27b1c70e8e",
+    "commit": "d9ff76fe8003d5dab7d459a9ca77a5b8405ddc2a",
     "dismissals": [],
     "findings": [
       {
-        "body": "Selecting a shortcut immediately changes this controlled select\u2019s value from `brand:bankId` to the bare bank ID. The selected option therefore jumps from \u201cPopular brand cards\u201d to the later \u201cBanks\u201d group after an arrow-key change, so keyboard users cannot browse the shortcuts in order. The browser test uses `selectOption` and checks Tab order, which does not catch this. Keep the picker\u2019s selected value separate from the bank ID sent on save, and test shortcut selection with keyboard input. [React\u2019s controlled-select documentation](https://react.dev/reference/react-dom/components/select) describes this value-matching behavior.",
-        "file": "apps/web/src/routes/cards/add/add-card-page.tsx",
-        "line": 95,
-        "priority": "P1",
-        "title": "Not done: keyboard navigation through brand shortcuts"
-      },
-      {
-        "body": "This new task-status file is outside every allowed path and is not needed to deliver the add-card screen or its tests. Remove it from the branch.",
+        "body": "The branch still adds this task-status file outside every permitted path. It is not needed to deliver the add-card screen or its tests, so remove it from the branch.",
         "file": ".factory/stories/CWF-3/tasks/T4E.json",
         "line": 1,
         "priority": "P2",
         "title": "Remove the unrelated task tracker from the branch"
       }
     ],
-    "status": "blocked",
-    "tree": "88ea3dff91536366ac975f6e7b1d42516bb977f8e6a12fb6f641cb80b44a30d1"
+    "status": "clean",
+    "tree": "c5d2b16f045c4c7afc12bc1483df053e8dbbdfbf2fbc6748488785989f514324"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-19T20:50:41+00:00",
@@ -32,6 +25,10 @@
     },
     {
       "at": "2026-10-19T21:34:10+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-19T21:57:14+00:00",
       "step": "review"
     }
   ]
