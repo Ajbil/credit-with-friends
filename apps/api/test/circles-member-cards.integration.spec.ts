@@ -151,7 +151,28 @@ describe('circle member cards API', () => {
     expect(JSON.stringify(result.payload)).not.toContain('9876543210');
   });
 
-  test('done-when-4: a newly joined member sees earlier cards and a second circle remains visible after one membership ends', async () => {
+  test('done-when-4: a newly joined viewer sees an existing member’s earlier card', async () => {
+    const holder = await member('Existing holder');
+    const viewer = await member('New viewer');
+    const id = await circle(holder);
+    const cardId = await add(holder.cookie, 'Regalia');
+    expectMissing(await view(id, holder.id, viewer.cookie));
+
+    const invite = await call(`/circles/${id}/invite`, 'GET', holder.cookie);
+    expect(invite.response.status).toBe(200);
+    const code = (invite.payload.data.url as string).split('/').at(-1)!;
+    expect((await call(`/circle-invites/${code}/join`, 'POST', viewer.cookie)).response.status).toBe(200);
+
+    const result = await view(id, holder.id, viewer.cookie);
+    expect(result.response.status).toBe(200);
+    expect(result.payload.data).toEqual({
+      memberId: holder.id,
+      displayName: 'Existing holder',
+      cards: [{ id: cardId, bankId: 'hdfc-bank', bankName: 'HDFC Bank', type: 'credit', variant: 'Regalia' }],
+    });
+  });
+
+  test('done-when-4: an existing viewer sees a newly joined holder’s earlier card and a second circle remains visible after one membership ends', async () => {
     const viewer = await member('Two circle viewer');
     const holder = await member('Two circle holder');
     const cardId = await add(holder.cookie, 'Regalia');
