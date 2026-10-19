@@ -9,6 +9,8 @@ import { PrismaClient } from '@prisma/client';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import type { ApiConfig } from '../src/common/config/config.module';
 import { PrismaService } from '../src/common/database/prisma.service';
+import { memberCards } from '../src/modules/cards/member-cards.service';
+import { ServiceBus } from '../src/service-bus/service-bus.service';
 
 const origin = 'http://localhost:5173';
 const baseDatabaseUrl = process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5433/credit_with_friends';
@@ -120,6 +122,59 @@ async function raceReadWithMembershipEnd(circleId: string, holderId: string, vie
   const [read, ended] = await Promise.all([readPromise, endPromise]);
   if (waitError) throw waitError;
   return { read: read!, ended: ended! };
+}
+
+async function raceMembershipEndWithPausedRead(circleId: string, holderId: string, viewerCookie: string, end: () => Promise<Awaited<ReturnType<typeof call>>>) {
+  const bus = app.get(ServiceBus);
+  let release!: () => void;
+  const paused = new Promise<void>((resolve) => { release = resolve; });
+  let readPid = 0;
+  bus.registerRequest('cards.memberCards', async ({ memberId, tx }) => {
+    const [{ pid }] = await tx.$queryRaw<Array<{ pid: number }>>`SELECT pg_backend_pid() AS pid`;
+    readPid = pid;
+    await paused;
+    return memberCards(memberId, tx);
+  });
+  let readPromise: ReturnType<typeof view> | undefined;
+  let endPromise: ReturnType<typeof end> | undefined;
+  try {
+    const answered: string[] = [];
+    readPromise = view(circleId, holderId, viewerCookie);
+    void readPromise.then(() => { answered.push('read'); }, () => { answered.push('read failed'); });
+    await vi.waitFor(() => expect(readPid).toBeGreaterThan(0), { timeout: 8_000 });
+
+    endPromise = end();
+    void endPromise.then(() => { answered.push('end'); }, () => { answered.push('end failed'); });
+    let endPid = 0;
+    await vi.waitFor(async () => {
+      const waiting = await db.$queryRaw<Array<{ pid: number; query: string; blockers: number[] }>>`
+        SELECT pid, query, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
+        WHERE application_name = ${`${schemaName}_api`} AND wait_event_type = 'Lock'`;
+      const competitor = waiting.find(({ pid, query, blockers }) =>
+        pid !== readPid && blockers.includes(readPid) && query.includes('FOR UPDATE'));
+      expect(competitor, `membership end never waited behind read ${readPid}: ${JSON.stringify(waiting)}`).toBeDefined();
+      endPid = competitor!.pid;
+    }, { timeout: 8_000 });
+
+    expect(await db.circleMembership.findUnique({ where: { circleId_memberId: { circleId, memberId: holderId } } })).not.toBeNull();
+    expect(await db.circleMembership.count({ where: { circleId } })).toBe(2);
+    expect((await db.circle.findUnique({ where: { id: circleId } }))?.deletedAtUtc).toBeNull();
+    const stillWaiting = await db.$queryRaw<Array<{ pid: number; blockers: number[] }>>`
+      SELECT pid, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
+      WHERE application_name = ${`${schemaName}_api`} AND wait_event_type = 'Lock'`;
+    expect(stillWaiting.find(({ pid, blockers }) => pid === endPid && blockers.includes(readPid)), `connection ${endPid} stopped waiting`).toBeDefined();
+    expect(answered).toEqual([]);
+
+    release();
+    const read = await readPromise;
+    const ended = await endPromise;
+    expect(answered).toEqual(['read', 'end']);
+    return { read, ended };
+  } finally {
+    release();
+    await Promise.allSettled([readPromise, endPromise].filter((promise) => promise !== undefined));
+    bus.registerRequest('cards.memberCards', ({ memberId, tx }) => memberCards(memberId, tx));
+  }
 }
 
 describe('circle member cards API', () => {
@@ -246,6 +301,23 @@ describe('circle member cards API', () => {
     if (read.response.status === 200) {
       expect(read.payload.data.cards).toEqual([{ id: cardId, bankId: 'hdfc-bank', bankName: 'HDFC Bank', type: 'credit', variant: 'Millennia' }]);
     } else expectMissing(read);
+    expectMissing(await view(id, holder.id, viewer.cookie));
+  });
+
+  test.each(['leave', 'removal', 'deletion'] as const)('done-when-4: read-first %s waits until the holder’s cards have been read', async (change) => {
+    const viewer = await member(`Read-first viewer ${change}`);
+    const holder = await member(`Read-first holder ${change}`);
+    const id = await circle(viewer, holder);
+    const cardId = await add(holder.cookie);
+    const end = change === 'leave'
+      ? () => call(`/circles/${id}/leave`, 'POST', holder.cookie)
+      : change === 'removal'
+        ? () => call(`/circles/${id}/members/${holder.id}/remove`, 'POST', viewer.cookie)
+        : () => call(`/circles/${id}`, 'DELETE', viewer.cookie);
+    const { read, ended } = await raceMembershipEndWithPausedRead(id, holder.id, viewer.cookie, end);
+    expect(read.response.status).toBe(200);
+    expect(read.payload.data.cards).toEqual([{ id: cardId, bankId: 'hdfc-bank', bankName: 'HDFC Bank', type: 'credit', variant: 'Millennia' }]);
+    expect(ended.response.status).toBe(200);
     expectMissing(await view(id, holder.id, viewer.cookie));
   });
 });
