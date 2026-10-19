@@ -2,7 +2,7 @@
 .circles-header{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:38px}
 .circles-header h1{font-size:clamp(2.8rem,7vw,4.4rem);margin-bottom:12px;text-wrap:balance}
 .circles-header p{color:var(--circle-muted);margin-bottom:0}
-.circles-header>.button{flex:none}
+.circles-nav{display:flex;flex-wrap:wrap;gap:12px;flex:none}
 .circles-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
 .circles-empty{padding:24px 0;border-top:1px solid var(--circle-line)}
 .circles-empty p,.circles-list-region p{color:var(--circle-muted)}

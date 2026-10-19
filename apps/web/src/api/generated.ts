@@ -523,6 +523,217 @@ export interface ManageCircleResponseDto {
   error: ManageCircleResponseDtoError;
 }
 
+export interface BankDto {
+  /** Stable bank identifier. */
+  id: string;
+  /** Current name shown to members. */
+  displayName: string;
+  /** Name used to sort the list, ignoring a leading The. */
+  sortName: string;
+}
+
+export interface BanksPaginationDto {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface BanksDataDto {
+  items: BankDto[];
+  pagination: BanksPaginationDto;
+  /** Email address for requesting a missing bank. */
+  contactEmail: string;
+}
+
+/**
+ * @nullable
+ */
+export type BanksResponseDtoError =
+  (typeof BanksResponseDtoError)[keyof typeof BanksResponseDtoError] | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BanksResponseDtoError = {} as const;
+
+export interface BanksResponseDto {
+  success: boolean;
+  data: BanksDataDto;
+  /** @nullable */
+  error: BanksResponseDtoError;
+}
+
+export type MyCardDtoType = (typeof MyCardDtoType)[keyof typeof MyCardDtoType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MyCardDtoType = {
+  credit: 'credit',
+  debit: 'debit',
+} as const;
+
+export interface MyCardDto {
+  id: string;
+  bankId: string;
+  bankName: string;
+  type: MyCardDtoType;
+  /** @nullable */
+  variant: string | null;
+}
+
+export interface MyCardsDataDto {
+  items: MyCardDto[];
+  pagination: BanksPaginationDto;
+}
+
+/**
+ * @nullable
+ */
+export type MyCardsResponseDtoError =
+  (typeof MyCardsResponseDtoError)[keyof typeof MyCardsResponseDtoError] | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MyCardsResponseDtoError = {} as const;
+
+export interface MyCardsResponseDto {
+  success: boolean;
+  data: MyCardsDataDto;
+  /** @nullable */
+  error: MyCardsResponseDtoError;
+}
+
+/**
+ * Credit or debit card.
+ */
+export type AddCardDtoType =
+  (typeof AddCardDtoType)[keyof typeof AddCardDtoType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AddCardDtoType = {
+  credit: 'credit',
+  debit: 'debit',
+} as const;
+
+export interface AddCardDto {
+  /** Stable id of a bank in the list. */
+  bankId: string;
+  /** Credit or debit card. */
+  type: AddCardDtoType;
+  /**
+   * Optional card variant, never card details.
+   * @maxLength 40
+   */
+  variant?: string;
+}
+
+/**
+ * @nullable
+ */
+export type AddCardResponseDtoError =
+  (typeof AddCardResponseDtoError)[keyof typeof AddCardResponseDtoError] | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AddCardResponseDtoError = {} as const;
+
+export interface AddCardResponseDto {
+  success: boolean;
+  data: MyCardDto;
+  /** @nullable */
+  error: AddCardResponseDtoError;
+}
+
+/**
+ * New card type, if changing types.
+ */
+export type EditCardDtoType =
+  (typeof EditCardDtoType)[keyof typeof EditCardDtoType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EditCardDtoType = {
+  credit: 'credit',
+  debit: 'debit',
+} as const;
+
+export interface EditCardDto {
+  /** New bank id, if changing banks. */
+  bankId?: string;
+  /** New card type, if changing types. */
+  type?: EditCardDtoType;
+  /**
+   * New variant, or null to clear it. Never card details.
+   * @maxLength 40
+   * @nullable
+   */
+  variant?: string | null;
+}
+
+/**
+ * @nullable
+ */
+export type RemoveCardResponseDtoData =
+  | (typeof RemoveCardResponseDtoData)[keyof typeof RemoveCardResponseDtoData]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RemoveCardResponseDtoData = {} as const;
+
+/**
+ * @nullable
+ */
+export type RemoveCardResponseDtoError =
+  | (typeof RemoveCardResponseDtoError)[keyof typeof RemoveCardResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RemoveCardResponseDtoError = {} as const;
+
+export interface RemoveCardResponseDto {
+  success: boolean;
+  /** @nullable */
+  data: RemoveCardResponseDtoData;
+  /** @nullable */
+  error: RemoveCardResponseDtoError;
+}
+
+export type MemberCardDtoType =
+  (typeof MemberCardDtoType)[keyof typeof MemberCardDtoType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MemberCardDtoType = {
+  credit: 'credit',
+  debit: 'debit',
+} as const;
+
+export interface MemberCardDto {
+  id: string;
+  bankId: string;
+  bankName: string;
+  type: MemberCardDtoType;
+  /** @nullable */
+  variant: string | null;
+}
+
+export interface MemberCardsDataDto {
+  memberId: string;
+  displayName: string;
+  cards: MemberCardDto[];
+}
+
+/**
+ * @nullable
+ */
+export type MemberCardsResponseDtoError =
+  | (typeof MemberCardsResponseDtoError)[keyof typeof MemberCardsResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MemberCardsResponseDtoError = {} as const;
+
+export interface MemberCardsResponseDto {
+  success: boolean;
+  data: MemberCardsDataDto;
+  /** @nullable */
+  error: MemberCardsResponseDtoError;
+}
+
 export interface HealthDataDto {
   /** Indicates that the API process is ready. */
   status: string;
@@ -549,6 +760,17 @@ export type GoogleControllerStartParams = {
 };
 
 export type ListCirclesControllerListParams = {
+  /**
+   * Items per page, at most 100.
+   */
+  limit?: number;
+  /**
+   * Page number, starting at 1.
+   */
+  page?: number;
+};
+
+export type BanksControllerListParams = {
   /**
    * Items per page, at most 100.
    */
@@ -1836,6 +2058,378 @@ export const circleManageControllerHandover = async (
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...options?.headers },
       body: JSON.stringify(handOverCircleDto),
+    },
+  );
+};
+
+/**
+ * Returns banks in name order and the contact address for requesting a missing bank.
+ * @summary List banks available for cards
+ */
+export type banksControllerListResponse200 = {
+  data: BanksResponseDto;
+  status: 200;
+};
+
+export type banksControllerListResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type banksControllerListResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type banksControllerListResponseSuccess =
+  banksControllerListResponse200 & {
+    headers: Headers;
+  };
+export type banksControllerListResponseError = (
+  banksControllerListResponse400 | banksControllerListResponse401
+) & {
+  headers: Headers;
+};
+
+export type banksControllerListResponse =
+  banksControllerListResponseSuccess | banksControllerListResponseError;
+
+export const getBanksControllerListUrl = (
+  params?: BanksControllerListParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/banks?${stringifiedParams}`
+    : `/api/v1/banks`;
+};
+
+export const banksControllerList = async (
+  params?: BanksControllerListParams,
+  options?: RequestInit,
+): Promise<banksControllerListResponse> => {
+  return apiFetch<banksControllerListResponse>(
+    getBanksControllerListUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
+};
+
+/**
+ * Shows all cards held by the signed-in member, including members outside circles.
+ * @summary List my cards
+ */
+export type myCardsControllerListResponse200 = {
+  data: MyCardsResponseDto;
+  status: 200;
+};
+
+export type myCardsControllerListResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type myCardsControllerListResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type myCardsControllerListResponseSuccess =
+  myCardsControllerListResponse200 & {
+    headers: Headers;
+  };
+export type myCardsControllerListResponseError = (
+  myCardsControllerListResponse401 | myCardsControllerListResponse403
+) & {
+  headers: Headers;
+};
+
+export type myCardsControllerListResponse =
+  myCardsControllerListResponseSuccess | myCardsControllerListResponseError;
+
+export const getMyCardsControllerListUrl = () => {
+  return `/api/v1/me/cards`;
+};
+
+export const myCardsControllerList = async (
+  options?: RequestInit,
+): Promise<myCardsControllerListResponse> => {
+  return apiFetch<myCardsControllerListResponse>(
+    getMyCardsControllerListUrl(),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
+};
+
+/**
+ * Adds a listed bank, credit or debit type, and optional variant. Never send card numbers, CVV, expiry dates or OTPs.
+ * @summary Add one of my cards
+ */
+export type myCardsControllerAddResponse201 = {
+  data: AddCardResponseDto;
+  status: 201;
+};
+
+export type myCardsControllerAddResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type myCardsControllerAddResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type myCardsControllerAddResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type myCardsControllerAddResponse409 = {
+  data: ApiErrorResponseDto;
+  status: 409;
+};
+
+export type myCardsControllerAddResponseSuccess =
+  myCardsControllerAddResponse201 & {
+    headers: Headers;
+  };
+export type myCardsControllerAddResponseError = (
+  | myCardsControllerAddResponse400
+  | myCardsControllerAddResponse401
+  | myCardsControllerAddResponse403
+  | myCardsControllerAddResponse409
+) & {
+  headers: Headers;
+};
+
+export type myCardsControllerAddResponse =
+  myCardsControllerAddResponseSuccess | myCardsControllerAddResponseError;
+
+export const getMyCardsControllerAddUrl = () => {
+  return `/api/v1/me/cards`;
+};
+
+export const myCardsControllerAdd = async (
+  addCardDto: AddCardDto,
+  options?: RequestInit,
+): Promise<myCardsControllerAddResponse> => {
+  return apiFetch<myCardsControllerAddResponse>(getMyCardsControllerAddUrl(), {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(addCardDto),
+  });
+};
+
+/**
+ * Changes the selected fields on a card you hold. Never send card numbers, CVV, expiry dates or OTPs.
+ * @summary Edit one of my cards
+ */
+export type myCardsControllerEditResponse200 = {
+  data: AddCardResponseDto;
+  status: 200;
+};
+
+export type myCardsControllerEditResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type myCardsControllerEditResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type myCardsControllerEditResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type myCardsControllerEditResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type myCardsControllerEditResponse409 = {
+  data: ApiErrorResponseDto;
+  status: 409;
+};
+
+export type myCardsControllerEditResponseSuccess =
+  myCardsControllerEditResponse200 & {
+    headers: Headers;
+  };
+export type myCardsControllerEditResponseError = (
+  | myCardsControllerEditResponse400
+  | myCardsControllerEditResponse401
+  | myCardsControllerEditResponse403
+  | myCardsControllerEditResponse404
+  | myCardsControllerEditResponse409
+) & {
+  headers: Headers;
+};
+
+export type myCardsControllerEditResponse =
+  myCardsControllerEditResponseSuccess | myCardsControllerEditResponseError;
+
+export const getMyCardsControllerEditUrl = (cardId: string) => {
+  return `/api/v1/me/cards/${cardId}`;
+};
+
+export const myCardsControllerEdit = async (
+  cardId: string,
+  editCardDto: EditCardDto,
+  options?: RequestInit,
+): Promise<myCardsControllerEditResponse> => {
+  return apiFetch<myCardsControllerEditResponse>(
+    getMyCardsControllerEditUrl(cardId),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(editCardDto),
+    },
+  );
+};
+
+/**
+ * Permanently removes a card you hold so it disappears from card lists.
+ * @summary Remove one of my cards
+ */
+export type myCardsControllerRemoveResponse200 = {
+  data: RemoveCardResponseDto;
+  status: 200;
+};
+
+export type myCardsControllerRemoveResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type myCardsControllerRemoveResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type myCardsControllerRemoveResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type myCardsControllerRemoveResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type myCardsControllerRemoveResponseSuccess =
+  myCardsControllerRemoveResponse200 & {
+    headers: Headers;
+  };
+export type myCardsControllerRemoveResponseError = (
+  | myCardsControllerRemoveResponse400
+  | myCardsControllerRemoveResponse401
+  | myCardsControllerRemoveResponse403
+  | myCardsControllerRemoveResponse404
+) & {
+  headers: Headers;
+};
+
+export type myCardsControllerRemoveResponse =
+  myCardsControllerRemoveResponseSuccess | myCardsControllerRemoveResponseError;
+
+export const getMyCardsControllerRemoveUrl = (cardId: string) => {
+  return `/api/v1/me/cards/${cardId}`;
+};
+
+export const myCardsControllerRemove = async (
+  cardId: string,
+  options?: RequestInit,
+): Promise<myCardsControllerRemoveResponse> => {
+  return apiFetch<myCardsControllerRemoveResponse>(
+    getMyCardsControllerRemoveUrl(cardId),
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  );
+};
+
+/**
+ * Shows a current member’s cards only while you both belong to this circle.
+ * @summary View a circle member’s cards
+ */
+export type memberCardsControllerViewResponse200 = {
+  data: MemberCardsResponseDto;
+  status: 200;
+};
+
+export type memberCardsControllerViewResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type memberCardsControllerViewResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type memberCardsControllerViewResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type memberCardsControllerViewResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type memberCardsControllerViewResponseSuccess =
+  memberCardsControllerViewResponse200 & {
+    headers: Headers;
+  };
+export type memberCardsControllerViewResponseError = (
+  | memberCardsControllerViewResponse400
+  | memberCardsControllerViewResponse401
+  | memberCardsControllerViewResponse403
+  | memberCardsControllerViewResponse404
+) & {
+  headers: Headers;
+};
+
+export type memberCardsControllerViewResponse =
+  | memberCardsControllerViewResponseSuccess
+  | memberCardsControllerViewResponseError;
+
+export const getMemberCardsControllerViewUrl = (
+  circleId: string,
+  memberId: string,
+) => {
+  return `/api/v1/circles/${circleId}/members/${memberId}/cards`;
+};
+
+export const memberCardsControllerView = async (
+  circleId: string,
+  memberId: string,
+  options?: RequestInit,
+): Promise<memberCardsControllerViewResponse> => {
+  return apiFetch<memberCardsControllerViewResponse>(
+    getMemberCardsControllerViewUrl(circleId, memberId),
+    {
+      ...options,
+      method: 'GET',
     },
   );
 };

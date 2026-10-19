@@ -53,7 +53,10 @@ export function CirclesHomePage() {
   return <PageFrame><section className="circles-home">
     <header className="circles-header">
       <div><h1>Your circles</h1><p>The groups of people you trust.</p></div>
-      <Link className="button button--quiet" to="/profile">Your profile</Link>
+      <nav className="circles-nav" aria-label="Your account">
+        <Link className="button button--quiet" to="/cards">Your cards</Link>
+        <Link className="button button--quiet" to="/profile">Your profile</Link>
+      </nav>
     </header>
     <div className="circles-layout">
       <section className="circles-list-region" aria-label="Your circle memberships">
