@@ -1,0 +1,56 @@
+{
+  "branch": "task/CWF-3-T1B",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "2a697c255a0cbbdcbed4514ddd502ea391274fabdf6f746d83f3999ad2cf81ae",
+    "commit": "ed38ca5dac21fe3b8943a37a001d7ecf08cc5edb",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This added failed-Join retry case, together with the following different-invite case, changes the plan for Done-when 5. That item is context only for this part, and the plan file is outside the permitted paths. The API list-and-add work does not need these T4D test-plan edits.",
+        "file": "plans/CWF-3.md",
+        "line": 204,
+        "priority": "P2",
+        "title": "Out of scope: move the invite-flow plan edit to T4D"
+      },
+      {
+        "body": "This branch provides the list and add API. The Your cards screen, bank picker, 27 brand shortcuts, and browser flow remain assigned to T4A and T4E.",
+        "file": "apps/api/src/modules/cards/my-cards.controller.ts",
+        "line": 13,
+        "priority": "P2",
+        "title": "Later: T4A and T4E \u2014 complete the Your cards and shortcut flow"
+      },
+      {
+        "body": "The POST endpoint exposes add refusals. T1D owns editing, while T4E and T4B own the add and edit reminders and placement of field and form errors.",
+        "file": "apps/api/src/modules/cards/my-cards.controller.ts",
+        "line": 25,
+        "priority": "P2",
+        "title": "Later: T1D, T4E and T4B \u2014 complete edit rules and screen refusals"
+      },
+      {
+        "body": "Event publication is implemented for adds. T1D owns the edit and removal endpoints and the test that neither publishes a CardListedEvent.",
+        "file": "apps/api/src/modules/cards/my-cards.service.ts",
+        "line": 36,
+        "priority": "P2",
+        "title": "Later: T1D \u2014 prove edits and removals record no card event"
+      }
+    ],
+    "status": "clean",
+    "tree": "f1fd97294b0f141afa18fa9dc32561adab8061697b6e73bf8396435da4e97476"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-18T10:07:20+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-18T11:21:17+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-18T13:56:51+00:00",
+      "step": "review"
+    }
+  ]
+}

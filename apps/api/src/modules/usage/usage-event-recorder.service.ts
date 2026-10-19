@@ -14,15 +14,18 @@ export class UsageEventRecorder implements OnModuleInit {
   onModuleInit(): void {
     this.bus.registerEvent('CircleInviteEvent', (event) => this.record('invite', event));
     this.bus.registerEvent('CircleJoinedEvent', (event) => this.record('join', event));
+    this.bus.registerEvent('CardListedEvent', (event) => this.record('card_listed', event));
   }
 
-  private async record(type: 'invite' | 'join', event: BusEvent): Promise<void> {
+  private async record(type: 'invite' | 'join' | 'card_listed', event: BusEvent): Promise<void> {
     const started = Date.now();
-    const eventName = type === 'invite' ? 'CircleInviteEvent' : 'CircleJoinedEvent';
+    const eventName = type === 'invite' ? 'CircleInviteEvent' : type === 'join' ? 'CircleJoinedEvent' : 'CardListedEvent';
     try {
       await this.db.usageEvent.create({ data: {
         id: event.id, type, memberId: event.initiatedByAccountId, occurredAtUtc: event.timestampUtc,
-        circles: { create: { circleId: event.data.circleId as string } },
+        circles: { create: type === 'card_listed'
+          ? (event.data.circleIds as string[]).map((circleId) => ({ circleId }))
+          : { circleId: event.data.circleId as string } },
       } });
       this.logger.info({ context: { eventName, eventId: event.id, outcome: 'recorded', durationMs: Date.now() - started } }, 'Usage event recorded');
     } catch (error) {

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 export type CircleCreator = { id: string; googleAccountId: string } | null;
 export type MemberDisplayName = { id: string; displayName: string };
@@ -6,6 +7,9 @@ export type BusEvent = { id: string; version: number; timestampUtc: Date; initia
 type Requests = {
   'accounts.circleCreator': { input: string; output: CircleCreator };
   'accounts.displayNames': { input: string[]; output: MemberDisplayName[] };
+  'circles.lockMemberCircles': { input: { memberId: string; tx: Prisma.TransactionClient }; output: { circleIds: string[] } };
+  'circles.lockSharedMembership': { input: { circleId: string; viewerId: string; memberId: string; tx: Prisma.TransactionClient }; output: { shared: boolean; memberName?: string } };
+  'cards.memberCards': { input: { memberId: string; tx: Prisma.TransactionClient }; output: Array<{ id: string; bankId: string; bankName: string; type: string; variant: string | null }> };
 };
 
 @Injectable()

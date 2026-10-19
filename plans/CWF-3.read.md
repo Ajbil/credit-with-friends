@@ -1,12 +1,12 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-18T06:38:38+00:00
-read_hash: 1dc186a44a43d485c79eed80517997eef602bf28
-round: 9
+read_at: 2026-10-18T10:06:11+00:00
+read_hash: 4214df085c1f9e66e5a397d890415652bb04bcfc
+round: 13
 passed: yes
-doc_seen: 1dc186a44a43d485c79eed80517997eef602bf28
+doc_seen: 4214df085c1f9e66e5a397d890415652bb04bcfc
 spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
-notes_seen: 9ab1b3263023e25e55830b34e16dcc101a8bc58c
+notes_seen: b354a45bb637228c632b4eafef38af79d3c0b893
 ---
 # Cold read notes
 
@@ -206,5 +206,31 @@ No findings.
     Disposition: keep amended: T1C races a circle deletion against the read, alongside leave and removal
 
 ## Round 9
+
+No findings.
+
+## Round 10
+
+43. The new “811” allow-list contradicts the confirmed cards spec and the plan’s refusal rule.
+    “Kotak 811” and “811 Dream Different” contain three consecutive digits, which both documents say must be refused. The confirmed spec has no allow-list. Pin the intended exception in the spec and plan before T1A implements and tests it.
+
+## Round 11
+    Disposition: keep Decided line in Notes: the owner chose the bank-tied 811 exception on 2026-10-18; spec criterion 16 is the specific exception to criterion 3
+
+44. Disputed keep 43: the exception is still contradicted by the approval text and confirmed spec.
+    “What changes for you” and Risks say variants with three consecutive digits are refused, and spec acceptance criterion 3 says the same. The detailed rule and criterion 16 allow “Kotak 811.” Reconcile those statements so the approved behavior is unambiguous.
+    Disposition: keep Decided line in Notes: the owner chose the bank-tied 811 exception on 2026-10-18; spec criterion 16 is the specific exception to criterion 3
+
+## Round 12
+
+45. Unproven: item 5: a transient Join failure followed by a successful retry still shows the card invitation.
+    The plan promises to retain the flag after a failed Join, but T4D names only a failed invite-load retry. Add the Join retry case to T4D’s browser tests.
+    Disposition: keep amended: T4D tests a failed Join followed by a successful retry still showing the invitation
+
+46. Unproven: item 5: opening a different invite while the first invite’s flag is still active does not show the invitation.
+    T4D tests a later invite after a dead or reset link has already cleared the flag. Test the path mismatch before that flag is cleared.
+    Disposition: keep amended: T4D tests a different invite opened while the first flag is still set: no invitation and the flag cleared
+
+## Round 13
 
 No findings.
