@@ -78,4 +78,18 @@ describe('card rules shared by add and edit', () => {
     expect(refusal({ bankId: 'axis-bank', type: 'debit' }, twenty).getResponse()).toMatchObject({ code: 'CARD_LIMIT' });
     expect(applyCardRules({ bankId: 'axis-bank', type: 'debit' }, banks, twenty, 'card-0').type).toBe('debit');
   });
+
+  test('editing into another owned card is a duplicate but keeping its own identity is allowed', () => {
+    const cards = [
+      { id: 'first', bankId: 'hdfc-bank', type: 'credit', variantKey: 'millennia' },
+      { id: 'second', bankId: 'axis-bank', type: 'credit', variantKey: 'neo' },
+    ];
+    try {
+      applyCardRules({ bankId: 'axis-bank', type: 'credit', variant: ' NEO ' }, banks, cards, 'first');
+      throw new Error('Expected duplicate refusal');
+    } catch (error) {
+      expect((error as { getResponse(): unknown }).getResponse()).toMatchObject({ code: 'CARD_DUPLICATE' });
+    }
+    expect(applyCardRules({ bankId: 'hdfc-bank', type: 'credit', variant: 'Millennia' }, banks, cards, 'first').variantKey).toBe('millennia');
+  });
 });

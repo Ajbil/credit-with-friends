@@ -13,6 +13,17 @@ export class AddCardDto {
   @ApiPropertyOptional({ type: String, maxLength: 40, example: 'Millennia', description: 'Optional card variant, never card details.' }) variant?: unknown;
 }
 
+export class EditCardDto {
+  @Allow()
+  @ApiPropertyOptional({ type: String, example: 'hdfc-bank', description: 'New bank id, if changing banks.' }) bankId?: unknown;
+
+  @Allow()
+  @ApiPropertyOptional({ type: String, enum: ['credit', 'debit'], example: 'credit', description: 'New card type, if changing types.' }) type?: unknown;
+
+  @Allow()
+  @ApiPropertyOptional({ type: String, maxLength: 40, nullable: true, example: 'Millennia', description: 'New variant, or null to clear it. Never card details.' }) variant?: unknown;
+}
+
 export class MyCardDto {
   @ApiProperty({ type: String, example: '0199e379-4302-7c2a-a332-9a2e80dabefe' }) id!: string;
   @ApiProperty({ type: String, example: 'hdfc-bank' }) bankId!: string;
@@ -35,5 +46,11 @@ export class MyCardsResponseDto {
 export class AddCardResponseDto {
   @ApiProperty({ type: Boolean, example: true }) success!: true;
   @ApiProperty({ type: MyCardDto }) data!: MyCardDto;
+  @ApiProperty({ type: String, nullable: true, enum: [null], example: null }) error!: null;
+}
+
+export class RemoveCardResponseDto {
+  @ApiProperty({ type: Boolean, example: true }) success!: true;
+  @ApiProperty({ type: String, nullable: true, enum: [null], example: null }) data!: null;
   @ApiProperty({ type: String, nullable: true, enum: [null], example: null }) error!: null;
 }
