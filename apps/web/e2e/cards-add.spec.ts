@@ -46,7 +46,8 @@ test('done-when-1: pick Jupiter debit, change every filled field and save outsid
   await page.keyboard.press('Tab');
   await expect(page.getByLabel('Bank', { exact: true })).toBeFocused();
   await page.getByLabel('Bank', { exact: true }).selectOption({ label: 'Jupiter debit card (Federal Bank)' });
-  await expect(page.getByLabel('Bank', { exact: true })).toHaveValue('federal-bank');
+  // A shortcut stays selected; its bank ID is sent separately when saving.
+  await expect(page.getByLabel('Bank', { exact: true })).toHaveValue('Jupiter debit card:federal-bank');
   await expect(page.getByLabel('Card type')).toHaveValue('debit');
   await expect(page.getByLabel('Variant (optional)')).toHaveValue('Jupiter');
   await page.getByLabel('Bank', { exact: true }).focus();
@@ -55,6 +56,7 @@ test('done-when-1: pick Jupiter debit, change every filled field and save outsid
   await page.keyboard.press('Tab');
   await expect(page.getByLabel('Variant (optional)')).toBeFocused();
   await page.getByLabel('Bank', { exact: true }).selectOption({ label: 'HDFC Bank' });
+  await expect(page.getByLabel('Bank', { exact: true }).locator('option:checked')).toHaveText('HDFC Bank');
   await page.getByLabel('Card type').selectOption('credit');
   await page.getByLabel('Variant (optional)').fill('Millennia');
   page.once('dialog', async (dialog) => {
@@ -72,6 +74,35 @@ test('done-when-1: pick Jupiter debit, change every filled field and save outsid
   await expect(saved).toContainText('HDFC Bank');
   await expect(saved).toContainText('Credit card');
   await expect(saved).toContainText('Millennia');
+});
+
+test('done-when-1: ArrowDown browses consecutive brand shortcuts and saves the selected card', async ({ page }) => {
+  await member(page);
+  await page.goto('/cards/add');
+  const picker = page.getByLabel('Bank', { exact: true });
+  await picker.selectOption({ label: 'Scapia (Federal Bank)' });
+  await picker.focus();
+  for (const [label, value, type, variant] of [
+    ['Jupiter Edge (CSB Bank)', 'Jupiter Edge:csb-bank', 'credit', 'Jupiter Edge'],
+    ['Jupiter Edge (Federal Bank)', 'Jupiter Edge:federal-bank', 'credit', 'Jupiter Edge'],
+    ['Jupiter debit card (Federal Bank)', 'Jupiter debit card:federal-bank', 'debit', 'Jupiter'],
+  ]) {
+    await page.keyboard.press('ArrowDown');
+    await expect(picker).toBeFocused();
+    await expect(picker).toHaveValue(value);
+    await expect(picker.locator('option:checked')).toHaveText(label);
+    await expect(page.getByLabel('Card type')).toHaveValue(type);
+    await expect(page.getByLabel('Variant (optional)')).toHaveValue(variant);
+  }
+  const response = await saveResponse(page);
+  expect(response.status()).toBe(201);
+  expect(response.request().postDataJSON()).toEqual({ bankId: 'federal-bank', type: 'debit', variant: 'Jupiter' });
+  await expect(page).toHaveURL('/cards');
+  const saved = page.getByRole('list', { name: 'Your cards' }).getByRole('listitem');
+  await expect(saved).toHaveCount(1);
+  await expect(saved).toContainText('Federal Bank');
+  await expect(saved).toContainText('Debit card');
+  await expect(saved).toContainText('Jupiter');
 });
 
 async function fieldRefusal(page: Page, field: Locator, code: string, message: string) {
@@ -193,8 +224,8 @@ test('done-when-1 and 7: all shortcut issuers are live banks and a bank rename u
       await expect(picker.getByRole('option', { name: `${shortcut.brand} (${bank.displayName})`, exact: true })).toHaveCount(1);
     }
     await picker.selectOption({ label: 'Jupiter debit card (Federal Bank (corrected))' });
-    await expect(picker).toHaveValue('federal-bank');
-    await expect(picker.locator('option:checked')).toHaveText('Federal Bank (corrected)');
+    await expect(picker).toHaveValue('Jupiter debit card:federal-bank');
+    await expect(picker.locator('option:checked')).toHaveText('Jupiter debit card (Federal Bank (corrected))');
   } finally {
     await db.bank.update({ where: { id: 'federal-bank' }, data: { displayName: original.displayName } });
     await db.$disconnect();

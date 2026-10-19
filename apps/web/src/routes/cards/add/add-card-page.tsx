@@ -26,6 +26,7 @@ export function AddCardPage() {
   const banks = useQuery({ queryKey: ['banks'], networkMode: 'always', queryFn: async () => (await banksControllerList({ page: 1, limit: 100 })).data.data! });
   const ready = banks.isSuccess && banks.data.items.length > 0;
   const focusBankAfterRetry = useRef(false);
+  const [pickerValue, setPickerValue] = useState('');
   const [bankId, setBankId] = useState('');
   const [type, setType] = useState<AddCardDto['type']>('credit');
   const [variant, setVariant] = useState('');
@@ -90,7 +91,8 @@ export function AddCardPage() {
       </div> : <>
         <div className="card-add-field">
           <label htmlFor="card-bank">Bank</label>
-          <select id="card-bank" value={bankId} disabled={save.isPending} required aria-invalid={!!fieldErrors.bankId} aria-describedby={fieldErrors.bankId ? 'card-bank-error' : undefined} onChange={(event) => {
+          <select id="card-bank" value={pickerValue} disabled={save.isPending} required aria-invalid={!!fieldErrors.bankId} aria-describedby={fieldErrors.bankId ? 'card-bank-error' : undefined} onChange={(event) => {
+            setPickerValue(event.target.value);
             const shortcut = CARD_SHORTCUTS.find((card) => `${card.brand}:${card.bankId}` === event.target.value);
             setBankId(shortcut?.bankId ?? event.target.value);
             if (shortcut) { setType(shortcut.type); setVariant(shortcut.variant); }
