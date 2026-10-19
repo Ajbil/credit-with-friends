@@ -1,0 +1,53 @@
+{
+  "branch": "task/CWF-3-T1C",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "8f1cc1cc98ca1d3cdb09e9d4143646c8094c4f83c2327fbee4f400c460cf69b2",
+    "commit": "d2a9a659039ef94e23753503f0e3e79033c53f6e",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The API route is present, but this branch does not add the member-list link, read-only member screen, or browser tests required for the user-facing flow. Those are assigned to T4C.",
+        "file": "apps/api/src/modules/search/member-cards.controller.ts",
+        "line": 14,
+        "priority": "P2",
+        "title": "Later: T4C member screen and browser tests"
+      },
+      {
+        "body": "The API reads the current bank name, but this branch does not add the add-screen mailto button, visible contact address, or browser tests. Those are assigned to T4E.",
+        "file": "apps/api/src/modules/cards/member-cards.service.ts",
+        "line": 8,
+        "priority": "P2",
+        "title": "Later: T4E missing-bank request button and browser tests"
+      },
+      {
+        "body": "The new T1C status JSON is outside the paths allowed for this part and is not needed to deliver its API, documentation, or tests.",
+        "file": ".factory/stories/CWF-3/tasks/T1C.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove task-status metadata outside the allowed paths"
+      }
+    ],
+    "status": "clean",
+    "tree": "a61f25dff874695e7d0cbc46ea52812232270cce33c49921a16e7f76a4d32362"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-19T14:08:14+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-19T14:42:45+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-19T14:53:03+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-19T15:38:19+00:00",
+      "step": "review"
+    }
+  ]
+}

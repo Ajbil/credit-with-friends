@@ -11,6 +11,7 @@ import { LeaveCircleController } from './leave/leave-circle.controller';
 import { CircleRemovalsController } from './removals/circle-removals.controller';
 import { CircleManageController } from './manage/circle-manage.controller';
 import { lockMemberCircles } from './member-circles/lock-member-circles.service';
+import { lockSharedMembership } from './member-circles/lock-shared-membership.service';
 
 @Module({ imports: [ServiceBusModule], controllers: [CreateCircleController, ListCirclesController, ViewCircleController, CircleInviteController, JoinCircleController, LeaveCircleController, CircleRemovalsController, CircleManageController], providers: [CirclesCoreService] })
 export class CirclesModule implements OnModuleInit {
@@ -18,5 +19,10 @@ export class CirclesModule implements OnModuleInit {
 
   onModuleInit(): void {
     this.bus.registerRequest('circles.lockMemberCircles', ({ memberId, tx }) => lockMemberCircles(memberId, tx));
+    this.bus.registerRequest('circles.lockSharedMembership', async ({ circleId, viewerId, memberId, tx }) => {
+      if (!await lockSharedMembership(circleId, viewerId, memberId, tx)) return { shared: false };
+      const names = await this.bus.request('accounts.displayNames', [memberId]);
+      return names.length === 1 ? { shared: true, memberName: names[0].displayName } : { shared: false };
+    });
   }
 }
