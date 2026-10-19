@@ -11,6 +11,7 @@ import { PrivacyPage } from './routes/notice/privacy-page';
 import { SessionPage } from './routes/session/session-page';
 import { CirclePage } from './routes/circles/circle/circle-page';
 import { JoinPage } from './routes/circles/join/join-page';
+import { CardsPage } from './routes/cards/list/cards-page';
 import './style.css';
 
 const rootRoute = createRootRoute({ component: () => <Outlet /> });
@@ -23,8 +24,9 @@ const privacyRoute = createRoute({ getParentRoute: () => rootRoute, path: '/priv
 const sessionRoute = createRoute({ getParentRoute: () => rootRoute, path: '/session', component: SessionPage });
 const circleRoute = createRoute({ getParentRoute: () => rootRoute, path: '/circles/$circleId', component: CirclePage });
 const joinRoute = createRoute({ getParentRoute: () => rootRoute, path: '/circles/join/$code', component: JoinPage });
+const cardsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/cards', component: CardsPage });
 const futureRoute = createRoute({ getParentRoute: () => rootRoute, path: '$', component: SignInPage });
-const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute, onboardingRoute, notOpenRoute, profileRoute, noticeRoute, privacyRoute, sessionRoute, circleRoute, joinRoute, futureRoute]) });
+const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute, onboardingRoute, notOpenRoute, profileRoute, noticeRoute, privacyRoute, sessionRoute, circleRoute, joinRoute, cardsRoute, futureRoute]) });
 declare module '@tanstack/react-router' { interface Register { router: typeof router } }
 
 createRoot(document.getElementById('root')!).render(
