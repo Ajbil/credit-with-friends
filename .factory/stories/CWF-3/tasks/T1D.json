@@ -1,10 +1,45 @@
 {
   "branch": "task/CWF-3-T1D",
-  "status": "working",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "6e8a6dc1fa2df15b7b46ad1ca919396559568c8abcfcd5dc0f8e2d592ca9fab8",
+    "commit": "bfb8a5a0e6264cd97f31034e6185807d5e3c15ae",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The test checks only that the `card_listed` count stays at one and that `CardListedEvent` was not published. An edit or removal that emits a differently named usage event would still pass. Compare the total usage-event count before and after both requests and assert that `publish` was not called.",
+        "file": "apps/api/test/cards-edit.integration.spec.ts",
+        "line": 145,
+        "priority": "P1",
+        "title": "Not done: no usage event for an edit or a removal"
+      },
+      {
+        "body": "This branch adds the edit and remove API routes, but the edit reminder, placement of field and form errors, and removal confirmation with a working Cancel action still need UI implementation and browser coverage. The supplied assignment places the web tests in T4B, so this is follow-up work for that task.",
+        "file": "apps/api/src/modules/cards/my-cards.controller.ts",
+        "line": 40,
+        "priority": "P2",
+        "title": "Later: T4B edit screen and browser tests"
+      },
+      {
+        "body": "The new `.factory` file records only the branch's working status. It is outside the permitted paths and is not needed to deliver card editing or removal.",
+        "file": ".factory/stories/CWF-3/tasks/T1D.json",
+        "line": 3,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task-state file"
+      }
+    ],
+    "status": "blocked",
+    "tree": "a99f21fe7a17f42411bd0ed7cbe10ad46766cf366f11955cc476b49e0a33d7d1"
+  },
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-19T12:12:10+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-19T13:01:16+00:00",
+      "step": "review"
     }
   ]
 }
