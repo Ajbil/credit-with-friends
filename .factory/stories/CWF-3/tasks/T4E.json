@@ -1,0 +1,35 @@
+{
+  "branch": "task/CWF-3-T4E",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "e8781dc65d6853e3268c26efc703d6032c7facc44ccc37057fadaa27b1c70e8e",
+    "commit": "d9ff76fe8003d5dab7d459a9ca77a5b8405ddc2a",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "The branch still adds this task-status file outside every permitted path. It is not needed to deliver the add-card screen or its tests, so remove it from the branch.",
+        "file": ".factory/stories/CWF-3/tasks/T4E.json",
+        "line": 1,
+        "priority": "P2",
+        "title": "Remove the unrelated task tracker from the branch"
+      }
+    ],
+    "status": "clean",
+    "tree": "c5d2b16f045c4c7afc12bc1483df053e8dbbdfbf2fbc6748488785989f514324"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-19T20:50:41+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-19T21:34:10+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-19T21:57:14+00:00",
+      "step": "review"
+    }
+  ]
+}

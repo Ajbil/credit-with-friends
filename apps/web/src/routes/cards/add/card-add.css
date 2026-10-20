@@ -1,0 +1,15 @@
+.card-add-page{width:min(600px,calc(100% - 40px));--card-field:#fffdf7;--card-field-line:#6d8878;--card-error:#8d2525}
+.card-add-page .cards-header{margin-bottom:24px}
+.card-reminder{padding:16px 0;margin-bottom:28px;border-top:1px solid var(--cards-line);border-bottom:1px solid var(--cards-line);font-weight:650}
+.card-add-form{display:flex;flex-direction:column;gap:24px}
+.card-add-field{display:flex;flex-direction:column;gap:10px;min-width:0}
+.card-add-field label{font-weight:750}
+.card-add-field input,.card-add-field select{width:100%;min-height:50px;min-width:0;font:inherit;color:inherit;background:var(--card-field);border:1px solid var(--card-field-line);border-radius:9px;padding:12px;caret-color:currentColor}
+.card-add-field input::placeholder{color:var(--cards-muted);opacity:1}
+.card-add-field [aria-invalid=true]{border-color:var(--card-error)}
+.card-add-form .field-error{color:var(--card-error);margin:0}
+.card-add-form .cards-state{border:0;padding:0}
+.card-add-form>.button{align-self:flex-start;min-width:120px}
+.card-bank-request{margin-top:32px;padding-top:24px;border-top:1px solid var(--cards-line);overflow-wrap:anywhere;font-size:.95rem}
+.card-bank-request a{display:inline-flex;align-items:center;min-height:50px;text-underline-offset:4px}
+.card-bank-request span{display:block;margin-top:6px}

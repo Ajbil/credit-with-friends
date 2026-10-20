@@ -1,0 +1,33 @@
+import type { AddCardDto } from '../../../api/generated';
+
+// Release-pinned shortcuts from docs/specs/cards.md. Saved cards keep only the bank,
+// type and variant; labels always use the bank name returned by the API.
+export const CARD_SHORTCUTS: ReadonlyArray<AddCardDto & { brand: string; variant: string }> = [
+  { brand: 'OneCard', bankId: 'federal-bank', type: 'credit', variant: 'OneCard' },
+  { brand: 'OneCard', bankId: 'bank-of-baroda', type: 'credit', variant: 'OneCard' },
+  { brand: 'OneCard', bankId: 'csb-bank', type: 'credit', variant: 'OneCard' },
+  { brand: 'OneCard', bankId: 'sbm-bank-india', type: 'credit', variant: 'OneCard' },
+  { brand: 'OneCard', bankId: 'south-indian-bank', type: 'credit', variant: 'OneCard' },
+  { brand: 'OneCard', bankId: 'indian-bank', type: 'credit', variant: 'OneCard' },
+  { brand: 'Scapia', bankId: 'federal-bank', type: 'credit', variant: 'Scapia' },
+  { brand: 'Jupiter Edge', bankId: 'csb-bank', type: 'credit', variant: 'Jupiter Edge' },
+  { brand: 'Jupiter Edge', bankId: 'federal-bank', type: 'credit', variant: 'Jupiter Edge' },
+  { brand: 'Jupiter debit card', bankId: 'federal-bank', type: 'debit', variant: 'Jupiter' },
+  { brand: 'slice', bankId: 'slice-small-finance-bank', type: 'credit', variant: 'slice' },
+  { brand: 'Kiwi', bankId: 'yes-bank', type: 'credit', variant: 'Kiwi' },
+  { brand: 'Kiwi', bankId: 'punjab-national-bank', type: 'credit', variant: 'Kiwi' },
+  { brand: 'Kiwi KOSMO', bankId: 'au-small-finance-bank', type: 'credit', variant: 'Kiwi KOSMO' },
+  { brand: 'Tata Neu', bankId: 'hdfc-bank', type: 'credit', variant: 'Tata Neu' },
+  { brand: 'Tata Neu', bankId: 'state-bank-of-india', type: 'credit', variant: 'Tata Neu' },
+  { brand: 'Amazon Pay', bankId: 'icici-bank', type: 'credit', variant: 'Amazon Pay' },
+  { brand: 'Flipkart', bankId: 'state-bank-of-india', type: 'credit', variant: 'Flipkart' },
+  { brand: 'Flipkart', bankId: 'axis-bank', type: 'credit', variant: 'Flipkart' },
+  { brand: 'Swiggy', bankId: 'hdfc-bank', type: 'credit', variant: 'Swiggy' },
+  { brand: 'Airtel', bankId: 'axis-bank', type: 'credit', variant: 'Airtel' },
+  { brand: 'PhonePe', bankId: 'hdfc-bank', type: 'credit', variant: 'PhonePe' },
+  { brand: 'POP', bankId: 'yes-bank', type: 'credit', variant: 'POP' },
+  { brand: 'BharatPe', bankId: 'unity-small-finance-bank', type: 'credit', variant: 'BharatPe' },
+  { brand: 'superCard', bankId: 'axis-bank', type: 'credit', variant: 'superCard' },
+  { brand: 'superCard', bankId: 'kotak-mahindra-bank', type: 'credit', variant: 'superCard' },
+  { brand: 'superCard', bankId: 'utkarsh-small-finance-bank', type: 'credit', variant: 'superCard' },
+];
