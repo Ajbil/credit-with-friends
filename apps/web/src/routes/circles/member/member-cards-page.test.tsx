@@ -7,12 +7,11 @@ import { MemberCardsPage } from './member-cards-page';
 const clients: QueryClient[] = [];
 afterEach(() => { cleanup(); clients.forEach((client) => client.clear()); clients.length = 0; vi.unstubAllGlobals(); });
 
-async function showMember() {
+async function showMember(client = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } })) {
   vi.stubGlobal('scrollTo', vi.fn());
   const root = createRootRoute();
   const route = createRoute({ getParentRoute: () => root, path: '/circles/$circleId/members/$memberId/cards', component: MemberCardsPage });
   const router = createRouter({ routeTree: root.addChildren([route]), history: createMemoryHistory({ initialEntries: ['/circles/shared-circle/members/dev-member/cards'] }) });
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } });
   clients.push(client);
   await act(async () => { render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>); });
   return client;
@@ -34,6 +33,37 @@ test('done-when-4: loading never flashes the no-cards state before the member re
   expect(await screen.findByRole('heading', { name: 'Dev Member’s cards' })).toBeDefined();
   expect(screen.queryByRole('status')).toBeNull();
   expect(screen.getByRole('heading', { name: 'No cards listed yet' })).toBeDefined();
+});
+
+test.each(['success', 'not-found', 'connection failure'] as const)('done-when-4: an earlier visit’s cached cards stay hidden until this visit succeeds (%s)', async (outcome) => {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } });
+  client.setQueryData(['member-cards', 'shared-circle', 'dev-member'], {
+    memberId: 'dev-member', displayName: 'Dev Member', cards: [
+      { id: 'old-card', bankId: 'hdfc-bank', bankName: 'HDFC Bank', type: 'credit', variant: 'Earlier visit' },
+    ],
+  });
+  let finish!: (response: Response) => void;
+  let fail!: (error: Error) => void;
+  vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((resolve, reject) => { finish = resolve; fail = reject; })));
+  await showMember(client);
+  expect(screen.queryAllByText(/HDFC Bank|Earlier visit/)).toHaveLength(0);
+  expect(screen.getByRole('status').textContent).toBe('Loading this member’s cards…');
+  expect(document.title).toBe('Member cards | CreditWithFriends');
+  await act(async () => {
+    if (outcome === 'success') finish(memberResponse([
+      { id: 'new-card', bankId: 'federal-bank', bankName: 'Federal Bank', type: 'debit', variant: 'This visit' },
+    ]));
+    else if (outcome === 'not-found') finish(Response.json({
+      success: false, data: null, error: { code: 'CIRCLE_NOT_FOUND', message: 'This circle is not available.' },
+    }, { status: 404 }));
+    else fail(new TypeError('Failed to fetch'));
+  });
+  if (outcome === 'success') expect((await screen.findByRole('list', { name: 'Member cards' })).textContent).toContain('This visit');
+  else {
+    expect(await screen.findByRole('heading', { name: outcome === 'not-found' ? 'Member cards unavailable' : 'We couldn’t load this member’s cards' })).toBeDefined();
+    expect(screen.queryByRole('list', { name: 'Member cards' })).toBeNull();
+  }
+  expect(screen.queryAllByText(/HDFC Bank|Earlier visit/)).toHaveLength(0);
 });
 
 test('done-when-4: retry stays disabled during a slow request and then recovers', async () => {

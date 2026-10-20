@@ -124,3 +124,58 @@ test('done-when-4: a failed member-card load explains how to retry and then show
     await expect(page.getByRole('heading', { name: 'Your circles', exact: true })).toBeVisible();
   } finally { await holder.close(); }
 });
+
+test('done-when-4: returning in-app never reveals an earlier visit’s cards while membership is checked again', async ({ page, browser }) => {
+  const holder = await browser.newContext();
+  let release = () => {};
+  try {
+    const circleId = await shareCircle(page.context(), holder);
+    expect((await holder.request.post(`${API}/me/cards`, {
+      data: { bankId: 'hdfc-bank', type: 'credit', variant: 'Millennia' }, headers: HEADERS,
+    })).status()).toBe(201);
+    await page.goto(`/circles/${circleId}`);
+    await page.getByRole('link', { name: 'View Dev Member’s cards', exact: true }).click();
+    await expect(page.getByRole('list', { name: 'Member cards' })).toContainText('Millennia');
+    await page.getByRole('link', { name: 'Back to circle', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'College batch', exact: true })).toBeVisible();
+    expect((await holder.request.post(`${API}/circles/${circleId}/leave`, { headers: HEADERS })).ok()).toBeTruthy();
+
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    let requested!: () => void;
+    const requestStarted = new Promise<void>((resolve) => { requested = resolve; });
+    await page.route(`**/api/v1/circles/${circleId}/members/*/cards`, async (route) => {
+      requested();
+      await held;
+      await route.continue();
+    });
+    // Watch added/changed text, including nodes removed before the callback, so
+    // a flash of private data cannot pass between two Playwright assertions.
+    const exposure = await page.evaluateHandle(() => {
+      const seen: string[] = [];
+      const observer = new MutationObserver((records) => {
+        for (const record of records) {
+          const text = record.type === 'characterData'
+            ? `${record.oldValue ?? ''} ${record.target.textContent ?? ''}`
+            : Array.from(record.addedNodes, (node) => node.textContent ?? '').join(' ');
+          if (/HDFC Bank|Millennia/.test(text)) seen.push(text);
+        }
+      });
+      observer.observe(document.body, { subtree: true, childList: true, characterData: true, characterDataOldValue: true });
+      return { seen, observer };
+    });
+    try {
+      await page.goBack();
+      await requestStarted;
+      await expect(page.getByRole('status')).toHaveText('Loading this member’s cards…');
+      await expect(page.getByText(/HDFC Bank|Millennia/)).toHaveCount(0);
+      await capture(page, 'return-member-loading');
+      release();
+      await expect(page.getByRole('heading', { name: 'Member cards unavailable' })).toBeVisible();
+      await expect(page.getByText(/HDFC Bank|Millennia/)).toHaveCount(0);
+      expect(await exposure.evaluate(({ seen, observer }) => { observer.disconnect(); return seen; })).toEqual([]);
+    } finally {
+      release();
+      await exposure.dispose();
+    }
+  } finally { release(); await holder.close(); }
+});

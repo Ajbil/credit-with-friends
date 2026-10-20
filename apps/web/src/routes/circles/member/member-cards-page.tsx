@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
 import { memberCardsControllerView } from '../../../api/generated';
@@ -10,18 +10,27 @@ import './member-cards.css';
 
 export function MemberCardsPage() {
   const { circleId, memberId } = useParams({ from: '/circles/$circleId/members/$memberId/cards' });
+  return <MemberCardsVisit key={`${circleId}/${memberId}`} circleId={circleId} memberId={memberId} />;
+}
+
+function MemberCardsVisit({ circleId, memberId }: { circleId: string; memberId: string }) {
+  const [confirmed, setConfirmed] = useState(false);
   const cards = useQuery({
-    queryKey: ['member-cards', circleId, memberId], networkMode: 'always', refetchOnMount: 'always',
-    queryFn: async () => (await memberCardsControllerView(encodeURIComponent(circleId), encodeURIComponent(memberId))).data.data!,
+    queryKey: ['member-cards', circleId, memberId], networkMode: 'always', refetchOnMount: 'always', gcTime: 0,
+    queryFn: async ({ signal }) => (await memberCardsControllerView(encodeURIComponent(circleId), encodeURIComponent(memberId), { signal })).data.data!,
   });
-  const unavailable = cards.error instanceof ApiError && cards.error.status === 404;
-  const title = cards.data && !unavailable ? `${cards.data.displayName}’s cards` : 'Member cards';
+  const succeededThisVisit = cards.isFetchedAfterMount && cards.isSuccess;
+  // Only this visit's successful check permits keeping cards through a refresh failure.
+  useEffect(() => { if (succeededThisVisit) setConfirmed(true); }, [succeededThisVisit]);
+  const hasConfirmedData = confirmed || succeededThisVisit;
+  const unavailable = cards.isFetchedAfterMount && cards.error instanceof ApiError && cards.error.status === 404;
+  const title = hasConfirmedData && cards.data && !unavailable ? `${cards.data.displayName}’s cards` : 'Member cards';
   useEffect(() => {
     document.title = `${title} | CreditWithFriends`;
     return () => { document.title = 'CreditWithFriends'; };
   }, [title]);
 
-  if (cards.error instanceof ApiError && (cards.error.status === 401 || cards.error.failure.code === 'PRIVACY_NOTICE_REQUIRED')) {
+  if (cards.isFetchedAfterMount && cards.error instanceof ApiError && (cards.error.status === 401 || cards.error.failure.code === 'PRIVACY_NOTICE_REQUIRED')) {
     const returnTo = encodeURIComponent(`/circles/${encodeURIComponent(circleId)}/members/${encodeURIComponent(memberId)}/cards`);
     location.replace(`${cards.error.status === 401 ? '/session' : '/notice'}?returnTo=${returnTo}`);
     return null;
@@ -29,9 +38,9 @@ export function MemberCardsPage() {
 
   return <PageFrame><section className="cards-page member-cards-page">
     <Link className="button button--quiet" to="/circles/$circleId" params={{ circleId }}>Back to circle</Link>
-    {cards.isPending && !cards.isFetched ? <><h1>Member cards</h1><p role="status">Loading this member’s cards…</p></> : unavailable ? <div className="cards-state" role="alert">
+    {!cards.isFetchedAfterMount ? <><h1>Member cards</h1><p role="status">Loading this member’s cards…</p></> : unavailable ? <div className="cards-state" role="alert">
       <h1>Member cards unavailable</h1><p>These cards aren’t available. You can see a member’s cards only while you both belong to this circle.</p>
-    </div> : !cards.data ? <div className="cards-state" role="alert">
+    </div> : !hasConfirmedData || !cards.data ? <div className="cards-state" role="alert">
       <h1>We couldn’t load this member’s cards</h1><p>Check your connection and try again.</p>
       <Button variant="quiet" disabled={cards.isFetching} onClick={() => cards.refetch()}>{cards.isFetching ? 'Trying again…' : 'Try again'}</Button>
     </div> : <>
