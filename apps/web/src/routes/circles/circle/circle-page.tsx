@@ -10,6 +10,7 @@ import { CircleLeave } from './circle-leave';
 import { CircleClearRemovals, CircleMemberRemoval } from './circle-member-removal';
 import { CircleAdminSettings } from './circle-admin-settings';
 import './circle.css';
+import '../member/member-cards.css';
 
 export function CirclePage() {
   const { circleId } = useParams({ from: '/circles/$circleId' });
@@ -37,7 +38,9 @@ export function CirclePage() {
       <div className="circle-layout">
         <section aria-labelledby="members-heading"><h2 id="members-heading">Members</h2>
           {circle.data.members.length === 0 ? <><p>No members to show. Try loading your circle again.</p><Button variant="quiet" onClick={() => circle.refetch()}>Try again</Button></> : <ul className="circle-members" aria-label="Circle members">{circle.data.members.map((member) => <li key={member.id}>
-            <span>{member.displayName}</span>{member.isAdmin && <span className="circle-admin">Admin</span>}
+            <span>{currentMember && member.id !== currentMember.id
+              ? <Link className="text-link member-cards-link" to="/circles/$circleId/members/$memberId/cards" params={{ circleId, memberId: member.id }} aria-label={`View ${member.displayName}’s cards`}>{member.displayName}</Link>
+              : member.displayName}</span>{member.isAdmin && <span className="circle-admin">Admin</span>}
             {currentMember?.isAdmin && member.id !== currentMember.id && <CircleMemberRemoval circleId={circleId} member={member} />}
           </li>)}</ul>}
           {currentMember?.isAdmin && <CircleClearRemovals circleId={circleId} />}
