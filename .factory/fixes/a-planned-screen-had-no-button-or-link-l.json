@@ -3,7 +3,7 @@
   "branch": "fix/a-planned-screen-had-no-button-or-link-l",
   "done_when": "AGENTS.md Known traps says every new screen's plan names the button or link that leads to it",
   "kind": "fix",
-  "status": "started",
+  "status": "working",
   "steps": [
     {
       "at": "2026-10-20T08:09:26+00:00",
