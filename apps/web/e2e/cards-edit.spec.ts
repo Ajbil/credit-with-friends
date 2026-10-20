@@ -39,11 +39,41 @@ async function capture(page: Page, state: string) {
   await page.setViewportSize({ width: 390, height: 844 });
 }
 
+test('done-when-1: follow Add a card from Your cards and see the saved card listed', async ({ page }) => {
+  await member(page);
+  await page.goto('/cards');
+  await expect(page.getByRole('heading', { name: 'No cards yet' })).toBeVisible();
+  const add = page.getByRole('link', { name: 'Add a card', exact: true });
+  await expect(add).toHaveAttribute('href', '/cards/add');
+  await page.getByRole('link', { name: 'Back to your circles' }).focus();
+  await page.keyboard.press('Tab');
+  await expect(add).toBeFocused();
+  await capture(page, 'empty-list-add');
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL('/cards/add');
+  await page.getByLabel('Bank', { exact: true }).selectOption('hdfc-bank');
+  await page.getByLabel('Card type').selectOption('credit');
+  await page.getByLabel('Variant (optional)').fill('Millennia');
+  const response = page.waitForResponse((response) => response.url() === `${API}/me/cards` && response.request().method() === 'POST');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  expect((await response).status()).toBe(201);
+  await expect(page).toHaveURL('/cards');
+  const list = page.getByRole('list', { name: 'Your cards' });
+  await expect(list.getByRole('listitem')).toHaveCount(1);
+  await expect(list).toContainText('HDFC Bank');
+  await expect(list).toContainText('Credit card');
+  await expect(list).toContainText('Millennia');
+  await expect(add).toBeVisible();
+  await capture(page, 'populated-list-add');
+});
+
 test('done-when-3: open a listed card, edit every field with the keyboard and save while holding 20 cards', async ({ page }) => {
   await member(page);
   const card = await addCard(page);
   for (const variant of 'ABCDEFGHIJKLMNOPQRS') await addCard(page, variant);
   await page.goto('/cards');
+  await expect(page.getByText('You can list at most 20 cards.', { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Add a card', exact: true })).toHaveCount(0);
   const edit = page.getByRole('link', { name: 'Edit HDFC Bank credit card Millennia', exact: true });
   await edit.focus();
   await page.keyboard.press('Enter');

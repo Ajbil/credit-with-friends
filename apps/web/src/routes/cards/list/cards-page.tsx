@@ -23,6 +23,9 @@ export function CardsPage() {
   return <PageFrame><section className="cards-page">
     <Link className="button button--quiet" to="/">Back to your circles</Link>
     <header className="cards-header"><h1>Your cards</h1><p>The bank cards you hold.</p></header>
+    {cards.isSuccess && !cards.isFetching && (cards.data.items.length < 20
+      ? <Link className="button button--primary" to="/cards/add">Add a card</Link>
+      : <p>You can list at most 20 cards.</p>)}
     {cards.isPending ? <p role="status">Loading your cards…</p> : cards.isError ? <div className="cards-state" role="alert">
       <h2>We couldn’t load your cards</h2><p>Check your connection and try again.</p>
       <Button variant="quiet" disabled={cards.isFetching} onClick={() => cards.refetch()}>{cards.isFetching ? 'Trying again…' : 'Try again'}</Button>
