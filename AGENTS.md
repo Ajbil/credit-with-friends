@@ -73,3 +73,7 @@ and the Rules below, and leave the flow and the approval steps to the agent coor
   built side by side collide and time out before any assertion runs. Plan web parts that each need
   a browser run to finish one after another, and leave full-suite runs to the pull-request checks
   rather than loosening shared timeouts. (CWF-7: both web parts, one extra round each.)
+- Every new screen in a plan names the button or link that leads to it and the part that adds it.
+  That part's browser test reaches the screen by clicking it instead of typing its address.
+  Building each screen as its own part left Add a card and Edit unreachable until the edit part
+  added their links. (CWF-3: the Add a card and Edit links were missing until the edit part.)
