@@ -5,6 +5,7 @@ import { accountsControllerCancel, accountsControllerNotice, accountsControllerO
 import { ApiError } from '../api/fetcher';
 import { Button } from '../components/ui/button';
 import { PageFrame } from '../components/page-frame';
+import { rememberOnboardingInvite } from '../routes/cards/welcome/onboarding-invite.helper';
 
 export function OnboardingPage() {
   const pending = useQuery({ queryKey: ['pending'], queryFn: async () => (await accountsControllerPending()).data.data! });
@@ -14,7 +15,11 @@ export function OnboardingPage() {
   const [isAdultConfirmed, setAdult] = useState(false);
   const [isConsentGiven, setConsent] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const onboard = useMutation({ mutationFn: (input: Parameters<typeof accountsControllerOnboard>[0]) => accountsControllerOnboard(input), onSuccess: () => { location.assign(pending.data?.returnPath || '/'); }, onError: (error) => {
+  const onboard = useMutation({ mutationFn: (input: Parameters<typeof accountsControllerOnboard>[0]) => accountsControllerOnboard(input), onSuccess: () => {
+    const returnPath = pending.data?.returnPath;
+    rememberOnboardingInvite(returnPath);
+    location.assign(!returnPath || returnPath === '/' ? '/cards/welcome' : returnPath);
+  }, onError: (error) => {
     if (error instanceof ApiError) setFieldErrors(Object.fromEntries((error.failure.details?.fieldErrors ?? []).map(({ field, reason }) => [field, reason === 'invalid_value' ? ({ displayName: 'Use 1 to 50 characters.', whatsappNumber: 'Enter a valid WhatsApp number.', isAdultConfirmed: 'Confirm you are 18 or older.', isConsentGiven: 'Accept the privacy notice to continue.' } as Record<string, string>)[field] ?? 'Check this value and try again.' : reason])));
   } });
   const cancel = useMutation({ mutationFn: accountsControllerCancel, onSuccess: () => { location.assign('/'); }, });
