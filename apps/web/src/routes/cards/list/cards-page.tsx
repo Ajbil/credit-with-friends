@@ -31,6 +31,7 @@ export function CardsPage() {
     </div> : <ul className="cards-list" aria-label="Your cards">{cards.data.items.map((card) => <li key={card.id}>
       <h2>{card.bankName}</h2>
       <p>{card.type === 'credit' ? 'Credit card' : 'Debit card'}{card.variant && <> · {card.variant}</>}</p>
+      <Link className="button button--quiet" to="/cards/$cardId/edit" params={{ cardId: card.id }} aria-label={`Edit ${card.bankName} ${card.type} card${card.variant ? ` ${card.variant}` : ''}`}>Edit</Link>
     </li>)}</ul>}
   </section></PageFrame>;
 }

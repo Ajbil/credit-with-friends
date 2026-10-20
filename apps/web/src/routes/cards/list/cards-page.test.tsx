@@ -49,8 +49,10 @@ test('done-when-1: a failed cards load offers a retry that shows bank, type and 
   expect(rows[0].textContent).toContain('HDFC Bank');
   expect(rows[0].textContent).toContain('Credit card');
   expect(rows[0].textContent).toContain('Millennia');
+  expect(within(rows[0]).getByRole('link', { name: 'Edit HDFC Bank credit card Millennia' }).getAttribute('href')).toBe('/cards/credit-card/edit');
   expect(rows[1].textContent).toContain('Federal Bank');
   expect(rows[1].textContent).toContain('Debit card');
   expect(rows[1].textContent).not.toMatch(/null|undefined/);
+  expect(within(rows[1]).getByRole('link', { name: 'Edit Federal Bank debit card' }).getAttribute('href')).toBe('/cards/debit-card/edit');
   expect(screen.queryByRole('alert')).toBeNull();
 });
