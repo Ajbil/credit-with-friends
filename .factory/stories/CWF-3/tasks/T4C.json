@@ -1,0 +1,35 @@
+{
+  "branch": "task/CWF-3-T4C",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "e4ce40cc0d52eb352c06cf5eb2f8158b7038e2fa903b0cf2420a1c345c3e1bc2",
+    "commit": "0f5c5e87daf10f4366a4b004afa9c7304116909a",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This new file contains only branch review and status metadata. It is outside the four permitted path groups and is not needed for the member-card screen or its tests.",
+        "file": ".factory/stories/CWF-3/tasks/T4C.json",
+        "line": 3,
+        "priority": "P2",
+        "title": "Remove the out-of-scope task tracker file"
+      }
+    ],
+    "status": "clean",
+    "tree": "5004c7fb6106c89675ea8807ad040a315644be1c34780e5a9baaf2b14bf3b23a"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-20T08:54:25+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-20T09:11:54+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-20T09:24:48+00:00",
+      "step": "review"
+    }
+  ]
+}
