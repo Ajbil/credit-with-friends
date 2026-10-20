@@ -1,0 +1,3 @@
+.card-remove{margin-top:40px}
+.card-remove .field-error{color:var(--card-error)}
+.card-load-error>.button+.button{margin-left:12px}

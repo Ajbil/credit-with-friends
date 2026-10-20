@@ -1,0 +1,35 @@
+{
+  "branch": "task/CWF-3-T4B",
+  "review": {
+    "blocking_level": "P1",
+    "changed": "04291a8439fadb2a64324daf3163e69ebdaae3440793f71e64af6dddf3d666a8",
+    "commit": "6e57cf79f2d838901353c237f11137113627237f",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "This out-of-scope change adds an Add a card link and a 20-card limit message to the cards list. Done-when 3 needs the per-card Edit link added below, but these controls implement the story's separate add-card work. Move the add controls and their list-test additions to that task.",
+        "file": "apps/web/src/routes/cards/list/cards-page.tsx",
+        "line": 26,
+        "priority": "P2",
+        "title": "Keep the add-card list controls in the add-card task"
+      }
+    ],
+    "status": "clean",
+    "tree": "97be6bda4ac4e0433b73d4600ea91b23e762eac96dd6cee0966d13ae91056af6"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-20T07:20:06+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-20T07:46:21+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-20T08:01:22+00:00",
+      "step": "review"
+    }
+  ]
+}

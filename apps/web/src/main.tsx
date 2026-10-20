@@ -13,6 +13,7 @@ import { CirclePage } from './routes/circles/circle/circle-page';
 import { JoinPage } from './routes/circles/join/join-page';
 import { CardsPage } from './routes/cards/list/cards-page';
 import { AddCardPage } from './routes/cards/add/add-card-page';
+import { EditCardPage } from './routes/cards/edit/edit-card-page';
 import './style.css';
 
 const rootRoute = createRootRoute({ component: () => <Outlet /> });
@@ -27,8 +28,9 @@ const circleRoute = createRoute({ getParentRoute: () => rootRoute, path: '/circl
 const joinRoute = createRoute({ getParentRoute: () => rootRoute, path: '/circles/join/$code', component: JoinPage });
 const cardsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/cards', component: CardsPage });
 const addCardRoute = createRoute({ getParentRoute: () => rootRoute, path: '/cards/add', component: AddCardPage });
+const editCardRoute = createRoute({ getParentRoute: () => rootRoute, path: '/cards/$cardId/edit', component: EditCardPage });
 const futureRoute = createRoute({ getParentRoute: () => rootRoute, path: '$', component: SignInPage });
-const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute, onboardingRoute, notOpenRoute, profileRoute, noticeRoute, privacyRoute, sessionRoute, circleRoute, joinRoute, cardsRoute, addCardRoute, futureRoute]) });
+const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute, onboardingRoute, notOpenRoute, profileRoute, noticeRoute, privacyRoute, sessionRoute, circleRoute, joinRoute, cardsRoute, addCardRoute, editCardRoute, futureRoute]) });
 declare module '@tanstack/react-router' { interface Register { router: typeof router } }
 
 createRoot(document.getElementById('root')!).render(

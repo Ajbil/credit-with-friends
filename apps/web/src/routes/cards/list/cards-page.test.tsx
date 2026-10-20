@@ -23,10 +23,13 @@ test('done-when-1: your cards explains an empty list after loading without requi
   await showCards();
   expect(screen.getByRole('status').textContent).toContain('Loading your cards');
   expect(screen.queryByText('No cards yet')).toBeNull();
+  expect(screen.queryByRole('link', { name: 'Add a card' })).toBeNull();
+  expect(screen.queryByText('You can list at most 20 cards.')).toBeNull();
   await act(async () => { finish(Response.json({ success: true, data: { items: [], pagination: { page: 1, limit: 20, totalItems: 0, totalPages: 0 } }, error: null })); });
   expect(await screen.findByRole('heading', { name: 'No cards yet' })).toBeDefined();
   expect(screen.getByText(/even if you haven’t joined a circle/)).toBeDefined();
   expect(screen.getByRole('link', { name: 'Back to your circles' }).getAttribute('href')).toBe('/');
+  expect(screen.getByRole('link', { name: 'Add a card' }).getAttribute('href')).toBe('/cards/add');
 });
 
 test('done-when-1: a failed cards load offers a retry that shows bank, type and optional variant', async () => {
@@ -42,6 +45,8 @@ test('done-when-1: a failed cards load offers a retry that shows bank, type and 
   expect((await screen.findByRole('alert')).textContent).toContain('We couldn’t load your cards');
   expect(screen.getByText('Check your connection and try again.')).toBeDefined();
   expect(screen.queryByText('No cards yet')).toBeNull();
+  expect(screen.queryByRole('link', { name: 'Add a card' })).toBeNull();
+  expect(screen.queryByText('You can list at most 20 cards.')).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   const list = await screen.findByRole('list', { name: 'Your cards' });
   const rows = within(list).getAllByRole('listitem');
@@ -49,8 +54,24 @@ test('done-when-1: a failed cards load offers a retry that shows bank, type and 
   expect(rows[0].textContent).toContain('HDFC Bank');
   expect(rows[0].textContent).toContain('Credit card');
   expect(rows[0].textContent).toContain('Millennia');
+  expect(within(rows[0]).getByRole('link', { name: 'Edit HDFC Bank credit card Millennia' }).getAttribute('href')).toBe('/cards/credit-card/edit');
   expect(rows[1].textContent).toContain('Federal Bank');
   expect(rows[1].textContent).toContain('Debit card');
   expect(rows[1].textContent).not.toMatch(/null|undefined/);
+  expect(within(rows[1]).getByRole('link', { name: 'Edit Federal Bank debit card' }).getAttribute('href')).toBe('/cards/debit-card/edit');
   expect(screen.queryByRole('alert')).toBeNull();
+  expect(screen.getByRole('link', { name: 'Add a card' }).getAttribute('href')).toBe('/cards/add');
+});
+
+test('done-when-1: holding 20 cards replaces Add a card with the card-limit message', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce(Response.json({
+    success: true,
+    data: { items: Array.from({ length: 20 }, (_, index) => ({
+      id: `card-${index}`, bankId: 'hdfc-bank', bankName: 'HDFC Bank', type: 'credit', variant: `Variant ${index}`,
+    })), pagination: { page: 1, limit: 20, totalItems: 20, totalPages: 1 } }, error: null,
+  })));
+  await showCards();
+  expect(await screen.findByText('You can list at most 20 cards.')).toBeDefined();
+  expect(screen.queryByRole('link', { name: 'Add a card' })).toBeNull();
+  expect(within(screen.getByRole('list', { name: 'Your cards' })).getAllByRole('listitem')).toHaveLength(20);
 });
