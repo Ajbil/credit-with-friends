@@ -94,6 +94,9 @@ test('done-when-3: an invite returns through sign-in and onboarding, joins only 
     const join = page.getByRole('button', { name: 'Join', exact: true });
     await expect(join).toBeFocused();
     await page.keyboard.press('Enter');
+    // Joining after onboarding now invites card entry before opening the circle.
+    await expect(page.getByRole('heading', { name: 'Add your cards', exact: true })).toBeVisible();
+    await page.getByRole('link', { name: 'Skip for now' }).click();
     await expect(page).toHaveURL(`/circles/${invite.circleId}`);
     expect((await (await page.request.get(`${api}/circles`)).json()).data.items).toEqual([
       expect.objectContaining({ id: invite.circleId, name: 'College batch', memberCount: 2, isAdmin: false }),

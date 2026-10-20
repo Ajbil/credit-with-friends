@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
 import { accountsControllerPending, joinCircleControllerJoin, joinCircleControllerPreview } from '../../../api/generated';
@@ -6,6 +6,7 @@ import { ApiError, googleStartUrl } from '../../../api/fetcher';
 import { PageFrame } from '../../../components/page-frame';
 import { Button } from '../../../components/ui/button';
 import { joinErrorMessage } from './join-error.helper';
+import { clearOnboardingInvite, destinationAfterInvite } from '../../cards/welcome/onboarding-invite.helper';
 import './join.css';
 
 export function JoinPage() {
@@ -16,6 +17,7 @@ export function JoinPage() {
 function InvitePage({ code }: { code: string }) {
   const client = useQueryClient();
   const returnPath = `/circles/join/${encodeURIComponent(code)}`;
+  const redirected = useRef(false);
   const invite = useQuery({
     queryKey: ['circle-invite', code], networkMode: 'always', refetchOnMount: 'always',
     queryFn: async () => (await joinCircleControllerPreview(encodeURIComponent(code))).data.data!,
@@ -30,9 +32,15 @@ function InvitePage({ code }: { code: string }) {
     mutationFn: () => joinCircleControllerJoin(encodeURIComponent(code)),
     onSuccess: (response) => {
       void client.invalidateQueries({ queryKey: ['circles'] });
-      location.assign(`/circles/${response.data.data!.circleId}`);
+      if (!redirected.current) {
+        redirected.current = true;
+        location.assign(destinationAfterInvite(returnPath, `/circles/${response.data.data!.circleId}`));
+      }
     },
     onError: (error) => {
+      if (error instanceof ApiError && ['INVITE_LINK_INVALID', 'JOIN_BLOCKED', 'CIRCLE_FULL', 'TOO_MANY_CIRCLES'].includes(error.failure.code)) {
+        clearOnboardingInvite();
+      }
       if (error instanceof ApiError && (error.status === 401 || error.failure.code === 'ACCOUNT_INCOMPLETE')) {
         // Reload the invite to validate the link before offering sign-in again.
         location.replace(returnPath);
@@ -43,12 +51,20 @@ function InvitePage({ code }: { code: string }) {
     },
   });
 
+  useEffect(() => { clearOnboardingInvite(returnPath); }, [returnPath]);
+
   useEffect(() => {
     if (accountRequired && pending.isSuccess && !pending.isFetching) {
       location.replace(`/onboarding?returnTo=${encodeURIComponent(returnPath)}`);
     }
-    if (invite.isSuccess && !invite.isFetching && invite.data?.status === 'already_member') {
-      location.replace(`/circles/${invite.data.circleId}`);
+    if (invite.isSuccess && !invite.isFetching && invite.data?.status === 'already_member' && !redirected.current) {
+      // Strict Mode may replay this effect; consuming the flag twice loses the welcome page.
+      redirected.current = true;
+      location.replace(destinationAfterInvite(returnPath, `/circles/${invite.data.circleId}`));
+    }
+    if ((invite.isSuccess && !invite.isFetching && invite.data.status === 'blocked') ||
+      (invite.error instanceof ApiError && invite.error.failure.code === 'INVITE_LINK_INVALID')) {
+      clearOnboardingInvite();
     }
     if (invite.error instanceof ApiError && invite.error.failure.code === 'PRIVACY_NOTICE_REQUIRED') {
       location.replace(`/notice?returnTo=${encodeURIComponent(returnPath)}`);
