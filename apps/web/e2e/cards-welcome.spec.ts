@@ -128,12 +128,12 @@ for (const action of ['skip', 'add'] as const) {
     await expectWelcome(page, invite.circleId);
     expect(await flag(page)).toBeNull();
     if (action === 'skip') await page.getByRole('link', { name: 'Skip for now' }).click();
-    else {
-      await addCard(page);
-      expect((await (await page.request.get(`${API}/me/cards`)).json()).data.items).toMatchObject([{ bankId: 'hdfc-bank', variant: 'Millennia' }]);
-    }
+    else await addCard(page);
     await expect(page).toHaveURL(`/circles/${invite.circleId}`);
     await expect(page.getByRole('heading', { name: 'Family', exact: true })).toBeVisible();
+    if (action === 'add') {
+      expect((await (await page.request.get(`${API}/me/cards`)).json()).data.items).toMatchObject([{ bankId: 'hdfc-bank', variant: 'Millennia' }]);
+    }
     await page.goto(invite.path);
     await expect(page).toHaveURL(`/circles/${invite.circleId}`);
     await page.reload();
