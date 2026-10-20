@@ -1,0 +1,14 @@
+{
+  "base": "fb65a57585747db835bd1d09e0f60ab77c94ff26",
+  "branch": "fix/a-planned-screen-had-no-button-or-link-l",
+  "done_when": "AGENTS.md Known traps says every new screen's plan names the button or link that leads to it",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-20T08:09:26+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "A planned screen had no button or link leading to it, so members could not reach it"
+}
