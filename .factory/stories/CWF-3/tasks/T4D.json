@@ -2,12 +2,12 @@
   "branch": "task/CWF-3-T4D",
   "review": {
     "blocking_level": "P1",
-    "changed": "da0cb1128dd3f2b2d3b8a9825967434b05e2b226af8d5488fd7f7f11fe1d5eba",
-    "commit": "b1d46f57b8f157ab56b91d14b1f73dfe5f501596",
+    "changed": "894c8fc4813c1919e0a486b8e545274f2f22310d11d44f8bede0ff73f9d08f80",
+    "commit": "c3668a5ea7e9a2fcc7df5405d1badf0a6aa69cb2",
     "dismissals": [],
     "findings": [
       {
-        "body": "The permitted paths do not include `.factory/stories/CWF-3/tasks/T4D.json`. This new file only records branch status and a start timestamp; the supplied change shows no role for it in the invitation flow. Remove it from this branch.",
+        "body": "This new file records branch review and status metadata. It is outside the permitted paths and has no role in the card invitation flow. The previously reported scope gap remains open.",
         "file": ".factory/stories/CWF-3/tasks/T4D.json",
         "line": 1,
         "priority": "P2",
@@ -15,9 +15,9 @@
       }
     ],
     "status": "clean",
-    "tree": "a7fcf44c163d873bc6da1d9b62cf92987599d1f5788e2b39aba3c529cd77299b"
+    "tree": "7dbb407e6e192d5dc34aed679095a280de96b76522c75b83907dbd7ab03d352a"
   },
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-20T10:41:57+00:00",
@@ -25,6 +25,10 @@
     },
     {
       "at": "2026-10-20T10:59:20+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-20T11:09:56+00:00",
       "step": "review"
     }
   ]
