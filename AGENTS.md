@@ -23,23 +23,57 @@ and the Rules below, and leave the flow and the approval steps to the agent coor
 
 ### The flow
 
-1. A story starts as one short doc: `forge story new <KEY> "<title>"`.
-2. It gets rounds of cold read (`forge read <KEY>`) until one finds nothing, then one approval
-   from the human.
+1. Every idea starts with `forge start "<idea>"`. Forge picks a fix, a plan, discovery or the idea list.
+   Never ask the human whether it is a story or a fix.
+2. A plan gets rounds of cold read (`forge read <KEY>`) until no notes block building, then one
+   approval from the human.
 3. Each task runs in its own branch and worktree: `forge task start <KEY>/<TASK>`, then
    `forge work <KEY>/<TASK>`.
 4. `forge close <item>` closes it when the tests pass and the review finds no serious problem.
 5. The human merges unless the default branch's `forge.toml` has `merge = "agent"`.
-   Then, once close says Ready, the agent runs `forge merge <item>`. After the story's last merge,
-   `forge story done <KEY> "<outcome>"`.
+   Then, once close says Ready, the agent runs `forge merge <item>`. The story's last task merge
+   records it done, using `--outcome "<outcome>"` or its title. Use `forge story done` on an
+   existing work branch only to change that outcome later; it opens no separate pull request.
 
 ### The lanes
 
+Send every idea through `forge start "<idea>"`. Forge picks the lane.
+
 - **Story:** anything that changes an interface or needs more than five code files.
-- **Fix:** a small change, started with `forge fix start "<why>" --done "<done when>"`.
+- **Fix:** a small change with at most five code files and no interface change.
   Specs, decisions, the roadmap and discovery notes ship as fixes.
+- **Discovery:** one question when Forge cannot guess the problem.
+- **Idea list:** only when the owner says later. Forge keeps the idea in `plans/ideas.md`.
+
+| The human says | Run |
+|---|---|
+| "Make it a story" (a fix) | Add the key to the fix's roadmap and commit it, then `forge story new <KEY> --from-fix <fix>` |
+| "Make it a fix" or "Just fix it" (a plan in planning) | `forge fix start "<its Problem>" --done "<its first Done-when>"`, then `forge story drop <KEY> --because "Moved to the fix <fix>"` |
+| "Do it later" (a fix) | `forge fix drop <fix> --because "The owner wants it later"`, then `forge start "Do this later: <its why> (kept on fix <fix>)"`. `fix drop --undo` brings it back |
+| "Do it now" (an idea-list entry) | `forge start "<the owner's new words>: <the entry's idea without its deferral words>"`, for example `forge start "Do it now: add dark mode"`. Then remove the entry from the main checkout's file while it is waiting, or else in the new item's branch |
+
+### Who builds
+
+`forge.toml`'s `workers` picks who builds; `forge work` and `forge next` name the worker for
+each item:
+
+- `codex`: every task and fix on Codex, user-facing ones with the design model's codex entry.
+- `claude`: every task and fix on Claude.
+- `split`: user-facing story tasks on Claude, everything else on Codex.
 
 ### Rules
+
+Mainline Deploy is available to install through the organization's plugin catalog. Do not assume
+that the plugin and MCP are installed or that the user is signed in.
+Use Mainline Deploy only when the user explicitly requests deployment. First check whether it is
+installed in the current host. If it is missing, use the organization's plugin catalog and the
+host's installation flow. Do not invent an installation command or marketplace address.
+Then follow the Mainline Deploy skill. Check OAuth sign-in and have the user complete it if needed.
+Wait for successful authentication before deployment. Installation alone does not mean the user is signed in.
+Deploy only the requested app to the requested environment. A build, fix, merge, ship/land request,
+successful test or review, demo preparation, or Forge next step does not by itself authorize deployment.
+Do not install Mainline or start OAuth sign-in for those requests. An explicit request such as
+"deploy this to staging" or "publish this on Mainline" needs no separate routine deployment approval.
 
 - Never commit to the default branch. Work happens on a story, task or fix branch, and the
   git hooks refuse anything else.
@@ -50,13 +84,20 @@ and the Rules below, and leave the flow and the approval steps to the agent coor
 - No running commentary. Speak only when something lands, when a failure or finding needs the
   human, or when a decision is theirs, in a line or two.
 - Write for humans in plain English: no IDs, hashes or jargon in questions, pull request
-  summaries or the board.
+  summaries or the board, except story keys shown small beside titles on the board.
 - A story is approved through Plan Mode: exit Plan Mode with the text of the story doc that
   `forge next` names, unchanged, as the plan: from its title down to `## For the builders`, or the
   whole doc when it has no such heading. The approval matches its "What changes for you" and
   "Done when" sections exactly, so a summary or a rewrite records nothing, and an edit below
   `## For the builders` needs no new approval. There is no other approval step.
 - Run long `forge work` runs in the background and keep watching them.
+- When Forge itself misbehaves (a wrong or confusing message, a refusal that shouldn't happen, a
+  crash, a command that reports success but did nothing, generated files that contradict each
+  other), file a bug on Forge's GitHub with the Forge bug template's sections, fill every one, and
+  leave out the repo's code, names, paths and secrets: describe what Forge did. The forge guide
+  has the sections and the command.
+- Put the rules every review of this repo must follow under `## Review rules`, outside the
+  forge:begin and forge:end lines. Forge's review reads them from the default branch.
 <!-- forge:end -->
 
 ## Known traps
@@ -77,3 +118,7 @@ and the Rules below, and leave the flow and the approval steps to the agent coor
   That part's browser test reaches the screen by clicking it instead of typing its address.
   Building each screen as its own part left Add a card and Edit unreachable until the edit part
   added their links. (CWF-3: the Add a card and Edit links were missing until the edit part.)
+
+# Claude Code entrypoint — do not add content here
+
+The shared contract and the Claude adapter are imported; edit those instead.
