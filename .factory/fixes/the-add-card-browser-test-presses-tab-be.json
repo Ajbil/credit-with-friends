@@ -11,12 +11,27 @@
   "done_when": "The first test in apps/web/e2e/cards-add.spec.ts waits until the Bank picker is visible before it presses Tab, and everything else the test proves is unchanged.",
   "fix_kind": "mechanical",
   "kind": "fix",
+  "known": [],
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "9b0b55c34abdddd8f58911163a2ae0185fa968f13bae0562a97276d8335d0867",
+    "changed": "1f83848f94b82b04c0208dac93f6b74c0c81c38785278f1e7e693380b1cb6d70",
+    "commit": "c6a92c9c626b4ceb7f44bcfdf4c74e6390bdbfa7",
+    "dismissals": [],
+    "findings": [],
+    "id": "8890b415-aac7-4180-a914-c3042a4b4720",
+    "status": "clean"
+  },
   "round": 1,
-  "status": "working",
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-23T06:25:05.864417+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-23T07:39:26.238122+00:00",
+      "step": "review"
     }
   ],
   "stuck": {
@@ -25,6 +40,7 @@
     "keys": {},
     "round": null
   },
+  "tests": "`C:\\Users\\caw-d\\AppData\\Roaming\\uv\\tools\\symphony-forge\\Scripts\\python.exe -c \"import sys; sys.path.insert(0, 'C:\\\\Users\\\\caw-d\\\\AppData\\\\Roaming\\\\uv\\\\tools\\\\symphony-forge\\\\Lib\\\\site-packages'); from forge.fasttest import close_tests; sys.exit(close_tests('dde67bcac1e308b1b5ead2d9fd1260e2b4774cc2'))\"` exited with status 1 on this machine.\nScope: all 3 workspace projects\nLockfile is up to date, resolution step is skipped\n@symphony/api:test:\n@symphony/api:test:  \u001b[31m\u276f\u001b[39m \u001b[30m\u001b[45m api-unit \u001b[49m\u001b[39m apps/api/src/common/config/config.spec.ts \u001b[2m(\u001b[22m\u001b[2m3 tests\u001b[22m\u001b[2m | \u001b[22m\u001b[33m3 skipped\u001b[39m\u001b[2m)\u001b[22m\u001b[33m 25203\u001b[2mms\u001b[22m\u001b[39m\n@symphony/api:test: \u001b[90m \u001b[2m\u276f\u001b[22m processTicksAndRejections apps/api/node:internal/process/task_queues:\u001b[2m105:5\u001b[22m\u001b[39m\n@symphony/api:test: \u001b[90m \u001b[2m\u276f\u001b[22m VitestExecutor.runModule ../../../Arihant%20Personal/CreditWithFriends/credit-with-friends-fix-the-add-card-browser-test-presses-tab-be/node_modules/.pnpm/vite-node@3.2.4_@types+node_17b37570450a2ff991a89f51814c5b29/node_modules/vite-node/dist/client.mjs:\u001b[2m397:4\u001b[22m\u001b[39m\n@symphony/api:test: \u001b[90m \u001b[2m\u276f\u001b[22m VitestExecutor.directRequest ../../../Arihant%20Personal/CreditWithFriends/credit-with-friends-fix-the-add-card-browser-test-presses-tab-be/node_modules/.pnpm/vite-node@3.2.4_@types+node_17b37570450a2ff991a89f51814c5b29/node_modules/vite-node/dist/client.mjs:\u001b[2m375:3\u001b[22m\u001b[39m\n@symphony/api:test: \u001b[90m \u001b[2m\u276f\u001b[22m VitestExecutor.cachedRequest ../../../Arihant%20Personal/CreditWithFriends/credit-with-friends-fix-the-add-card-browser-test-presses-tab-be/node_modules/.pnpm/vite-node@3.2.4_@types+node_17b37570450a2ff991a89f51814c5b29/node_modules/vite-node/dist/client.mjs:\u001b[2m189:11\u001b[22m\u001b[39m\n@symphony/api:test: \u001b[90m \u001b[2m\u276f\u001b[22m VitestExecutor.dependencyRequest ../../../Arihant%20Personal/CreditWithFriends/credit-with-friends-fix-the-add-card-browser-test-presses-tab-be/node_modules/.pnpm/vite-node@3.2.4_@types+node_17b37570450a2ff991a89f51814c5b29/node_modules/vite-node/dist/client.mjs:\u001b[2m239:10\u001b[22m\u001b[39m\n@symphony/api:test: \u001b[90m \u001b[2m\u276f\u001b[22m apps/api/src/common/config/config.spec.ts:\u001b[2m16:25\u001b[22m\u001b[39m\n@symphony/api:test:\n@symphony/api:test: \u001b[31mThis error originated in \"\u001b[1mapps/api/src/common/config/config.spec.ts\u001b[22m\" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.\u001b[39m\n@symphony/api:test: \u001b[31mThis error was caught after test environment was torn down. Make sure to cancel any running tasks before test finishes:\n@symphony/api:test: - cancel timeouts using clearTimeout and clearInterval\n@symphony/api:test: - wait for promises to resolve using the await keyword\u001b[39m\n@symphony/api:test: \u001b[31m\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u001b[39m\n@symphony/api:test:\n@symphony/api:test:\n@symphony/api:test: \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[31m1 failed\u001b[39m\u001b[22m\u001b[2m | \u001b[22m\u001b[1m\u001b[32m19 passed\u001b[39m\u001b[22m\u001b[90m (20)\u001b[39m\n@symphony/api:test: \u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m114 passed\u001b[39m\u001b[22m\u001b[2m | \u001b[22m\u001b[33m3 skipped\u001b[39m\u001b[90m (117)\u001b[39m\n@symphony/api:test: \u001b[2m     Errors \u001b[22m \u001b[1m\u001b[31m1 error\u001b[39m\u001b[22m\n@symphony/api:test: \u001b[2m   Start at \u001b[22m 13:06:09\n@symphony/api:test: \u001b[2m   Duration \u001b[22m 145.46s\u001b[2m (transform 107.63s, setup 0ms, collect 579.62s, tests 30.97s, environment 147ms, prepare 126.50s)\u001b[22m\n@symphony/api:test:\n@symphony/api:test: \u2009ELIFECYCLE\u2009 Test failed. See above for more details.\n@symphony/api#test:  ERROR  command (D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-fix-the-add-card-browser-test-presses-tab-be\\apps\\api) C:\\nvm4w\\nodejs\\pnpm.CMD run test exited (1)\n\n Tasks:    0 successful, 2 total\nCached:    0 cached, 2 total\n  Time:    3m3.981s\nFailed:    @symphony/api#test\n\n ERROR  run failed: command  exited (1)\n\u2009ELIFECYCLE\u2009 Test failed. See above for more details.",
   "why": "The add-card browser test presses Tab before the Bank picker has loaded, so it fails at random on slow machines.",
   "worker": "codex"
 }
