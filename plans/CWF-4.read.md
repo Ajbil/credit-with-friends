@@ -51,4 +51,4 @@ No findings.
 2. Advisory: T1B leaves the documented search rules contradictory.
    Raise: Not done. The plan tells T1B to update the spec’s behaviour and acceptance criterion 3 ([plans/CWF-4.md](/D:/Arihant%20Personal/CreditWithFriends/credit-with-friends-story-CWF-4/plans/CWF-4.md:155)), but [criterion 1](/D:/Arihant%20Personal/CreditWithFriends/credit-with-friends-story-CWF-4/docs/specs/find-and-contact.md:98) still excludes similar variants. The [data model](/D:/Arihant%20Personal/CreditWithFriends/credit-with-friends-story-CWF-4/docs/architecture/11-data-model.md:42) still defines matching as a substring check and is outside T1B’s Scope.
    Gain 3, Work 1, Harm 2
-   Disposition: keep - below the bar (follow-up)
+   Disposition: cut - T1B now updates acceptance criterion 1 and the data model matching line too, with the data model in its Scope
