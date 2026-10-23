@@ -8,8 +8,8 @@
       "text": "Gate: Remove unrelated design files from the T1A change",
       "from": "blocking",
       "item": "CWF-4/T1A",
-      "status": "open",
-      "closed_by": null
+      "status": "done",
+      "closed_by": "dismissed"
     }
   ]
 }

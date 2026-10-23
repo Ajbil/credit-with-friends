@@ -14,8 +14,8 @@
       "gain": 4,
       "harm": 4,
       "line": 1,
-      "outcome": "open",
-      "reason": "",
+      "outcome": "accepted",
+      "reason": "docs/design/CWF-4/01-home-find-a-card.html:1 These files were not written by T1A: they arrive from the story branch, where commits 6a6ac30, 1569e0c and df75a14 added the design folder that the owner's plan approval (ca56214) binds by its tree id; the first task's pull request carries the story's approved plan and design to main, as Forge's own story commits on this branch show.",
       "round": 1,
       "security": false,
       "title": "Gate: Remove unrelated design files from the T1A change",
@@ -41,7 +41,13 @@
     "branch_diff": "01f3d3d716eca8f329d003f88574dd9eec413c23a2dfdbdcabfbf8de9a7d724d",
     "changed": "f112b48aefc67b6618d14595b8ee4e07258091111a545605cc364be23d000413",
     "commit": "9e6d4a67591ab02c905e1b68a2171b5ec540d343",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": "docs/design/CWF-4/01-home-find-a-card.html:1 These files were not written by T1A: they arrive from the story branch, where commits 6a6ac30, 1569e0c and df75a14 added the design folder that the owner's plan approval (ca56214) binds by its tree id; the first task's pull request carries the story's approved plan and design to main, as Forge's own story commits on this branch show.",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "Gain 4, Work 1, Harm 4 (floor: migration)\nRaise: Gate. Case: normal use - merging this usage-recorder task also ships five CWF-4 design artboards, their PNGs, design.css, and support.js. These changed files are outside T1A's Scope and are not needed for its migration, recorder, redaction, or tests.",
@@ -65,10 +71,10 @@
       }
     ],
     "id": "5f4a4672-a3ff-47a3-9672-b9cb72de9e38",
-    "status": "blocked"
+    "status": "clean"
   },
   "round": 1,
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-23T14:53:51.000275+00:00",
