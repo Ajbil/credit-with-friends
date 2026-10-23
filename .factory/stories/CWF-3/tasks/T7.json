@@ -7,11 +7,97 @@
     "head": "17833566dfc3100c5cf12cdd7b59ebe1eeafec10",
     "start": "2263fc40d9f9b7da68a752f0b0e0b607356f45ca"
   },
-  "status": "working",
+  "known": [
+    {
+      "area": "docs/architecture/deployment.md",
+      "file": "docs/architecture/deployment.md",
+      "gain": 4,
+      "harm": 3,
+      "line": 143,
+      "outcome": "lived with",
+      "reason": "",
+      "round": 1,
+      "security": false,
+      "title": "Leave production-check results blank until the owner walk-through",
+      "work": 1
+    },
+    {
+      "area": "docs/architecture/deployment.md",
+      "file": "docs/architecture/deployment.md",
+      "gain": 3,
+      "harm": 3,
+      "line": 137,
+      "outcome": "lived with",
+      "reason": "",
+      "round": 1,
+      "security": false,
+      "title": "Gate: functional check",
+      "work": 1
+    },
+    {
+      "area": "docs/architecture/deployment.md",
+      "file": "docs/architecture/deployment.md",
+      "gain": 3,
+      "harm": 2,
+      "line": 137,
+      "outcome": "follow-up",
+      "reason": "",
+      "round": 1,
+      "security": false,
+      "title": "Gate: proof list",
+      "work": 1
+    }
+  ],
+  "review": {
+    "blocking_level": "P0",
+    "branch_diff": "282f23755d102f89fecf7be925c73e2c630fefbed2791ad3b0325e0a050b0685",
+    "changed": "a503c6601f39566796a33746588e2b48b0d4fca7f949a3c8047931da14b5b12f",
+    "commit": "1e0f7b1f55275a8a6198da83bc50037b1639a94e",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "Gain 4, Work 1, Harm 3\nRaise: Functional. Case: normal use - a reader treats the CWF-3 production check as passed before the reserved owner walk-through. The section says the coordinator will record results later and to leave result cells blank, but every check is marked Pass. The recorded ruling explicitly calls for a checklist without live results.",
+        "file": "docs/architecture/deployment.md",
+        "gain": 4,
+        "harm": 3,
+        "line": 143,
+        "priority": "P1",
+        "title": "Leave production-check results blank until the owner walk-through",
+        "work": 1
+      },
+      {
+        "body": "Gain 3, Work 1, Harm 3\nRaise: Gate. Case: normal use - the required handoff cannot show what was actually exercised for this part. The supplied commit-message evidence says the worker\u2019s last commit has no `Functional check:` paragraph. The production-check heading is the nearest changed line for this missing gate.",
+        "file": "docs/architecture/deployment.md",
+        "gain": 3,
+        "harm": 3,
+        "line": 137,
+        "priority": "P1",
+        "title": "Gate: functional check",
+        "work": 1
+      },
+      {
+        "body": "Gain 3, Work 1, Harm 2\nRaise: Gate. Case: normal use - the required mapping from the covered Done-when item to its documentary check is absent. The supplied proof list is `missing`, so this branch provides no named proof entry for the production-check document. The section heading is the nearest changed line for that omission.",
+        "file": "docs/architecture/deployment.md",
+        "gain": 3,
+        "harm": 2,
+        "line": 137,
+        "priority": "P1",
+        "title": "Gate: proof list",
+        "work": 1
+      }
+    ],
+    "id": "e365a34c-4988-408b-a5b1-df496304716b",
+    "status": "clean"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-21T10:04:15+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-23T10:18:19.176103+00:00",
+      "step": "review"
     }
   ]
 }
