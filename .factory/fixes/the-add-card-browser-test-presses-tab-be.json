@@ -4,12 +4,20 @@
   "done_when": "The first test in apps/web/e2e/cards-add.spec.ts waits until the Bank picker is visible before it presses Tab, and everything else the test proves is unchanged.",
   "fix_kind": "mechanical",
   "kind": "fix",
-  "status": "started",
+  "round": 1,
+  "status": "working",
   "steps": [
     {
       "at": "2026-10-23T06:25:05.864417+00:00",
       "step": "start"
     }
   ],
-  "why": "The add-card browser test presses Tab before the Bank picker has loaded, so it fails at random on slow machines."
+  "stuck": {
+    "close": null,
+    "head": "af744d4883a2e1533783867af196677b8e5ac4f2",
+    "keys": {},
+    "round": null
+  },
+  "why": "The add-card browser test presses Tab before the Bank picker has loaded, so it fails at random on slow machines.",
+  "worker": "codex"
 }
