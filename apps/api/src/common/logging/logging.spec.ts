@@ -42,6 +42,7 @@ describe('RequestLoggingMiddleware', () => {
 
     middleware.use(request as never, response as never, vi.fn());
     response.emit('finish');
+    logger.info({ whatsappE164: '+919123456789' }, 'redaction probe');
 
     const line = lines[0];
     const record = JSON.parse(line) as { correlationId: string; requestId: string; context: Record<string, unknown> };
@@ -51,6 +52,7 @@ describe('RequestLoggingMiddleware', () => {
       requestId: 'request-correlation-id',
     });
     expect(line).not.toMatch(/person@example\.in|\+919876543210|\+919123456789|query-secret|header-secret|cookie-secret|203\.0\.113\.42/);
+    expect(JSON.parse(lines[1])).toMatchObject({ whatsappE164: '[REDACTED]' });
     expect(headers).toContainEqual(['X-Correlation-Id', record.correlationId]);
   });
 });
