@@ -6,7 +6,7 @@ const API = 'http://localhost:3104/api/v1';
 const HEADERS = { origin: 'http://localhost:5173', 'x-requested-with': 'cwf' };
 const REMINDER = 'Never enter card numbers, CVV, expiry dates or OTPs.';
 
-async function member(page: Page) {
+async function member(page: Page, displayName = 'Card Holder') {
   const signIn = await page.request.post('http://127.0.0.1:3104/api/v1/test-auth/sign-in', {
     data: { googleAccountId: randomUUID(), email: 'listed@example.in', name: 'Card Holder' }, headers: HEADERS,
   });
@@ -15,7 +15,7 @@ async function member(page: Page) {
   expect(session).toBeDefined();
   await page.context().addCookies([{ name: 'cwf_session', value: session!, domain: 'localhost', path: '/api/v1', httpOnly: true, sameSite: 'Lax' }]);
   expect((await page.request.post(`${API}/onboarding`, {
-    data: { displayName: 'Card Holder', whatsappNumber: '9876543210', isAdultConfirmed: true, isConsentGiven: true, privacyNoticeVersion: 1 }, headers: HEADERS,
+    data: { displayName, whatsappNumber: '9876543210', isAdultConfirmed: true, isConsentGiven: true, privacyNoticeVersion: 1 }, headers: HEADERS,
   })).ok()).toBeTruthy();
 }
 
@@ -171,11 +171,82 @@ test('done-when-7: requesting a missing bank shows the contact and encodes the e
   const email = new URL(href!);
   expect(email.protocol).toBe('mailto:');
   expect(decodeURIComponent(email.pathname)).toBe(contactEmail);
-  expect(email.searchParams.get('subject')).toBe('Please add my bank');
-  expect(email.searchParams.get('body')).toBe('Bank name: ');
-  expect(href).toContain('subject=Please%20add%20my%20bank');
-  expect(href).toContain('body=Bank%20name%3A%20');
+  // The request now includes the approved greeting and bank / brand prompt.
+  expect(email.searchParams.get('subject')).toBe('Request to add a bank or brand card');
+  expect(email.searchParams.get('body')).toBe('Hello,\r\n\r\nPlease add this bank or brand card to CreditWithFriends:\r\n\r\nBank / brand card name:\r\n\r\nThank you.');
+  expect(email.search).toBe('?subject=Request%20to%20add%20a%20bank%20or%20brand%20card&body=Hello%2C%0D%0A%0D%0APlease%20add%20this%20bank%20or%20brand%20card%20to%20CreditWithFriends%3A%0D%0A%0D%0ABank%20%2F%20brand%20card%20name%3A%0D%0A%0D%0AThank%20you.');
   await expect(page.getByText(contactEmail, { exact: true })).toBeVisible();
+});
+
+test('card privacy assurance is bold on Add your cards and keeps the add and skip paths', async ({ page }) => {
+  await member(page);
+  await page.goto('/cards/welcome');
+  const assurance = page.getByText('We never ask for card numbers, CVV, expiry dates or OTPs, and your cards are never shared outside your circles.', { exact: true });
+  await expect(assurance).toBeVisible();
+  expect(await assurance.evaluate((element) => element.tagName)).toBe('STRONG');
+  expect(await assurance.evaluate((element) => element.parentElement?.previousElementSibling?.textContent)).toBe('Only people in your circles can see your cards. Never enter card numbers, CVV, expiry dates or OTPs.');
+  await capture(page, 'cards-welcome-assurance');
+  await page.getByRole('link', { name: 'Add a card', exact: true }).focus();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Skip for now' })).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: 'Add a card', exact: true })).toBeVisible();
+});
+
+test('circle member card links use icons, full phone rows and a desktop hover or focus hint', async ({ page, browser }) => {
+  await member(page);
+  const admin = await browser.newContext({ baseURL: 'http://localhost:5173', viewport: { width: 1280, height: 900 }, hasTouch: false, isMobile: false });
+  try {
+    const adminPage = await admin.newPage();
+    await member(adminPage, 'Asha Admin');
+    const created = await admin.request.post(`${API}/circles`, { data: { name: 'Card sharing circle' }, headers: HEADERS });
+    expect(created.status()).toBe(201);
+    const circleId = (await created.json()).data.id as string;
+    const invite = await admin.request.get(`${API}/circles/${circleId}/invite`);
+    expect(invite.ok()).toBeTruthy();
+    const code = (await invite.json()).data.url.split('/').at(-1) as string;
+    expect((await page.request.post(`${API}/circle-invites/${code}/join`, { headers: HEADERS })).ok()).toBeTruthy();
+    await page.goto('/');
+    await page.getByRole('link', { name: /Card sharing circle/ }).click();
+    const members = page.getByRole('list', { name: 'Circle members' });
+    const link = members.getByRole('link', { name: 'View Asha Admin’s cards', exact: true });
+    await expect(link).toBeVisible();
+    await expect(link.locator('svg[aria-hidden="true"]')).toHaveCount(2);
+    await expect(link).toHaveCSS('text-decoration-line', 'none');
+    await expect(members.getByRole('listitem').filter({ hasText: 'Card Holder' }).locator('a, svg')).toHaveCount(0);
+    await link.focus();
+    await expect(link.getByText('See their cards')).toBeHidden();
+    const row = await link.boundingBox();
+    const list = await members.boundingBox();
+    expect(row!.height).toBeGreaterThanOrEqual(44);
+    expect(row!.width).toBe(list!.width);
+    await page.screenshot({ path: test.info().outputPath('circle-links-phone.png'), fullPage: true });
+    await link.click({ position: { x: row!.width - 8, y: row!.height / 2 } });
+    await expect(page.getByRole('heading', { name: 'Asha Admin’s cards', exact: true })).toBeVisible();
+    // Exercise the same linked Admin row with a mouse and a keyboard.
+    await admin.addCookies(await page.context().cookies());
+    await adminPage.goto('/');
+    await adminPage.getByRole('link', { name: /Card sharing circle/ }).click();
+    const desktopLink = adminPage.getByRole('link', { name: 'View Asha Admin’s cards', exact: true });
+    const hint = desktopLink.getByText('See their cards');
+    await expect(hint).toBeHidden();
+    await desktopLink.hover();
+    await expect(hint).toBeVisible();
+    const hintBox = await hint.boundingBox();
+    const badgeBox = await desktopLink.getByText('Admin', { exact: true }).boundingBox();
+    expect(hintBox!.y + hintBox!.height).toBeLessThanOrEqual(badgeBox!.y);
+    await adminPage.mouse.move(0, 0);
+    await expect(hint).toBeHidden();
+    await adminPage.getByRole('link', { name: 'Back to your circles' }).focus();
+    await adminPage.keyboard.press('Tab');
+    await expect(desktopLink).toBeFocused();
+    await expect(hint).toBeVisible();
+    expect(await desktopLink.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe('none');
+    await adminPage.screenshot({ path: test.info().outputPath('circle-links-desktop.png'), fullPage: true });
+    await adminPage.keyboard.press('Enter');
+    await expect(adminPage.getByRole('heading', { name: 'Asha Admin’s cards', exact: true })).toBeVisible();
+  } finally { await admin.close(); }
 });
 
 test('done-when-1: a failed bank load offers retry without a partial picker or enabled Save', async ({ page }) => {

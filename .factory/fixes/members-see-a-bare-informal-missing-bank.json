@@ -1,0 +1,45 @@
+{
+  "base": "2b6d4d88290b1a7249a55d46d9a9c8e5f7752de7",
+  "branch": "fix/members-see-a-bare-informal-missing-bank",
+  "chat": {
+    "approval": null,
+    "claude": null,
+    "conversation": "01a16837-034f-7f90-b8c0-24051d51a6d7",
+    "head": null,
+    "start": "db1882682ee98979431e804148c0557deafffbde"
+  },
+  "done_when": "The missing-bank link opens an email with a professional subject and a polite message that still has the bank-name line filled in, circle member names you can open show a link icon instead of an underline, and the Add your cards page shows a bold line saying card details are never collected or shared.",
+  "fix_kind": "ui",
+  "kind": "fix",
+  "known": [],
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "d72cfab9b1a9ff08e35d780039297d767d80b815f9167fe6719b979a328284a5",
+    "changed": "daacb155daf98c33c0e6e498aef5f809a90b07dc0b00b994531bb007a88a59c4",
+    "commit": "9898c2f95d797b0ac11386d1d071c31c9744198c",
+    "dismissals": [],
+    "findings": [],
+    "id": "a538f2e4-212f-4f5e-b7d7-0af088655dff",
+    "status": "clean"
+  },
+  "round": 1,
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-23T10:00:39.164982+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-23T10:46:15.284834+00:00",
+      "step": "review"
+    }
+  ],
+  "stuck": {
+    "close": null,
+    "head": "4a6e362ef3fd62df2c4505bba40c75d8b13a648e",
+    "keys": {},
+    "round": null
+  },
+  "why": "Members see a bare, informal missing-bank email, an underline that does not read as a link to a member's cards on the circle page, and no clear bold assurance on Add your cards that card details are never collected or shared.",
+  "worker": "codex"
+}

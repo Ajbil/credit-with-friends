@@ -78,6 +78,6 @@ export function CardForm({ banks, values, onChange, onSubmit, saving, error, lab
       {error && !hasFieldErrors && <p id="card-save-error" className="field-error" role="alert" tabIndex={-1}>{error instanceof ApiError ? error.failure.message : 'We couldn’t save your card. Check your connection and try again.'}</p>}
       <Button type="submit" disabled={!ready || !values.bankId || saving || disabled}>{saving ? 'Saving…' : 'Save'}</Button>
     </form>
-    {ready && <p className="card-bank-request"><a className="text-link" href={`mailto:${encodeURIComponent(banks.data.contactEmail)}?subject=${encodeURIComponent('Please add my bank')}&body=${encodeURIComponent('Bank name: ')}`}>Bank not listed? Ask us to add it</a><span>{banks.data.contactEmail}</span></p>}
+    {ready && <p className="card-bank-request"><a className="text-link" href={`mailto:${encodeURIComponent(banks.data.contactEmail)}?subject=${encodeURIComponent('Request to add a bank or brand card')}&body=${encodeURIComponent('Hello,\r\n\r\nPlease add this bank or brand card to CreditWithFriends:\r\n\r\nBank / brand card name:\r\n\r\nThank you.')}`}>Bank not listed? Ask us to add it</a><span>{banks.data.contactEmail}</span></p>}
   </>;
 }
