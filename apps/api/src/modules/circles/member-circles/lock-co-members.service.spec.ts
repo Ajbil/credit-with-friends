@@ -15,7 +15,8 @@ describe('co-members in live circles', () => {
         { id: 'membership-3', circleId: 'circle-a', memberId: 'searcher' },
         { id: 'membership-4', circleId: 'circle-a', memberId: 'shared' },
         { id: 'membership-5', circleId: 'circle-a', memberId: 'other' },
-      ]);
+      ])
+      .mockResolvedValueOnce([{ circleId: 'circle-b' }, { circleId: 'circle-a' }]);
     const tx = { $queryRaw: query } as unknown as Prisma.TransactionClient;
 
     await expect(lockCoMembers('searcher', tx)).resolves.toEqual({
@@ -25,6 +26,6 @@ describe('co-members in live circles', () => {
         { memberId: 'other', circles: [{ id: 'circle-a', name: 'Alpha' }] },
       ],
     });
-    expect(query).toHaveBeenCalledTimes(2);
+    expect(query).toHaveBeenCalledTimes(3);
   });
 });

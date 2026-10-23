@@ -84,6 +84,14 @@ function membershipEnd(change: 'leave' | 'removal' | 'deletion', circleId: strin
       : () => call(`/circles/${circleId}`, 'DELETE', shopper.cookie);
 }
 
+function searcherMembershipEnd(change: 'leave' | 'removal' | 'deletion', circleId: string, shopper: Awaited<ReturnType<typeof member>>, holder: Awaited<ReturnType<typeof member>>) {
+  return change === 'leave'
+    ? () => call(`/circles/${circleId}/leave`, 'POST', shopper.cookie)
+    : change === 'removal'
+      ? () => call(`/circles/${circleId}/members/${shopper.id}/remove`, 'POST', holder.cookie)
+      : () => call(`/circles/${circleId}`, 'DELETE', holder.cookie);
+}
+
 async function waitForLock(label: string, expectedBlockers: number[], excludedPids: number[] = [], queryText?: string) {
   let competitorPid = 0;
   await vi.waitFor(async () => {
@@ -383,6 +391,90 @@ describe('searches API', () => {
       expect(endAnswered).toBe(false);
       release();
       expect(items(await searchRequest).map(({ cards, memberId }) => [memberId, cards[0].id])).toEqual([[holder.id, cardId]]);
+      expect((await endRequest).response.status).toBe(200);
+      expect(searchAnswered).toBe(true);
+      expect(endAnswered).toBe(true);
+      expect(items(await search(shopper.cookie))).toEqual([]);
+    } finally {
+      release();
+      await Promise.allSettled([searchRequest, endRequest].filter((promise) => promise !== undefined));
+      bus.registerRequest('cards.findHolders', ({ memberIds, bankId, type, variant, tx }) => findHolders(memberIds, bankId, type, variant, tx));
+    }
+  });
+
+  test.each(['leave', 'removal', 'deletion'] as const)('done-when-1: searcher %s commits before a waiting search and excludes that circle', async (change) => {
+    const holder = await member(`Searcher end holder ${change}`);
+    const shopper = await member(`Searcher end shopper ${change}`);
+    const circleId = await circle(`Searcher end ${change}`, holder, shopper);
+    await add(holder.cookie);
+    const lockUrl = new URL(databaseUrl);
+    lockUrl.searchParams.set('application_name', `${schemaName}_searcher_${change}_writer`);
+    const writerDb = new PrismaClient({ datasources: { db: { url: lockUrl.toString() } } });
+    let release!: () => void;
+    let ready!: (pid: number) => void;
+    const released = new Promise<void>((resolve) => { release = resolve; });
+    const locked = new Promise<number>((resolve) => { ready = resolve; });
+    const writer = writerDb.$transaction(async (tx) => {
+      const [{ pid }] = await tx.$queryRaw<Array<{ pid: number }>>`SELECT pg_backend_pid() AS pid`;
+      await tx.$queryRaw`SELECT "id" FROM "Circle" WHERE "id" = ${circleId}::uuid FOR UPDATE`;
+      ready(pid);
+      await released;
+      if (change === 'deletion') {
+        await tx.circle.update({ where: { id: circleId }, data: { deletedAtUtc: new Date(), inviteCode: null } });
+      } else {
+        await tx.circleMembership.delete({ where: { circleId_memberId: { circleId, memberId: shopper.id } } });
+      }
+    }, { timeout: 30_000 });
+    let searchRequest: ReturnType<typeof search> | undefined;
+    try {
+      const writerPid = await locked;
+      searchRequest = search(shopper.cookie);
+      const searchPid = await waitForLock('searcher membership search', [writerPid], [], 'FOR SHARE');
+      const waiting = await db.$queryRaw<Array<{ pid: number; blockers: number[] }>>`
+        SELECT pid, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
+        WHERE application_name = ${`${schemaName}_api`} AND wait_event_type = 'Lock'`;
+      expect(waiting.find(({ pid, blockers }) => pid === searchPid && blockers.includes(writerPid))).toBeDefined();
+    } finally {
+      release();
+      try { await writer; } finally { await writerDb.$disconnect(); }
+    }
+    expect(items(await searchRequest!)).toEqual([]);
+  });
+
+  test.each(['leave', 'removal', 'deletion'] as const)('done-when-1: search holds the searcher membership until %s can finish', async (change) => {
+    const holder = await member(`Searcher first holder ${change}`);
+    const shopper = await member(`Searcher first shopper ${change}`);
+    const circleId = await circle(`Searcher first ${change}`, holder, shopper);
+    const cardId = await add(holder.cookie);
+    const bus = app.get(ServiceBus);
+    let release!: () => void;
+    const paused = new Promise<void>((resolve) => { release = resolve; });
+    let searchPid = 0;
+    bus.registerRequest('cards.findHolders', async ({ memberIds, bankId, type, variant, tx }) => {
+      const [{ pid }] = await tx.$queryRaw<Array<{ pid: number }>>`SELECT pg_backend_pid() AS pid`;
+      searchPid = pid;
+      await paused;
+      return findHolders(memberIds, bankId, type, variant, tx);
+    });
+    let searchRequest: ReturnType<typeof search> | undefined;
+    let endRequest: ReturnType<ReturnType<typeof searcherMembershipEnd>> | undefined;
+    try {
+      let searchAnswered = false;
+      let endAnswered = false;
+      searchRequest = search(shopper.cookie);
+      void searchRequest.then(() => { searchAnswered = true; });
+      await vi.waitFor(() => expect(searchPid).toBeGreaterThan(0), { timeout: 8_000 });
+      endRequest = searcherMembershipEnd(change, circleId, shopper, holder)();
+      void endRequest.then(() => { endAnswered = true; });
+      const endPid = await waitForLock(`searcher ${change}`, [searchPid], [], 'FOR UPDATE');
+      const waiting = await db.$queryRaw<Array<{ pid: number; blockers: number[] }>>`
+        SELECT pid, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
+        WHERE application_name = ${`${schemaName}_api`} AND wait_event_type = 'Lock'`;
+      expect(waiting.find(({ pid, blockers }) => pid === endPid && blockers.includes(searchPid))).toBeDefined();
+      expect(searchAnswered).toBe(false);
+      expect(endAnswered).toBe(false);
+      release();
+      expect(items(await searchRequest).map(({ memberId, cards }) => [memberId, cards[0].id])).toEqual([[holder.id, cardId]]);
       expect((await endRequest).response.status).toBe(200);
       expect(searchAnswered).toBe(true);
       expect(endAnswered).toBe(true);
