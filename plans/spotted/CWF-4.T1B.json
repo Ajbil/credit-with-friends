@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "key": "bug\tapps/api/src/modules/circles/member-circles/lock-co-members.service.ts\tSearch can expose cards after the searcher has left a circle\tCWF-4/T1B",
+      "kind": "bug",
+      "path": "apps/api/src/modules/circles/member-circles/lock-co-members.service.ts",
+      "line": 12,
+      "text": "Search can expose cards after the searcher has left a circle",
+      "from": "blocking",
+      "item": "CWF-4/T1B",
+      "status": "open",
+      "closed_by": null
+    }
+  ]
+}
