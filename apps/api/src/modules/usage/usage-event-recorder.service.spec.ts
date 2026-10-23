@@ -4,6 +4,7 @@ import { ServiceBus } from '../../service-bus/service-bus.service';
 import type { PinoLogger } from 'nestjs-pino';
 import { describe, expect, test, vi } from 'vitest';
 import { UsageEventRecorder } from './usage-event-recorder.service';
+import { USAGE_EVENT_NAMES, type CardSearchedEvent, type CardHolderContactedEvent } from './usage-events';
 
 describe('usage event recorder', () => {
   test('records invite and join events with their circles through the bus', async () => {
@@ -41,6 +42,27 @@ describe('usage event recorder', () => {
     expect(create).toHaveBeenCalledWith({ data: {
       id: event.id, type: 'card_listed', memberId: event.initiatedByAccountId, occurredAtUtc: event.timestampUtc,
       circles: { create: circleIds.map((circleId) => ({ circleId })) },
+    } });
+  });
+
+  test('maps search and contact data to the usage row without carrying variant data', async () => {
+    const create = vi.fn(async () => ({}));
+    const bus = new ServiceBus();
+    const logger = { info: vi.fn(), warn: vi.fn() } as unknown as PinoLogger;
+    new UsageEventRecorder({ usageEvent: { create } } as unknown as PrismaService, bus, logger).onModuleInit();
+    const common = { id: randomUUID(), version: 1, timestampUtc: new Date(), initiatedByAccountId: randomUUID() };
+    const search: CardSearchedEvent = { ...common, data: { circleIds: [], bankId: 'hdfc-bank', cardType: 'either', peopleFound: 2 } };
+    Object.assign(search.data, { variant: 'Flip-Kart' });
+    await bus.publish(USAGE_EVENT_NAMES.search, search);
+    expect(create).toHaveBeenLastCalledWith({ data: {
+      id: common.id, type: 'search', memberId: common.initiatedByAccountId, occurredAtUtc: common.timestampUtc,
+      bankId: 'hdfc-bank', cardType: 'either', peopleFound: 2, circles: { create: [] },
+    } });
+    const contact: CardHolderContactedEvent = { ...common, id: randomUUID(), data: { holderMemberId: randomUUID(), circleIds: [randomUUID()] } };
+    await bus.publish(USAGE_EVENT_NAMES.whatsappTap, contact);
+    expect(create).toHaveBeenLastCalledWith({ data: {
+      id: contact.id, type: 'whatsapp_tap', memberId: common.initiatedByAccountId, occurredAtUtc: common.timestampUtc,
+      holderMemberId: contact.data.holderMemberId, circles: { create: [{ circleId: contact.data.circleIds[0] }] },
     } });
   });
 });
