@@ -1,6 +1,13 @@
 {
   "base": "2b6d4d88290b1a7249a55d46d9a9c8e5f7752de7",
   "branch": "fix/members-see-a-bare-informal-missing-bank",
+  "chat": {
+    "approval": null,
+    "claude": null,
+    "conversation": "01a16837-034f-7f90-b8c0-24051d51a6d7",
+    "head": null,
+    "start": "db1882682ee98979431e804148c0557deafffbde"
+  },
   "done_when": "The missing-bank link opens an email with a professional subject and a polite message that still has the bank-name line filled in, circle member names you can open show a link icon instead of an underline, and the Add your cards page shows a bold line saying card details are never collected or shared.",
   "fix_kind": "ui",
   "kind": "fix",
