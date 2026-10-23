@@ -37,10 +37,14 @@ export function CirclePage() {
       <header className="circle-header"><h1>{circle.data.name}</h1><p>{new Intl.NumberFormat('en-IN').format(circle.data.members.length)} {circle.data.members.length === 1 ? 'member' : 'members'}</p></header>
       <div className="circle-layout">
         <section aria-labelledby="members-heading"><h2 id="members-heading">Members</h2>
-          {circle.data.members.length === 0 ? <><p>No members to show. Try loading your circle again.</p><Button variant="quiet" onClick={() => circle.refetch()}>Try again</Button></> : <ul className="circle-members" aria-label="Circle members">{circle.data.members.map((member) => <li key={member.id}>
-            <span>{currentMember && member.id !== currentMember.id
-              ? <Link className="text-link member-cards-link" to="/circles/$circleId/members/$memberId/cards" params={{ circleId, memberId: member.id }} aria-label={`View ${member.displayName}’s cards`}>{member.displayName}</Link>
-              : member.displayName}</span>{member.isAdmin && <span className="circle-admin">Admin</span>}
+          {circle.data.members.length === 0 ? <><p>No members to show. Try loading your circle again.</p><Button variant="quiet" onClick={() => circle.refetch()}>Try again</Button></> : <ul className="circle-members" aria-label="Circle members">{circle.data.members.map((member) => <li key={member.id} className={currentMember && member.id !== currentMember.id ? 'circle-member-row' : undefined}>
+            {currentMember && member.id !== currentMember.id
+              ? <Link className="member-cards-link" to="/circles/$circleId/members/$memberId/cards" params={{ circleId, memberId: member.id }} aria-label={`View ${member.displayName}’s cards`}>
+                <span className="circle-member-name">{member.displayName}<svg className="circle-member-link-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m10 13 4-4m-6 6-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 3 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" /></svg><span className="circle-member-hint" aria-hidden="true">See their cards</span></span>
+                {member.isAdmin && <span className="circle-admin">Admin</span>}
+                <svg className="circle-member-chevron" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 6 6 6-6 6" /></svg>
+              </Link>
+              : <><span>{member.displayName}</span>{member.isAdmin && <span className="circle-admin">Admin</span>}</>}
             {currentMember?.isAdmin && member.id !== currentMember.id && <CircleMemberRemoval circleId={circleId} member={member} />}
           </li>)}</ul>}
           {currentMember?.isAdmin && <CircleClearRemovals circleId={circleId} />}

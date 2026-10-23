@@ -25,6 +25,7 @@ export function CardsWelcomePage() {
     <h1>Add your cards</h1>
     <p>Let your circle know which bank cards you hold. Just choose your bank, credit or debit, and an optional variant.</p>
     <p>Only people in your circles can see your cards. Never enter card numbers, CVV, expiry dates or OTPs.</p>
+    <p><strong>We never ask for card numbers, CVV, expiry dates or OTPs, and your cards are never shared outside your circles.</strong></p>
     <p>You can add cards later from Your cards.</p>
     <div className="cards-welcome-actions">
       <a className="button button--primary" href={destination ? `/cards/add?returnTo=${encodeURIComponent(destination)}` : '/cards/add'}>Add a card</a>

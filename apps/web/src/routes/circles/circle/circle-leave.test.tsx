@@ -33,6 +33,9 @@ test('done-when-1: leaving stays disabled while sending and a transport failure 
   try {
     await act(async () => { render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>); });
     const leave = await screen.findByRole('button', { name: /^Leave circle$/ });
+    const memberLink = screen.getByRole('link', { name: 'View Asha Admin’s cards' });
+    expect(memberLink.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
+    expect(memberLink.classList.contains('text-link')).toBe(false);
     fireEvent.click(leave);
     await waitFor(() => expect(screen.getByRole('button', { name: 'Leaving…' }).hasAttribute('disabled')).toBe(true));
     fireEvent.click(screen.getByRole('button', { name: 'Leaving…' }));
