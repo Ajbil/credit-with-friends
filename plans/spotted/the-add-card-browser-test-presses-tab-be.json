@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "key": "edge\tapps/api/src/common/config/config.spec.ts\tThe full suite reports an error while collecting this test file on this machine.",
+      "kind": "edge",
+      "path": "apps/api/src/common/config/config.spec.ts",
+      "line": 16,
+      "text": "The full suite reports an error while collecting this test file on this machine.",
+      "from": "worker",
+      "item": "the-add-card-browser-test-presses-tab-be",
+      "status": "open",
+      "closed_by": null
+    }
+  ]
+}
