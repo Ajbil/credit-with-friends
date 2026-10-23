@@ -17,10 +17,11 @@
   and what you type in a search is never stored or logged.
 - Every matching card, and every card on a circle member's cards screen, has a "Message on
   WhatsApp" button. Tapping it checks first that the card still exists and that you still share a
-  circle, then opens WhatsApp to that person with a message you can edit before sending, for
-  example: "Hi Meera Shah, do you have a moment? I need your HDFC Bank credit card, Regalia Gold,
-  for an offer." Without a variant it reads "...your HDFC Bank credit card for an offer." The app
-  sends nothing itself.
+  circle, then opens WhatsApp to that person with a message you can edit before sending, which
+  says where it came from, for example: "Hi Meera Shah, I saw on CreditWithFriends
+  (creditwithfriends.in) that you have an HDFC Bank credit card, Regalia Gold. Do you have a
+  moment? I need it for an offer." Without a variant it reads "...that you have an HDFC Bank
+  credit card. Do you have a moment? I need it for an offer." The app sends nothing itself.
 - If the card was removed, or you no longer share a circle, the button shows "This card is no
   longer available." and opens nothing.
 - Next to the buttons the app reminds you that the card holder places the order themselves and
@@ -30,7 +31,7 @@
   each WhatsApp tap (with the person you tapped and the circles you share) is counted for your
   later usage view. Counting never slows or blocks either.
 
-Design: docs/design/CWF-4/ (a8aa6c7725a53cde18997adacbd4720c14c74ab4)
+Design: docs/design/CWF-4/ (be9eaadbfad497da8ffac61322d068e6345ffa3f)
 
 ## Why
 
@@ -79,8 +80,8 @@ WhatsApp tap: member, card holder, their shared circles); the tables are in
 `docs/architecture/11-data-model.md`. The approved screens are in `docs/design/CWF-4/`: build to
 them in the app's existing hand-written CSS (no new UI library), at phone width first.
 
-The approved message wording puts the variant between commas ("card, Regalia Gold, for an
-offer"); T1C updates the spec's template line to match.
+The approved message names the app so the person knows where it came from; T1C updates the
+spec's template line to match it.
 
 ### Done-when details
 
@@ -137,10 +138,15 @@ offer"); T1C updates the spec's template line to match.
 3. **Message on WhatsApp.**
    - `POST /api/v1/contacts` with body `{ cardId }` returns `{ whatsappUrl }`:
      `https://wa.me/<digits of the holder's current E.164 number>?text=<encoded message>`, the
-     message being "Hi <holder's display name>, do you have a moment? I need your <bank> <credit
-     or debit> card, <variant>, for an offer." or, without a variant, "Hi <name>, do you have a
-     moment? I need your <bank> <credit or debit> card for an offer." with the bank's current
-     display name. Encode with `encodeURIComponent`.
+     message being "Hi <holder's display name>, I saw on CreditWithFriends (creditwithfriends.in)
+     that you have <a or an> <bank> <credit or debit> card, <variant>. Do you have a moment? I
+     need it for an offer." or, without a variant, "Hi <name>, I saw on CreditWithFriends
+     (creditwithfriends.in) that you have <a or an> <bank> <credit or debit> card. Do you have a
+     moment? I need it for an offer." with the bank's current display name. The article is "an"
+     when the bank name's first word starts with a vowel letter, or is all capitals (an
+     initialism) starting with A, E, F, H, I, L, M, N, O, R, S or X ("an HDFC Bank", "an IDFC
+     FIRST Bank"); otherwise "a" ("a State Bank of India (SBI)", "a Kotak Mahindra Bank"). Encode
+     with `encodeURIComponent`.
    - In one transaction the search module reads the card's holder through `cards`, makes a new
      circles request `circles.lockSharedCircles` (input `{ memberId, otherMemberId, tx }`, output
      `{ circleIds }`, locking both members' membership rows in shared non-deleted circles `FOR
@@ -159,7 +165,7 @@ offer"); T1C updates the spec's template line to match.
      numbers, CVV, expiry dates or OTPs." with the second sentence bold, sits directly above the
      buttons on the results and on the member cards screen, as in the designs.
    - Tests (T1C): the link and both message forms through the API, the bank's current name, the
-     number's digits only. Web tests (T4B): from a search result and from the member cards screen
+     number's digits only, and a unit test of the article over every seeded bank name. Web tests (T4B): from a search result and from the member cards screen
      the browser goes to the expected `wa.me` link (intercept the navigation; never open
      WhatsApp), the reminder beside the buttons, the busy state, and a failed press (the request
      aborted, then a server error) showing the retry message and opening nothing, followed by a
