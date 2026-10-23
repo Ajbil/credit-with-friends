@@ -10,9 +10,12 @@
 - You see who in your circles holds that card: each person once, with every matching card and the
   names of the circles you share, in A to Z order. You never appear in your own results, and
   nobody you share no circle with ever does.
-- When you type a variant, people whose card matches it come first under "Matching variant", then
-  people who listed that bank and type without a variant under "Variant not stated". When nobody
-  matches, you see only "No one in your circles has this card yet."
+- When you type a variant, spacing, punctuation and capital letters don't matter ("flipkart"
+  finds "Flip-Kart" and "flip kart"). People whose card matches it come first under "Matching
+  variant"; then people whose variant is a near miss with a small typo ("flipkat", "flpkat")
+  under "Similar variant"; then people who listed that bank and type without a variant under
+  "Variant not stated". Abbreviations such as "FKT" are not matched. When nobody matches, you see
+  only "No one in your circles has this card yet."
 - A variant that looks like card details is refused with the same warning as on the add screen,
   and what you type in a search is never stored or logged.
 - Every matching card, and every card on a circle member's cards screen, has a "Message on
@@ -31,7 +34,7 @@
   each WhatsApp tap (with the person you tapped and the circles you share) is counted for your
   later usage view. Counting never slows or blocks either.
 
-Design: docs/design/CWF-4/ (be9eaadbfad497da8ffac61322d068e6345ffa3f)
+Design: docs/design/CWF-4/ (7fd8e968c1b39794bd031c8a23e4b0ff706c179c)
 
 ## Why
 
@@ -47,9 +50,11 @@ repaid outside the app (decisions 0002 and 0003), and only first-party counts ar
 1. **From home you can find a card: pick a bank or brand card, credit, debit or either, and an
    optional variant, and see each person in your circles who holds it once, with their matching
    cards and the circles you share, in A to Z order.**
-2. **With a variant, matching people come first under "Matching variant" and people without a
-   stated variant follow under "Variant not stated"; a search with no match shows only "No one in
-   your circles has this card yet."; a variant that looks like card details is refused.**
+2. **With a variant, ignoring spacing, punctuation and capitals, matching people come first under
+   "Matching variant", people whose variant differs by a small typo follow under "Similar
+   variant", and people without a stated variant come last under "Variant not stated"; a search
+   with no match shows only "No one in your circles has this card yet."; a variant that looks
+   like card details is refused.**
 3. **"Message on WhatsApp" on a search result or on a circle member's card opens WhatsApp to that
    person with the ready message you can edit, next to the reminder that the holder places the
    order and nobody shares card details.**
@@ -92,12 +97,13 @@ spec's template line to match it.
      constitution (page from 1, limit default 20, maximum 100; `data.items` plus
      `data.pagination`); the web asks for one page of 100 and shows "Show more" when there are
      more pages. Rate limit: 60 per minute per member (`docs/architecture/12-auth-sessions-security.md`).
-   - Each item is one person: `memberId`, `displayName`, `group` (`matching` or `unstated`, or
-     `all` without a variant), the shared circles as `{ id, name }` sorted by name, and every
-     qualifying card as `{ id, bankId, bankName, type, variant }`. Never a WhatsApp number.
+   - Each item is one person: `memberId`, `displayName`, `group` (`matching`, `similar` or
+     `unstated`, or `all` without a variant), the shared circles as `{ id, name }` sorted by
+     name, and every qualifying card as `{ id, bankId, bankName, type, variant }`. Never a
+     WhatsApp number.
    - Order: without a variant, one list by display name (case-insensitive), ties by member id;
-     with a variant, all `matching` people first, then `unstated`, each ordered the same way.
-     Paging runs over that order.
+     with a variant, all `matching` people first, then `similar`, then `unstated`, each ordered
+     the same way. Paging runs over that order.
    - **Ownership follows `docs/architecture/10-system-overview.md`:** the search module never
      reads memberships or cards itself. In one transaction it makes a new circles bus request,
      `circles.lockCoMembers` (input `{ memberId, tx }`, output `{ circleIds, coMembers: { memberId,
@@ -105,11 +111,13 @@ spec's template line to match it.
      co-members' membership rows in non-deleted circles `FOR SHARE` (circle rows first, then
      membership rows in id order, as `circles.lockSharedMembership` does) and excludes the
      searcher; then a new cards bus request, `cards.findHolders` (input `{ memberIds, bankId,
-     type, variant?, tx }`, output the qualifying cards with their match kind); then
+     type, variant?, tx }`, output the qualifying cards with their match kind, computed by the
+     cards module's variant-match helper from item 2); then
      `accounts.displayNames`. This is the "member ids sharing a circle with X" query the
      architecture names; T1B records it in `docs/architecture/13-privacy-deletion-jobs.md`.
-   - Variant matching: trim; empty counts as no variant; otherwise compare against the card's
-     case-insensitive `variantKey` with a substring match that escapes `%`, `_` and `\`.
+   - Variant matching follows item 2. The cards module reads every card of the chosen bank and
+     type held by the co-members (circles are small, decision 0001) and matches variants in
+     application code, so no database search extension is needed.
    - Tests (T1B): integration tests for the exact result set across two circles (a person in both
      appears once with both circle names), the searcher never included, credit, debit and any,
      paging and its order, a bank rename showing the new name without changing matches, results
@@ -119,9 +127,22 @@ spec's template line to match it.
      form, both brand-card and bank picks, the result list, "Show more", the failed state with a
      retry, and returning from WhatsApp to the same results without a new search request.
 2. **Variant groups, no one yet, refusals.**
-   - With a variant, a card qualifies when its variant contains the text (`matching`) or it has no
-     variant (`unstated`); a different stated variant never qualifies. A person with any matching
-     card is in `matching` and shows all their qualifying cards, including unstated ones.
+   - **The variant-match helper, one pure function in the cards module with unit tests:**
+     normalise both the entry and each card's variant to lower case with every character that is
+     not a letter or digit removed. An entry that is empty after trimming or after normalising
+     (only spaces or punctuation) counts as no variant. A card qualifies as:
+     - `matching` when its normalised variant contains the normalised entry;
+     - `similar` when it doesn't, but some run of its normalised variant is within the allowed
+       number of edits (insert, delete or change one character) of the normalised entry, the
+       allowance being 0 for an entry of fewer than 4 characters, 1 for 4 to 7 and 2 for 8 or
+       more (approximate substring matching, for example Sellers' edit distance);
+     - `unstated` when it has no variant;
+     - otherwise it does not qualify.
+     Examples for the entry "flipkart": "Flipkart", "Flip-Kart", "flip kart" and "Flipkart Axis"
+     are `matching`; "flipkat" and "flpkat" are `similar`; "FKT", "Millennia" and "Ace" don't
+     qualify. For the entry "flipkat", "Flipkart" is `similar`.
+   - A person's group is the best kind among their qualifying cards (`matching`, then `similar`,
+     then `unstated`), and they show all their qualifying cards of every kind.
    - Refusals reuse the card codes and messages from the exception filter: an unknown bank is
      `CARD_BANK_UNKNOWN` beside the bank field; a variant over 40 characters after trimming is
      `CARD_VARIANT_TOO_LONG` and a card-like variant is `CARD_VARIANT_UNSAFE` beside the variant
@@ -131,10 +152,14 @@ spec's template line to match it.
      output as the CWF-3 add tests do).
    - No match returns an empty page; the web shows only "No one in your circles has this card
      yet." under the form.
-   - Tests (T1B): spaces-only variant equals no variant, case-insensitive contains, a
-     different stated variant excluded, a person with matching and unstated cards in `matching`
-     only, `%` and `_` treated literally, each refusal through the API. Web tests (T4A): the two
-     group headings, the no-one-yet state with nothing else, each refusal beside its field.
+   - T1B updates the spec's variant rules (behaviour and acceptance criterion 3) in
+     `docs/specs/find-and-contact.md` to this matching, the "Similar variant" group and its order.
+   - Tests (T1B): a table-driven unit test of the helper with every example above plus each
+     allowance boundary (3, 4, 7 and 8 characters) and a punctuation-only entry counting as no
+     variant; integration tests for spaces-only and punctuation-only entries equal to no variant, all three groups and their order, a person with matching, similar and
+     unstated cards in `matching` only with all three cards shown, and each refusal through the
+     API. Web tests (T4A): the three group headings, the no-one-yet state with nothing else, each
+     refusal beside its field.
 3. **Message on WhatsApp.**
    - `POST /api/v1/contacts` with body `{ cardId }` returns `{ whatsappUrl }`:
      `https://wa.me/<digits of the holder's current E.164 number>?text=<encoded message>`, the
@@ -215,7 +240,7 @@ spec's template line to match it.
 | ID | Name | What it delivers | Covers | Scope | Tests | After | User-facing | Developer |
 |---|---|---|---|---|---|---|---|---|
 | T1A | Usage events for searches and taps | The migration adding the search and tap fields to usage events, the recorder's two new events, and the number added to the log redaction list | 5 | `apps/api/prisma/`, `apps/api/src/modules/usage/`, `apps/api/src/common/logging/logging.config.ts`, `apps/api/test/usage-search-contact.integration.spec.ts` | `apps/api/src/modules/usage/**/*.spec.ts`, `apps/api/test/usage-search-contact.integration.spec.ts` | | no | |
-| T1B | Search API | The searches endpoint with variant groups, paging and refusals; the circles module's co-members lock and the cards module's holder lookup through the bus; the search event | 1, 2 | `apps/api/src/modules/search/`, `apps/api/src/modules/circles/member-circles/`, `apps/api/src/modules/circles/circles.module.ts`, `apps/api/src/modules/cards/`, `apps/api/src/service-bus/service-bus.service.ts`, `apps/api/openapi.json`, `docs/architecture/13-privacy-deletion-jobs.md`, `apps/api/test/search.integration.spec.ts` | `apps/api/src/modules/search/**/*.spec.ts`, `apps/api/src/modules/circles/member-circles/**/*.spec.ts`, `apps/api/src/modules/cards/**/*.spec.ts`, `apps/api/test/search.integration.spec.ts` | T1A | no | |
+| T1B | Search API | The searches endpoint with the forgiving variant match and its matching, similar and not-stated groups, paging and refusals; the circles module's co-members lock and the cards module's holder lookup through the bus; the search event | 1, 2 | `apps/api/src/modules/search/`, `apps/api/src/modules/circles/member-circles/`, `apps/api/src/modules/circles/circles.module.ts`, `apps/api/src/modules/cards/`, `apps/api/src/service-bus/service-bus.service.ts`, `apps/api/openapi.json`, `docs/architecture/13-privacy-deletion-jobs.md`, `docs/specs/find-and-contact.md`, `apps/api/test/search.integration.spec.ts` | `apps/api/src/modules/search/**/*.spec.ts`, `apps/api/src/modules/circles/member-circles/**/*.spec.ts`, `apps/api/src/modules/cards/**/*.spec.ts`, `apps/api/test/search.integration.spec.ts` | T1A | no | |
 | T1C | Contact API | The contacts endpoint with the WhatsApp link, the no-longer-available refusal, the shared-circles lock, the card lock and the contact details request through the bus, the tap event, and the spec's message line | 3, 4 | `apps/api/src/modules/search/`, `apps/api/src/modules/circles/member-circles/`, `apps/api/src/modules/circles/circles.module.ts`, `apps/api/src/modules/cards/`, `apps/api/src/modules/accounts/`, `apps/api/src/service-bus/service-bus.service.ts`, `apps/api/src/common/api/api-exception.filter.ts`, `apps/api/openapi.json`, `docs/specs/find-and-contact.md`, `apps/api/test/contact.integration.spec.ts` | `apps/api/src/modules/search/**/*.spec.ts`, `apps/api/src/modules/accounts/**/*.spec.ts`, `apps/api/test/contact.integration.spec.ts` | T1B | no | |
 | T4A | Web: find a card | The regenerated client; the "Find a card" button on home; the search screen with the picker, type, variant, results, groups, "Show more", no one yet, refusals and the failed state; returning from WhatsApp to the same results | 1, 2 | `apps/web/src/api/generated.ts`, `apps/web/src/main.tsx`, `apps/web/src/routes/circles/home/`, `apps/web/src/routes/search/`, `apps/web/src/routes/cards/add/card-form.tsx`, `apps/web/e2e/search.spec.ts` | `apps/web/src/routes/search/**/*.test.tsx`, `apps/web/src/routes/circles/home/**/*.test.tsx`, `apps/web/e2e/search.spec.ts` | T1C | yes | |
 | T4B | Web: message on WhatsApp | The button with its busy state on search results and on the member cards screen, the reminder above the buttons, and the no-longer-available message | 3, 4 | `apps/web/src/routes/search/`, `apps/web/src/routes/circles/member/`, `apps/web/src/components/`, `apps/web/e2e/contact.spec.ts` | `apps/web/src/routes/search/**/*.test.tsx`, `apps/web/src/routes/circles/member/**/*.test.tsx`, `apps/web/e2e/contact.spec.ts` | T4A | yes | |

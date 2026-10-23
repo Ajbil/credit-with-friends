@@ -1,13 +1,13 @@
 ---
 reader: codex (gpt-6-sol)
-read_at: 2026-10-23T13:37:13.618722+00:00
-seconds: 110.797
-read_hash: e190ea6df758fc3842ad2dc8bb78d95503d5af47
-round: 3
+read_at: 2026-10-23T14:05:11.863879+00:00
+seconds: 158.859
+read_hash: d3efff5e5137bcd5a6273b7f7356d3bcd709349f
+round: 4
 passed: yes
-doc_seen: e190ea6df758fc3842ad2dc8bb78d95503d5af47
+doc_seen: d3efff5e5137bcd5a6273b7f7356d3bcd709349f
 spec_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
-notes_seen: 86d2742c7ac4fe3243523a8ea7d7b8c62363de1c
+notes_seen: 47e4e9774136ab0732c310489f8f476a92e65b5a
 answers_seen: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 conversation: 01a16899-dc6b-7552-801a-8aa50008817b
 session:
@@ -45,3 +45,10 @@ No findings.
 ## Round 3
 
 No findings.
+
+## Round 4
+
+2. Advisory: T1B leaves the documented search rules contradictory.
+   Raise: Not done. The plan tells T1B to update the spec’s behaviour and acceptance criterion 3 ([plans/CWF-4.md](/D:/Arihant%20Personal/CreditWithFriends/credit-with-friends-story-CWF-4/plans/CWF-4.md:155)), but [criterion 1](/D:/Arihant%20Personal/CreditWithFriends/credit-with-friends-story-CWF-4/docs/specs/find-and-contact.md:98) still excludes similar variants. The [data model](/D:/Arihant%20Personal/CreditWithFriends/credit-with-friends-story-CWF-4/docs/architecture/11-data-model.md:42) still defines matching as a substring check and is outside T1B’s Scope.
+   Gain 3, Work 1, Harm 2
+   Disposition: keep - below the bar (follow-up)
