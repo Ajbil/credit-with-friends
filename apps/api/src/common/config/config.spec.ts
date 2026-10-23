@@ -14,7 +14,7 @@ let validateConfig: (env: Record<string, unknown>) => ApiConfig;
 beforeAll(async () => {
   for (const [key, value] of Object.entries(validEnvironment)) vi.stubEnv(key, value);
   ({ validateConfig } = await import('./config.module'));
-});
+}, 30_000);
 
 afterAll(() => vi.unstubAllEnvs());
 

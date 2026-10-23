@@ -66,3 +66,4 @@ timeline.jsonl
 
 # Local agent files
 .agents/
+forge.local.toml
