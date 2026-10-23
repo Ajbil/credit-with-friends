@@ -1,0 +1,66 @@
+{
+  "amendments": [
+    {
+      "at": "2026-10-23T08:28:09.381076+00:00",
+      "because": "The owner chose to add it to this fix: that setup step timed out in all three full local runs on this machine while passing alone in about 3 seconds",
+      "done_when": "The first test in apps/web/e2e/cards-add.spec.ts waits until the Bank picker is visible before it presses Tab, and everything else the test proves is unchanged."
+    }
+  ],
+  "base": "dde67bcac1e308b1b5ead2d9fd1260e2b4774cc2",
+  "branch": "fix/the-add-card-browser-test-presses-tab-be",
+  "chat": {
+    "approval": null,
+    "claude": null,
+    "conversation": "01a1677f-2558-7b10-93a6-063e3d08a6e4",
+    "head": null,
+    "start": "6df0d2f7310352e2e296f141d798a38e10d53eb6"
+  },
+  "done_when": "The first test in apps/web/e2e/cards-add.spec.ts waits until the Bank picker is visible before it presses Tab, and everything else the test proves is unchanged. The settings test in apps/api/src/common/config/config.spec.ts gives its one-time setup step 30 seconds instead of the default 10, so loading the settings code under a busy full local run no longer times out; no shared timeout changes and nothing else that test proves changes.",
+  "fix_kind": "mechanical",
+  "kind": "fix",
+  "known": [],
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "7f73812476a0ae4e542b650ef1a3d3040e75e51f6c528c2ed0efd46c5332454f",
+    "changed": "bd14cef86fb12fbdf05e82dc502ad2ec6de7082ec03b1249b2c6a074de8a9b4a",
+    "commit": "bcf4f49ce585768382834c91a9b9688bc93d127d",
+    "dismissals": [],
+    "findings": [],
+    "id": "e1149d8f-7f76-42f0-91b5-f03252480b6f",
+    "status": "clean"
+  },
+  "round": 3,
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-23T06:25:05.864417+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-23T07:39:26.238122+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-23T07:56:39.936445+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-23T08:33:20.644791+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-23T08:47:39.144947+00:00",
+      "step": "review"
+    }
+  ],
+  "stuck": {
+    "close": "3a0e630d-678c-4438-8bac-2ff70357a904",
+    "head": "71304caf9ed6e78177a9f5dffd8c7d01c3077423",
+    "keys": {
+      "close's tests failing": 2
+    },
+    "round": 2
+  },
+  "why": "The add-card browser test presses Tab before the Bank picker has loaded, so it fails at random on slow machines.",
+  "worker": "codex"
+}
