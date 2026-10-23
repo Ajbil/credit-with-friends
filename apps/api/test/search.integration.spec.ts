@@ -84,14 +84,14 @@ function membershipEnd(change: 'leave' | 'removal' | 'deletion', circleId: strin
       : () => call(`/circles/${circleId}`, 'DELETE', shopper.cookie);
 }
 
-async function waitForLock(label: string, expectedBlocker: number, excludedPids: number[] = [], queryText?: string) {
+async function waitForLock(label: string, expectedBlockers: number[], excludedPids: number[] = [], queryText?: string) {
   let competitorPid = 0;
   await vi.waitFor(async () => {
     const waiting = await db.$queryRaw<Array<{ pid: number; query: string; blockers: number[] }>>`
       SELECT pid, query, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
       WHERE application_name = ${`${schemaName}_api`} AND wait_event_type = 'Lock'`;
     const competitor = waiting.find(({ pid, query, blockers }) =>
-      !excludedPids.includes(pid) && blockers.includes(expectedBlocker) && (!queryText || query.includes(queryText)));
+      !excludedPids.includes(pid) && blockers.some((blocker) => expectedBlockers.includes(blocker)) && (!queryText || query.includes(queryText)));
     expect(competitor, `${label} never waited: ${JSON.stringify(waiting)}`).toBeDefined();
     competitorPid = competitor!.pid;
   }, { timeout: 8_000 });
@@ -326,9 +326,10 @@ describe('searches API', () => {
     try {
       const blockerPid = await locked;
       searchRequest = search(shopper.cookie);
-      const searchPid = await waitForLock('search', blockerPid, [], 'FOR SHARE');
+      const searchPid = await waitForLock('search', [blockerPid], [], 'FOR SHARE');
       endRequest = membershipEnd(change, circleId, shopper, holder)();
-      const endPid = await waitForLock(`${change} membership end`, blockerPid, [searchPid], 'FOR UPDATE');
+      // PostgreSQL can queue the writer behind the waiting search instead of the row owner.
+      const endPid = await waitForLock(`${change} membership end`, [blockerPid, searchPid], [searchPid], 'FOR UPDATE');
       const waiting = await db.$queryRaw<Array<{ pid: number; blockers: number[] }>>`
         SELECT pid, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
         WHERE application_name = ${`${schemaName}_api`} AND wait_event_type = 'Lock'`;
@@ -373,7 +374,7 @@ describe('searches API', () => {
       await vi.waitFor(() => expect(readPid).toBeGreaterThan(0), { timeout: 8_000 });
       endRequest = membershipEnd(change, circleId, shopper, holder)();
       void endRequest.then(() => { endAnswered = true; });
-      const endPid = await waitForLock(`${change} membership end`, readPid, [], 'FOR UPDATE');
+      const endPid = await waitForLock(`${change} membership end`, [readPid], [], 'FOR UPDATE');
       const waiting = await db.$queryRaw<Array<{ pid: number; blockers: number[] }>>`
         SELECT pid, pg_blocking_pids(pid) AS blockers FROM pg_stat_activity
         WHERE application_name = ${`${schemaName}_api`} AND wait_event_type = 'Lock'`;
