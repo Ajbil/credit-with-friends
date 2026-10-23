@@ -42,6 +42,7 @@ test('done-when-1: pick Jupiter debit, change every filled field and save outsid
   await expect(page.getByRole('heading', { name: 'Add a card', exact: true })).toBeVisible();
   await expect(page.getByText(REMINDER, { exact: true })).toBeVisible();
   await expect(page).toHaveTitle('Add a card | CreditWithFriends');
+  await expect(page.getByLabel('Bank', { exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Back to your cards' }).focus();
   await page.keyboard.press('Tab');
   await expect(page.getByLabel('Bank', { exact: true })).toBeFocused();
