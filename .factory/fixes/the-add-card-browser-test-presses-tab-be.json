@@ -1,6 +1,13 @@
 {
   "base": "dde67bcac1e308b1b5ead2d9fd1260e2b4774cc2",
   "branch": "fix/the-add-card-browser-test-presses-tab-be",
+  "chat": {
+    "approval": null,
+    "claude": null,
+    "conversation": "01a1677f-2558-7b10-93a6-063e3d08a6e4",
+    "head": null,
+    "start": "6df0d2f7310352e2e296f141d798a38e10d53eb6"
+  },
   "done_when": "The first test in apps/web/e2e/cards-add.spec.ts waits until the Bank picker is visible before it presses Tab, and everything else the test proves is unchanged.",
   "fix_kind": "mechanical",
   "kind": "fix",
