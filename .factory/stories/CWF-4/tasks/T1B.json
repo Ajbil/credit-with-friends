@@ -14,7 +14,7 @@
       "gain": 5,
       "harm": 4,
       "line": 12,
-      "outcome": "open",
+      "outcome": "fixed in round 2",
       "reason": "",
       "round": 1,
       "security": true,
@@ -25,24 +25,13 @@
   "part_line_limit": 400,
   "review": {
     "blocking_level": "P1",
-    "branch_diff": "b4ce73bc1bc87e9e5ab3159f6c668dd2d2075724287b0e07067352b8657949e5",
-    "changed": "6acebd887ca9c5cb0ab633dabbb7acd2bab89b9df448e3a63213ec4ab9f48d50",
-    "commit": "5f9b44e61fb76804778a0795734b68a040d54407",
+    "branch_diff": "2acf1126df729baa2408ab9a57059607f3b3b049229792f3db50d27a84ca2731",
+    "changed": "eb56954b4478b0de3c4a2837fff6eb3fa665b22378aa479bebc65838b81fa5cf",
+    "commit": "5f37cf8693bbd2a4021d93a8257ea23c90770e9f",
     "dismissals": [],
-    "findings": [
-      {
-        "body": "Gain 5, Work 2, Harm 4\nRaise: Security. Case: normal use - a member searches while leaving a circle from another device, or while an admin removes them. The first query joins the searcher's membership but locks only the circle row. If the membership is deleted while this query waits for the circle lock, PostgreSQL can still read that membership from the query's earlier snapshot. The next query then reads current co-members without checking that the searcher is still a member, and the API can return their cards after the removal commits. [PostgreSQL documents that `FOR SHARE OF circle` leaves other joined tables unlocked.](https://www.postgresql.org/docs/18/sql-select.html) The race tests cover changes to the holder's membership, but not the searcher's.",
-        "file": "apps/api/src/modules/circles/member-circles/lock-co-members.service.ts",
-        "gain": 5,
-        "harm": 4,
-        "line": 12,
-        "priority": "P1",
-        "title": "Search can expose cards after the searcher has left a circle",
-        "work": 2
-      }
-    ],
-    "id": "6680a1bb-262d-467b-9e03-070ee64e951b",
-    "status": "blocked"
+    "findings": [],
+    "id": "8afc9bcc-7890-407e-b8f9-cda9d3616466",
+    "status": "clean"
   },
   "round": 3,
   "status": "fixing",
@@ -53,6 +42,10 @@
     },
     {
       "at": "2026-10-23T18:15:39.691475+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-23T18:45:39.597156+00:00",
       "step": "review"
     }
   ],
@@ -65,6 +58,6 @@
     },
     "round": 2
   },
-  "tests": "`C:\\Users\\caw-d\\AppData\\Local\\uv\\cache\\archive-v0\\z07rii8QajKh50aG\\Scripts\\python.exe -c \"import sys; sys.path.insert(0, 'C:\\\\Users\\\\caw-d\\\\AppData\\\\Local\\\\uv\\\\cache\\\\archive-v0\\\\z07rii8QajKh50aG\\\\Lib\\\\site-packages'); from forge.fasttest import close_tests; sys.exit(close_tests('34d42afadab5cbf3280230f0bcb4b6eab86127e7'))\"` exited with status 1 on this machine.\nScope: all 3 workspace projects\nLockfile is up to date, resolution step is skipped\n@symphony/web:test:  FAIL  src/pages/onboarding-page.test.tsx > onboarding form rejects invalid details and missing consent before sending them\n@symphony/web:test: Error: Test timed out in 5000ms.\n@symphony/web:test: If this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n@symphony/web:test:  \u276f src/pages/onboarding-page.test.tsx:16:1\n@symphony/web:test:      14| afterEach(() => { cleanup(); onboard.mockReset(); });\n@symphony/web:test:      15|\n@symphony/web:test:      16| test('onboarding form rejects invalid details and missing consent befo\u2026\n@symphony/web:test:        | ^\n@symphony/web:test:      17|   render(<QueryClientProvider client={new QueryClient({ defaultOptions\u2026\n@symphony/web:test:      18|   await screen.findByText('Test notice.');\n@symphony/web:test:\n@symphony/web:test: \u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/1]\u23af\n@symphony/web:test:\n@symphony/web:test:\n@symphony/web:test:  Test Files  1 failed | 19 passed (20)\n@symphony/web:test:       Tests  1 failed | 80 passed (81)\n@symphony/web:test:    Start at  23:42:16\n@symphony/web:test:    Duration  140.53s (transform 42.32s, setup 0ms, collect 321.68s, tests 65.10s, environment 408.28s, prepare 56.60s)\n@symphony/web:test:\n@symphony/web:test: \u2009ELIFECYCLE\u2009 Test failed. See above for more details.\n@symphony/web#test:  ERROR  command (D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-4-T1B\\apps\\web) C:\\nvm4w\\nodejs\\pnpm.CMD run test exited (1)\n\n Tasks:    1 successful, 2 total\nCached:    0 cached, 2 total\n  Time:    2m34.617s\nFailed:    @symphony/web#test\n\n WARNING  no output files found for task @symphony/api#test. Please check your `outputs` key in `turbo.json`\n ERROR  run failed: command  exited (1)\n\u2009ELIFECYCLE\u2009 Test failed. See above for more details.",
+  "tests": "`C:\\Users\\caw-d\\AppData\\Local\\uv\\cache\\archive-v0\\z07rii8QajKh50aG\\Scripts\\python.exe -c \"import sys; sys.path.insert(0, 'C:\\\\Users\\\\caw-d\\\\AppData\\\\Local\\\\uv\\\\cache\\\\archive-v0\\\\z07rii8QajKh50aG\\\\Lib\\\\site-packages'); from forge.fasttest import close_tests; sys.exit(close_tests('34d42afadab5cbf3280230f0bcb4b6eab86127e7'))\"` exited with status 1 on this machine.\nScope: all 3 workspace projects\nLockfile is up to date, resolution step is skipped\n@symphony/web:test:  FAIL  src/routes/cards/list/cards-page.test.tsx > done-when-1: your cards explains an empty list after loading without requiring a circle\n@symphony/web:test: Error: Test timed out in 5000ms.\n@symphony/web:test: If this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n@symphony/web:test:  \u276f src/routes/cards/list/cards-page.test.tsx:20:1\n@symphony/web:test:      18| }\n@symphony/web:test:      19|\n@symphony/web:test:      20| test('done-when-1: your cards explains an empty list after loading wit\u2026\n@symphony/web:test:        | ^\n@symphony/web:test:      21|   let finish!: (response: Response) => void;\n@symphony/web:test:      22|   vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((resolve) =\u2026\n@symphony/web:test:\n@symphony/web:test:\n@symphony/web:test: \u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/1]\u23af\n@symphony/web:test:\n@symphony/web:test:  Test Files  1 failed | 19 passed (20)\n@symphony/web:test:       Tests  1 failed | 80 passed (81)\n@symphony/web:test:    Start at  00:13:55\n@symphony/web:test:    Duration  99.94s (transform 46.00s, setup 0ms, collect 204.38s, tests 65.56s, environment 260.41s, prepare 63.38s)\n@symphony/web:test:\n@symphony/web:test: \u2009ELIFECYCLE\u2009 Test failed. See above for more details.\n@symphony/web#test:  ERROR  command (D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-4-T1B\\apps\\web) C:\\nvm4w\\nodejs\\pnpm.CMD run test exited (1)\n\n Tasks:    1 successful, 2 total\nCached:    0 cached, 2 total\n  Time:    1m51.566s\nFailed:    @symphony/web#test\n\n WARNING  no output files found for task @symphony/api#test. Please check your `outputs` key in `turbo.json`\n ERROR  run failed: command  exited (1)\n\u2009ELIFECYCLE\u2009 Test failed. See above for more details.",
   "worker": "codex"
 }
