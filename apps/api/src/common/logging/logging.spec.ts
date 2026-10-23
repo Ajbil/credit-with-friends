@@ -20,7 +20,7 @@ describe('RequestLoggingMiddleware', () => {
         query: { token: 'query-secret' },
         headers: { authorization: 'Bearer header-secret', cookie: 'cookie-secret' },
         remoteAddress: '203.0.113.42',
-        body: { email: 'person@example.in', whatsAppNumber: '+919876543210' },
+        body: { email: 'person@example.in', whatsAppNumber: '+919876543210', whatsappE164: '+919123456789' },
       },
     }) as unknown as PinoLogger;
     const middleware = new RequestLoggingMiddleware(logger);
@@ -34,7 +34,7 @@ describe('RequestLoggingMiddleware', () => {
       method: 'POST',
       baseUrl: '/api/v1',
       route: { path: '/probe' },
-      body: { email: 'person@example.in', whatsAppNumber: '+919876543210' },
+      body: { email: 'person@example.in', whatsAppNumber: '+919876543210', whatsappE164: '+919123456789' },
       query: { token: 'query-secret' },
       headers: { authorization: 'Bearer header-secret', cookie: 'cookie-secret' },
       cookies: { session: 'cookie-secret' },
@@ -42,6 +42,7 @@ describe('RequestLoggingMiddleware', () => {
 
     middleware.use(request as never, response as never, vi.fn());
     response.emit('finish');
+    logger.info({ whatsappE164: '+919123456789' }, 'redaction probe');
 
     const line = lines[0];
     const record = JSON.parse(line) as { correlationId: string; requestId: string; context: Record<string, unknown> };
@@ -50,7 +51,8 @@ describe('RequestLoggingMiddleware', () => {
       correlationId: 'request-correlation-id',
       requestId: 'request-correlation-id',
     });
-    expect(line).not.toMatch(/person@example\.in|\+919876543210|query-secret|header-secret|cookie-secret|203\.0\.113\.42/);
+    expect(line).not.toMatch(/person@example\.in|\+919876543210|\+919123456789|query-secret|header-secret|cookie-secret|203\.0\.113\.42/);
+    expect(JSON.parse(lines[1])).toMatchObject({ whatsappE164: '[REDACTED]' });
     expect(headers).toContainEqual(['X-Correlation-Id', record.correlationId]);
   });
 });

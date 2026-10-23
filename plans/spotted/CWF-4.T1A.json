@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "key": "bug\tdocs/design/CWF-4/01-home-find-a-card.html\tGate: Remove unrelated design files from the T1A change\tCWF-4/T1A",
+      "kind": "bug",
+      "path": "docs/design/CWF-4/01-home-find-a-card.html",
+      "line": 1,
+      "text": "Gate: Remove unrelated design files from the T1A change",
+      "from": "blocking",
+      "item": "CWF-4/T1A",
+      "status": "done",
+      "closed_by": "dismissed"
+    }
+  ]
+}

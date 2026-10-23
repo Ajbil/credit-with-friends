@@ -39,6 +39,7 @@ model Member {
   circleMemberships   CircleMembership[]
   circleRemovalBlocks  CircleRemovalBlock[]
   usageEvents         UsageEvent[]
+  holderContactEvents UsageEvent[] @relation("UsageEventHolder")
   cards               Card[]
 }
 
@@ -126,13 +127,20 @@ model UsageEvent {
   id           String @id @default(dbgenerated("uuidv7()")) @db.Uuid
   type         String
   memberId     String? @db.Uuid
+  holderMemberId String? @db.Uuid
+  bankId       String?
+  cardType     String?
+  peopleFound  Int?
   occurredAtUtc DateTime @default(now())
   createdAtUtc DateTime @default(now())
   updatedAtUtc DateTime @updatedAt
   member       Member? @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  holder       Member? @relation("UsageEventHolder", fields: [holderMemberId], references: [id], onDelete: SetNull)
   circles      UsageEventCircle[]
 
   @@index([memberId], map: "idx_UsageEvent_memberId")
+  @@index([holderMemberId], map: "idx_UsageEvent_holderMemberId")
+  @@index([bankId, cardType], map: "idx_UsageEvent_bankId_cardType")
   @@index([type], map: "idx_UsageEvent_type")
   @@index([occurredAtUtc], map: "idx_UsageEvent_occurredAtUtc")
 }

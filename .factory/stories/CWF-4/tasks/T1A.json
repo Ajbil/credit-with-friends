@@ -1,0 +1,95 @@
+{
+  "branch": "task/CWF-4-T1A",
+  "chat": {
+    "approval": "3c9692665316a7c2ece1317a0e8ed2c073d6c3b787706dcd412bae014c3da8ad",
+    "claude": null,
+    "conversation": "01a16942-2bc1-7a90-8c5e-dfbed858e844",
+    "head": null,
+    "start": "28c487002e1a075139cad42ed1d762948dd3b910"
+  },
+  "known": [
+    {
+      "area": "docs/design/CWF-4/01-home-find-a-card.html",
+      "file": "docs/design/CWF-4/01-home-find-a-card.html",
+      "gain": 4,
+      "harm": 4,
+      "line": 1,
+      "outcome": "accepted",
+      "reason": "docs/design/CWF-4/01-home-find-a-card.html:1 These files were not written by T1A: they arrive from the story branch, where commits 6a6ac30, 1569e0c and df75a14 added the design folder that the owner's plan approval (ca56214) binds by its tree id; the first task's pull request carries the story's approved plan and design to main, as Forge's own story commits on this branch show.",
+      "round": 1,
+      "security": false,
+      "title": "Gate: Remove unrelated design files from the T1A change",
+      "work": 1
+    },
+    {
+      "area": "apps/api/src/modules/usage/usage-event-recorder.service.ts",
+      "file": "apps/api/src/modules/usage/usage-event-recorder.service.ts",
+      "gain": 2,
+      "harm": 2,
+      "line": 17,
+      "outcome": "lived with",
+      "reason": "",
+      "round": 1,
+      "security": false,
+      "title": "Later: T1B and T1C must publish the search and tap events",
+      "work": 3
+    }
+  ],
+  "part_line_limit": 400,
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "01f3d3d716eca8f329d003f88574dd9eec413c23a2dfdbdcabfbf8de9a7d724d",
+    "changed": "f112b48aefc67b6618d14595b8ee4e07258091111a545605cc364be23d000413",
+    "commit": "9e6d4a67591ab02c905e1b68a2171b5ec540d343",
+    "dismissals": [
+      {
+        "because": "docs/design/CWF-4/01-home-find-a-card.html:1 These files were not written by T1A: they arrive from the story branch, where commits 6a6ac30, 1569e0c and df75a14 added the design folder that the owner's plan approval (ca56214) binds by its tree id; the first task's pull request carries the story's approved plan and design to main, as Forge's own story commits on this branch show.",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
+    "findings": [
+      {
+        "body": "Gain 4, Work 1, Harm 4 (floor: migration)\nRaise: Gate. Case: normal use - merging this usage-recorder task also ships five CWF-4 design artboards, their PNGs, design.css, and support.js. These changed files are outside T1A's Scope and are not needed for its migration, recorder, redaction, or tests.",
+        "file": "docs/design/CWF-4/01-home-find-a-card.html",
+        "gain": 4,
+        "harm": 4,
+        "line": 1,
+        "priority": "P1",
+        "title": "Gate: Remove unrelated design files from the T1A change",
+        "work": 1
+      },
+      {
+        "body": "Gain 2, Work 3, Harm 2\nThe recorder registers both events, but this change has no search or contact caller to publish them. T1B owns publishing searches with the total people found only on page 1; T1C owns publishing successful WhatsApp taps. Their API tests also own proving that recording cannot delay or block either response. Until those tasks land, the Done-when usage counts are not end to end.",
+        "file": "apps/api/src/modules/usage/usage-event-recorder.service.ts",
+        "gain": 2,
+        "harm": 2,
+        "line": 17,
+        "priority": "P2",
+        "title": "Later: T1B and T1C must publish the search and tap events",
+        "work": 3
+      }
+    ],
+    "id": "5f4a4672-a3ff-47a3-9672-b9cb72de9e38",
+    "status": "clean"
+  },
+  "round": 1,
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-23T14:53:51.000275+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-23T15:31:30.776319+00:00",
+      "step": "review"
+    }
+  ],
+  "stuck": {
+    "close": null,
+    "head": "e5bf9e34421b7ed297f1f0f591f564689535340e",
+    "keys": {},
+    "round": null
+  },
+  "worker": "codex"
+}

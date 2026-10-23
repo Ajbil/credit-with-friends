@@ -12,7 +12,7 @@ export function apiPinoOptions(environment: ApiConfig['environment']) {
     redact: {
       paths: [
         'accessToken', 'authorization', 'cookie', 'displayName', 'email', 'googleAccountId', 'name', 'password',
-        'query', 'refreshToken', 'req', 'token', 'whatsAppNumber', 'whatsappNumber',
+        'query', 'refreshToken', 'req', 'token', 'whatsAppNumber', 'whatsappE164', 'whatsappNumber',
       ],
       censor: '[REDACTED]',
     },
