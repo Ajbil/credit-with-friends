@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
-import type { PinoLogger } from 'nestjs-pino';
+import { PinoLogger } from 'nestjs-pino';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import type { ApiConfig } from '../src/common/config/config.module';
 import { PrismaService } from '../src/common/database/prisma.service';
