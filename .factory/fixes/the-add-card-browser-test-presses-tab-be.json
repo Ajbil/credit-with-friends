@@ -30,7 +30,7 @@
     "status": "clean"
   },
   "round": 2,
-  "status": "fixing",
+  "status": "hotspot",
   "steps": [
     {
       "at": "2026-10-23T06:25:05.864417+00:00",
@@ -49,6 +49,11 @@
       "step": "review"
     }
   ],
+  "stop": {
+    "question": "The add-card browser test presses Tab before the Bank picker has is stuck. It should deliver: The first test in apps/web/e2e/cards-add.spec.ts waits until the Bank picker is visible before it presses Tab, and everything else the test proves is unchanged. The settings test in apps/api/src/common/config/config.spec.ts gives its one-time setup step 30 seconds instead of the default 10, so loading the settings code under a busy full local run no longer times out; no shared timeout changes and nothing else that test proves changes.\nTwo rounds in a row left close's tests failing.\nThe worker tried: Review of the-add-card-browser-test-presses-tab-be: clean.\nChoose one: switch this item to Claude; keep Codex for one more round; or narrow or split it.",
+    "tool": "codex",
+    "wait_id": "67fe07a8-88df-40df-beea-92b9faa6e5e0"
+  },
   "stuck": {
     "close": "dc7719cf-cc6f-45b3-9c84-db8acc41a281",
     "head": "0bbb4cd174596b71424bf6e9bd3dc0a34283fc24",
