@@ -44,7 +44,7 @@
     "id": "6680a1bb-262d-467b-9e03-070ee64e951b",
     "status": "blocked"
   },
-  "round": 2,
+  "round": 3,
   "status": "fixing",
   "steps": [
     {
@@ -57,10 +57,13 @@
     }
   ],
   "stuck": {
-    "close": null,
-    "head": "b05a68b9773415b28fbd11f8fed2307309b9903f",
-    "keys": {},
-    "round": null
+    "close": "bde63fda-ca2f-4782-904c-e98668508129",
+    "head": "abbb752ab02c470ad0d6c20641bfab7cf5458506",
+    "keys": {
+      "close's tests failing": 1,
+      "the open P0 search can expose cards after the searcher has left a circle in apps/api/src/modules/circles/member-circles/lock-co-members.service.ts": 1
+    },
+    "round": 2
   },
   "tests": "`C:\\Users\\caw-d\\AppData\\Local\\uv\\cache\\archive-v0\\z07rii8QajKh50aG\\Scripts\\python.exe -c \"import sys; sys.path.insert(0, 'C:\\\\Users\\\\caw-d\\\\AppData\\\\Local\\\\uv\\\\cache\\\\archive-v0\\\\z07rii8QajKh50aG\\\\Lib\\\\site-packages'); from forge.fasttest import close_tests; sys.exit(close_tests('34d42afadab5cbf3280230f0bcb4b6eab86127e7'))\"` exited with status 1 on this machine.\nScope: all 3 workspace projects\nLockfile is up to date, resolution step is skipped\n@symphony/web:test:  FAIL  src/pages/onboarding-page.test.tsx > onboarding form rejects invalid details and missing consent before sending them\n@symphony/web:test: Error: Test timed out in 5000ms.\n@symphony/web:test: If this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n@symphony/web:test:  \u276f src/pages/onboarding-page.test.tsx:16:1\n@symphony/web:test:      14| afterEach(() => { cleanup(); onboard.mockReset(); });\n@symphony/web:test:      15|\n@symphony/web:test:      16| test('onboarding form rejects invalid details and missing consent befo\u2026\n@symphony/web:test:        | ^\n@symphony/web:test:      17|   render(<QueryClientProvider client={new QueryClient({ defaultOptions\u2026\n@symphony/web:test:      18|   await screen.findByText('Test notice.');\n@symphony/web:test:\n@symphony/web:test: \u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/1]\u23af\n@symphony/web:test:\n@symphony/web:test:\n@symphony/web:test:  Test Files  1 failed | 19 passed (20)\n@symphony/web:test:       Tests  1 failed | 80 passed (81)\n@symphony/web:test:    Start at  23:42:16\n@symphony/web:test:    Duration  140.53s (transform 42.32s, setup 0ms, collect 321.68s, tests 65.10s, environment 408.28s, prepare 56.60s)\n@symphony/web:test:\n@symphony/web:test: \u2009ELIFECYCLE\u2009 Test failed. See above for more details.\n@symphony/web#test:  ERROR  command (D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-CWF-4-T1B\\apps\\web) C:\\nvm4w\\nodejs\\pnpm.CMD run test exited (1)\n\n Tasks:    1 successful, 2 total\nCached:    0 cached, 2 total\n  Time:    2m34.617s\nFailed:    @symphony/web#test\n\n WARNING  no output files found for task @symphony/api#test. Please check your `outputs` key in `turbo.json`\n ERROR  run failed: command  exited (1)\n\u2009ELIFECYCLE\u2009 Test failed. See above for more details.",
   "worker": "codex"
