@@ -1,0 +1,12 @@
+{
+  "doc": "plans/CWF-4.md",
+  "status": "planning",
+  "steps": [
+    {
+      "at": "2026-10-23T11:35:21.869861+00:00",
+      "step": "start"
+    }
+  ],
+  "title": "Find a card holder and message them on WhatsApp",
+  "touches": 0
+}
