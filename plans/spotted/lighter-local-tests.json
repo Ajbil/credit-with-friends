@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "key": "bug\t.github/workflows/forge.yml\tRequired tests check fails because pnpm is no longer enabled\tlighter-local-tests",
+      "kind": "bug",
+      "path": ".github/workflows/forge.yml",
+      "line": 68,
+      "text": "Required tests check fails because pnpm is no longer enabled",
+      "from": "blocking",
+      "item": "lighter-local-tests",
+      "status": "open",
+      "closed_by": null
+    }
+  ]
+}

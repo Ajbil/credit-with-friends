@@ -11,14 +11,59 @@
   "done_when": "The forge.toml test command runs install, lint, typecheck, the API unit tests and the build, the full suites still run in GitHub's checks job, and a close on this laptop passes its tests",
   "fix_kind": "mechanical",
   "kind": "fix",
+  "known": [
+    {
+      "area": ".github/workflows/forge.yml",
+      "file": ".github/workflows/forge.yml",
+      "gain": 4,
+      "harm": 2,
+      "line": 68,
+      "outcome": "open",
+      "reason": "",
+      "round": 1,
+      "security": false,
+      "title": "Required tests check fails because pnpm is no longer enabled",
+      "work": 1
+    }
+  ],
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "b6c940e296569dbd37db85e85e707b1877a439a79d77ef72d6df630adaa7f851",
+    "changed": "a45857d1ce10af4c9b7b806324068c6bb21ba51bee8db5772276cff98798665d",
+    "commit": "60207f70cffb129d9b6b8c48218ecb2ba647b560",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "Gain 4, Work 1, Harm 2\nRaise: Functional. Case: normal use - a pull request runs the required `tests` job. The previous step enabled Corepack when `pnpm` was absent; the new step calls `pnpm` directly after `actions/setup-node@v7`. [setup-node's documentation](https://github.com/actions/setup-node) says package managers must be pre-installed, and the [ubuntu-latest software inventory](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md) does not list pnpm. The step therefore fails with `pnpm: command not found` before installing or testing. This is new evidence about the generated GitHub job; the coordinator's no-guard instruction addressed the local `forge.toml` command.",
+        "file": ".github/workflows/forge.yml",
+        "gain": 4,
+        "harm": 2,
+        "line": 68,
+        "priority": "P1",
+        "title": "Required tests check fails because pnpm is no longer enabled",
+        "work": 1
+      }
+    ],
+    "id": "749fc374-a188-4a0b-bbe1-7e02a58d56ad",
+    "status": "blocked"
+  },
   "round": 1,
-  "status": "working",
+  "status": "hotspot",
   "steps": [
     {
       "at": "2026-10-24T16:20:00.098836+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-24T16:44:28.996720+00:00",
+      "step": "review"
     }
   ],
+  "stop": {
+    "at": "2026-10-24T16:44:29.076373+00:00",
+    "file": ".github/workflows/forge.yml",
+    "wait_id": "2a0ea100-cc1a-4bd7-af35-16c719529782"
+  },
   "stuck": {
     "close": null,
     "head": "c0dc3af74244eabe5cfe9b7426f3a2e7a2eceef8",
