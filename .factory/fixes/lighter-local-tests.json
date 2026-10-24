@@ -9,6 +9,13 @@
     "start": "eaea9744447a1adc5b7b3a5e99b9772a4cb5d5cb"
   },
   "done_when": "The forge.toml test command runs install, lint, typecheck, the API unit tests and the build, the full suites still run in GitHub's checks job, and a close on this laptop passes its tests",
+  "drop": {
+    "at": "2026-10-24T16:51:57.024270+00:00",
+    "because": "Folded into the dependency refresh fix, whose checks need it and whose audit it needs",
+    "by": "Ajbil <ajbilstudymail@gmail.com> 1792860717 +0530",
+    "pull_request": 64,
+    "status": "fixing"
+  },
   "fix_kind": "mechanical",
   "kind": "fix",
   "known": [
@@ -48,7 +55,7 @@
     "status": "blocked"
   },
   "round": 2,
-  "status": "fixing",
+  "status": "dropped",
   "steps": [
     {
       "at": "2026-10-24T16:20:00.098836+00:00",
@@ -57,6 +64,10 @@
     {
       "at": "2026-10-24T16:44:28.996720+00:00",
       "step": "review"
+    },
+    {
+      "at": "2026-10-24T16:51:57.024270+00:00",
+      "step": "drop"
     }
   ],
   "stop": {
