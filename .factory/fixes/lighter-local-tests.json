@@ -47,7 +47,7 @@
     "id": "749fc374-a188-4a0b-bbe1-7e02a58d56ad",
     "status": "blocked"
   },
-  "round": 1,
+  "round": 2,
   "status": "fixing",
   "steps": [
     {
@@ -69,10 +69,10 @@
     "worker_round": 1
   },
   "stuck": {
-    "close": null,
-    "head": "c0dc3af74244eabe5cfe9b7426f3a2e7a2eceef8",
+    "close": "22418610-ec45-4046-ba5c-3063f1590b47",
+    "head": "9259890cf208280dccccf5a1977adfa9ff42844d",
     "keys": {},
-    "round": null
+    "round": 1
   },
   "why": "Forge's local test run before a part is ready runs the whole website and browser suite, which times out on this laptop although GitHub passes it",
   "worker": "codex"
