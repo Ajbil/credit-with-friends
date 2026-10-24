@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "key": "bug\t.github/workflows/ci.yml\tNot done: Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes\trefresh-dependencies",
+      "kind": "bug",
+      "path": ".github/workflows/ci.yml",
+      "line": 56,
+      "text": "Not done: Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes",
+      "from": "blocking",
+      "item": "refresh-dependencies",
+      "status": "done",
+      "closed_by": "dismissed"
+    }
+  ]
+}
