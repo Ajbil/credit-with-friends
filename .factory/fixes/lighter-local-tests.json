@@ -1,6 +1,13 @@
 {
   "base": "34d42afadab5cbf3280230f0bcb4b6eab86127e7",
   "branch": "fix/lighter-local-tests",
+  "chat": {
+    "approval": null,
+    "claude": null,
+    "conversation": "01a16eb7-91ba-7390-862e-e64a7d2bc304",
+    "head": null,
+    "start": "eaea9744447a1adc5b7b3a5e99b9772a4cb5d5cb"
+  },
   "done_when": "The forge.toml test command runs install, lint, typecheck, the API unit tests and the build, the full suites still run in GitHub's checks job, and a close on this laptop passes its tests",
   "fix_kind": "mechanical",
   "kind": "fix",
