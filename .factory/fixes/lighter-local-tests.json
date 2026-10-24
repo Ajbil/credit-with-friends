@@ -4,12 +4,20 @@
   "done_when": "The forge.toml test command runs install, lint, typecheck, the API unit tests and the build, the full suites still run in GitHub's checks job, and a close on this laptop passes its tests",
   "fix_kind": "mechanical",
   "kind": "fix",
-  "status": "started",
+  "round": 1,
+  "status": "working",
   "steps": [
     {
       "at": "2026-10-24T16:20:00.098836+00:00",
       "step": "start"
     }
   ],
-  "why": "Forge's local test run before a part is ready runs the whole website and browser suite, which times out on this laptop although GitHub passes it"
+  "stuck": {
+    "close": null,
+    "head": "c0dc3af74244eabe5cfe9b7426f3a2e7a2eceef8",
+    "keys": {},
+    "round": null
+  },
+  "why": "Forge's local test run before a part is ready runs the whole website and browser suite, which times out on this laptop although GitHub passes it",
+  "worker": "codex"
 }
