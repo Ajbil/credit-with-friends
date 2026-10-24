@@ -1,3 +1,3 @@
 import { defineConfig } from 'vitest/config';
 
-export default defineConfig({ test: { environment: 'jsdom', include: ['src/**/*.test.tsx'], maxWorkers: 2 } });
+export default defineConfig({ test: { environment: 'jsdom', include: ['src/**/*.test.tsx'], maxWorkers: 1 } });
