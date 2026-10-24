@@ -48,7 +48,7 @@
     "status": "blocked"
   },
   "round": 1,
-  "status": "hotspot",
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-24T16:20:00.098836+00:00",
@@ -61,8 +61,12 @@
   ],
   "stop": {
     "at": "2026-10-24T16:44:29.076373+00:00",
+    "by": "owner",
+    "choice": "more",
     "file": ".github/workflows/forge.yml",
-    "wait_id": "2a0ea100-cc1a-4bd7-af35-16c719529782"
+    "reason": "Owner chose the lighter local test command; one more round to restore enabling pnpm on GitHub's runner",
+    "wait_id": "2a0ea100-cc1a-4bd7-af35-16c719529782",
+    "worker_round": 1
   },
   "stuck": {
     "close": null,
