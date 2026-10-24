@@ -53,7 +53,7 @@
     "id": "8038f70c-8c03-45cb-9a1a-a7e98c6aa666",
     "status": "clean"
   },
-  "round": 1,
+  "round": 2,
   "status": "fixing",
   "steps": [
     {
@@ -66,10 +66,12 @@
     }
   ],
   "stuck": {
-    "close": null,
-    "head": "78b49f0beaf40ba099a666de167cf321eaaac422",
-    "keys": {},
-    "round": null
+    "close": "9fb3cfb0-2c6e-413e-a5b3-097ede86688b",
+    "head": "f9c9448e5ad2dd40807796e2ad03d9af9a61824c",
+    "keys": {
+      "close's tests failing": 1
+    },
+    "round": 1
   },
   "tests": "`C:\\Users\\caw-d\\AppData\\Local\\uv\\cache\\archive-v0\\z07rii8QajKh50aG\\Scripts\\python.exe -c \"import sys; sys.path.insert(0, 'C:\\\\Users\\\\caw-d\\\\AppData\\\\Local\\\\uv\\\\cache\\\\archive-v0\\\\z07rii8QajKh50aG\\\\Lib\\\\site-packages'); from forge.fasttest import close_tests; sys.exit(close_tests('34d42afadab5cbf3280230f0bcb4b6eab86127e7'))\"` exited with status 1 on this machine.\nScope: all 3 workspace projects\nLockfile is up to date, resolution step is skipped\n@symphony/web:test:\n@symphony/web:test:  FAIL  src/routes/cards/add/add-card-page.test.tsx > done-when-1: each keyboard shortcut selection stays selected while its card details change\n@symphony/web:test: Error: Test timed out in 5000ms.\n@symphony/web:test: If this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n@symphony/web:test:  \u276f src/routes/cards/add/add-card-page.test.tsx:11:1\n@symphony/web:test:       9| afterEach(() => { cleanup(); clients.forEach((client) => client.clear(\u2026\n@symphony/web:test:      10|\n@symphony/web:test:      11| test('done-when-1: each keyboard shortcut selection stays selected whi\u2026\n@symphony/web:test:        | ^\n@symphony/web:test:      12|   vi.stubGlobal('scrollTo', vi.fn());\n@symphony/web:test:      13|   const root = createRootRoute();\n@symphony/web:test:\n@symphony/web:test: \u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[3/3]\u23af\n@symphony/web:test:\n@symphony/web:test:\n@symphony/web:test:  Test Files  3 failed | 17 passed (20)\n@symphony/web:test:       Tests  3 failed | 78 passed (81)\n@symphony/web:test:    Start at  12:11:56\n@symphony/web:test:    Duration  422.48s (transform 68.86s, setup 0ms, collect 839.99s, tests 86.51s, environment 1794.91s, prepare 87.71s)\n@symphony/web:test:\n@symphony/web:test: \u2009ELIFECYCLE\u2009 Test failed. See above for more details.\n@symphony/web#test:  ERROR  command (D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-fix-refresh-dependencies\\apps\\web) C:\\nvm4w\\nodejs\\pnpm.CMD run test exited (1)\n\n Tasks:    1 successful, 2 total\nCached:    1 cached, 2 total\n  Time:    7m35.088s\nFailed:    @symphony/web#test\n\n ERROR  run failed: command  exited (1)\n\u2009ELIFECYCLE\u2009 Test failed. See above for more details.",
   "why": "Dependencies and base images are over a week old, so new security advisories fail the image scan",
