@@ -11,12 +11,52 @@
   "done_when": "Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes",
   "fix_kind": "mechanical",
   "kind": "fix",
+  "known": [
+    {
+      "area": ".github/workflows/ci.yml",
+      "file": ".github/workflows/ci.yml",
+      "gain": 5,
+      "harm": 3,
+      "line": 56,
+      "outcome": "open",
+      "reason": "",
+      "round": 1,
+      "security": false,
+      "title": "Not done: Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes",
+      "work": 3
+    }
+  ],
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "c4b056ded731e557ab66a97f974e69d82cf41dbe9070e2e577e4d5c9d8ef8b92",
+    "changed": "854005d9417d0a129d4227112f6a0736d0777b4df6dba1136603adc4b4bf8067",
+    "commit": "286ac9a5712728c3582b39235e6ff0d68983762e",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "Gain 5, Work 3, Harm 3\nRaise: Not done\nCase: normal use - CI runs `pnpm test` at this line. The proof list reports nine web-suite timeouts and says the suite failure remains unresolved, so the repository test command does not pass. It also reports only `pnpm build` for the apps and a run of the prebuilt PostgreSQL image; neither demonstrates that an image builds.",
+        "file": ".github/workflows/ci.yml",
+        "gain": 5,
+        "harm": 3,
+        "line": 56,
+        "priority": "P1",
+        "title": "Not done: Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes",
+        "work": 3
+      }
+    ],
+    "id": "8038f70c-8c03-45cb-9a1a-a7e98c6aa666",
+    "status": "blocked"
+  },
   "round": 1,
-  "status": "working",
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-24T05:23:36.573319+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-24T06:18:47.115241+00:00",
+      "step": "review"
     }
   ],
   "stuck": {
@@ -25,6 +65,7 @@
     "keys": {},
     "round": null
   },
+  "tests": "`C:\\Users\\caw-d\\AppData\\Local\\uv\\cache\\archive-v0\\z07rii8QajKh50aG\\Scripts\\python.exe -c \"import sys; sys.path.insert(0, 'C:\\\\Users\\\\caw-d\\\\AppData\\\\Local\\\\uv\\\\cache\\\\archive-v0\\\\z07rii8QajKh50aG\\\\Lib\\\\site-packages'); from forge.fasttest import close_tests; sys.exit(close_tests('34d42afadab5cbf3280230f0bcb4b6eab86127e7'))\"` exited with status 1 on this machine.\nScope: all 3 workspace projects\nLockfile is up to date, resolution step is skipped\n@symphony/web:test:  FAIL  src/routes/circles/member/member-cards-page.test.tsx > done-when-4: loading never flashes the no-cards state before the member response\n@symphony/web:test: Error: Test timed out in 5000ms.\n@symphony/web:test: If this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n@symphony/web:test:  \u276f src/routes/circles/member/member-cards-page.test.tsx:26:1\n@symphony/web:test:\n@symphony/web:test:      24| // The browser owns the successful real-API flow. These tests hold or \u2026\n@symphony/web:test:      25| // transport to exercise query lifecycle windows without replacing the\u2026\n@symphony/web:test:      26| test('done-when-4: loading never flashes the no-cards state before the\u2026\n@symphony/web:test:        | ^\n@symphony/web:test:      27|   let finish!: (response: Response) => void;\n@symphony/web:test:      28|   vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((resolve) =\u2026\n@symphony/web:test:\n@symphony/web:test: \u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[5/5]\u23af\n@symphony/web:test:\n@symphony/web:test:  Test Files  4 failed | 16 passed (20)\n@symphony/web:test:       Tests  5 failed | 76 passed (81)\n@symphony/web:test:    Start at  11:46:05\n@symphony/web:test:    Duration  148.64s (transform 75.92s, setup 0ms, collect 314.91s, tests 102.33s, environment 303.00s, prepare 90.54s)\n@symphony/web:test:\n@symphony/web:test: \u2009ELIFECYCLE\u2009 Test failed. See above for more details.\n@symphony/web#test:  ERROR  command (D:\\Arihant Personal\\CreditWithFriends\\credit-with-friends-fix-refresh-dependencies\\apps\\web) C:\\nvm4w\\nodejs\\pnpm.CMD run test exited (1)\n\n Tasks:    1 successful, 2 total\nCached:    0 cached, 2 total\n  Time:    3m6.275s\nFailed:    @symphony/web#test\n\n WARNING  no output files found for task @symphony/api#test. Please check your `outputs` key in `turbo.json`\n ERROR  run failed: command  exited (1)\n\u2009ELIFECYCLE\u2009 Test failed. See above for more details.",
   "why": "Dependencies and base images are over a week old, so new security advisories fail the image scan",
   "worker": "codex"
 }
