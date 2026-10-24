@@ -1,0 +1,15 @@
+{
+  "base": "34d42afadab5cbf3280230f0bcb4b6eab86127e7",
+  "branch": "fix/refresh-dependencies",
+  "done_when": "Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes",
+  "fix_kind": "mechanical",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-24T05:23:36.573319+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "Dependencies and base images are over a week old, so new security advisories fail the image scan"
+}
