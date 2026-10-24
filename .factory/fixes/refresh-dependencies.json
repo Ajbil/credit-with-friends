@@ -31,8 +31,8 @@
       "gain": 5,
       "harm": 4,
       "line": 68,
-      "outcome": "open",
-      "reason": "",
+      "outcome": "accepted",
+      "reason": ".github/workflows/ci.yml:56 The web suite still gates every pull request: the separate `checks` job in ci.yml runs `pnpm test` here (every workspace, web included, with its browser tests) and `pnpm test:integration` on line 57, and forge.toml:7 keeps `checks` in the required list beside `tests` and `forge-pr-check`, so a web failure still blocks Ready and merge. Only Forge's own `tests` job and the laptop run became lighter, which is the owner's explicit choice because this laptop times out on the web suite while GitHub passes it; AGENTS.md Known traps records the rule.",
       "round": 2,
       "security": false,
       "title": "Gate: Required tests check skips the web suite",
@@ -44,7 +44,13 @@
     "branch_diff": "9af8a4dafbbe8109ad8ac91e38872de00e7b587de4db69329ca7e1090511e08f",
     "changed": "cd3bef50be24b61b1753b4fb7d5f969e9cf2830e6e2a909bf3340c86e2caf9b9",
     "commit": "544903dc511d605f799e3d6e4889dc7ac7252ff6",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": ".github/workflows/ci.yml:56 The web suite still gates every pull request: the separate `checks` job in ci.yml runs `pnpm test` here (every workspace, web included, with its browser tests) and `pnpm test:integration` on line 57, and forge.toml:7 keeps `checks` in the required list beside `tests` and `forge-pr-check`, so a web failure still blocks Ready and merge. Only Forge's own `tests` job and the laptop run became lighter, which is the owner's explicit choice because this laptop times out on the web suite while GitHub passes it; AGENTS.md Known traps records the rule.",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "Gain 5, Work 1, Harm 4\nRaise: Gate\nCase: normal use - a pull request changes web behavior and its web tests fail. This repair replaces `pnpm test` with an API-only Vitest command, while this workflow labels the resulting `tests` status as the one required tests check. That status can now pass without running the web suite. The separate CI workflow still runs `pnpm test`, but the supplied workflow identifies the Forge status as the required gate.",
@@ -58,10 +64,10 @@
       }
     ],
     "id": "5f3761a0-36a9-4e24-8678-1f966371c36c",
-    "status": "blocked"
+    "status": "clean"
   },
   "round": 2,
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-24T05:23:36.573319+00:00",

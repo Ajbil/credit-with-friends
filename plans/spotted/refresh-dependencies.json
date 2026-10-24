@@ -19,8 +19,8 @@
       "text": "Gate: Required tests check skips the web suite",
       "from": "blocking",
       "item": "refresh-dependencies",
-      "status": "open",
-      "closed_by": null
+      "status": "done",
+      "closed_by": "dismissed"
     }
   ]
 }
