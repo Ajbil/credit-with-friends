@@ -34,7 +34,7 @@
     "status": "clean"
   },
   "round": 3,
-  "status": "fixing",
+  "status": "hotspot",
   "steps": [
     {
       "at": "2026-10-23T16:55:48.873661+00:00",
@@ -49,6 +49,11 @@
       "step": "review"
     }
   ],
+  "stop": {
+    "question": "Find a card holder and message them on WhatsApp: Search API is stuck. It should deliver: The searches endpoint with the forgiving variant match and its matching, similar and not-stated groups, paging and refusals; the circles module's co-members lock and the cards module's holder lookup through the bus; the search event\nTwo rounds in a row left close's tests failing.\nThe worker tried: Recheck searcher's circle membership after locks.\nChoose one: switch this item to Claude; keep Codex for one more round; or narrow or split it.",
+    "tool": "codex",
+    "wait_id": "4e6b9340-fa0f-44c0-bbcb-cb0227bf7056"
+  },
   "stuck": {
     "close": "bde63fda-ca2f-4782-904c-e98668508129",
     "head": "abbb752ab02c470ad0d6c20641bfab7cf5458506",
