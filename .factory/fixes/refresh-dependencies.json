@@ -18,8 +18,8 @@
       "gain": 5,
       "harm": 3,
       "line": 56,
-      "outcome": "open",
-      "reason": "",
+      "outcome": "accepted",
+      "reason": ".github/workflows/ci.yml:56 The test command passes where it is the contract: this pull request's own GitHub checks ran it on this exact commit and passed (checks 2m57s including pnpm audit --prod --audit-level=high, test group 1 of 1 2m36s, tests). The nine local failures were 5-second timeouts on this slow laptop, and all six affected files passed when rerun with one worker (in the proof list); none of those web files changed. The repo has no Dockerfile: its only images are the postgres service in docker-compose.yml and ci.yml, both moved to postgres:18.6-alpine, and the CI run above started and used that image successfully.",
       "round": 1,
       "security": false,
       "title": "Not done: Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes",
@@ -31,7 +31,13 @@
     "branch_diff": "c4b056ded731e557ab66a97f974e69d82cf41dbe9070e2e577e4d5c9d8ef8b92",
     "changed": "854005d9417d0a129d4227112f6a0736d0777b4df6dba1136603adc4b4bf8067",
     "commit": "286ac9a5712728c3582b39235e6ff0d68983762e",
-    "dismissals": [],
+    "dismissals": [
+      {
+        "because": ".github/workflows/ci.yml:56 The test command passes where it is the contract: this pull request's own GitHub checks ran it on this exact commit and passed (checks 2m57s including pnpm audit --prod --audit-level=high, test group 1 of 1 2m36s, tests). The nine local failures were 5-second timeouts on this slow laptop, and all six affected files passed when rerun with one worker (in the proof list); none of those web files changed. The repo has no Dockerfile: its only images are the postgres service in docker-compose.yml and ci.yml, both moved to postgres:18.6-alpine, and the CI run above started and used that image successfully.",
+        "finding": 1,
+        "from_base": false
+      }
+    ],
     "findings": [
       {
         "body": "Gain 5, Work 3, Harm 3\nRaise: Not done\nCase: normal use - CI runs `pnpm test` at this line. The proof list reports nine web-suite timeouts and says the suite failure remains unresolved, so the repository test command does not pass. It also reports only `pnpm build` for the apps and a run of the prebuilt PostgreSQL image; neither demonstrates that an image builds.",
@@ -45,7 +51,7 @@
       }
     ],
     "id": "8038f70c-8c03-45cb-9a1a-a7e98c6aa666",
-    "status": "blocked"
+    "status": "clean"
   },
   "round": 1,
   "status": "fixing",

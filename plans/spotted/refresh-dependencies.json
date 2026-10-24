@@ -8,8 +8,8 @@
       "text": "Not done: Lockfiles and base images are updated within their allowed ranges, the image builds and the test command passes",
       "from": "blocking",
       "item": "refresh-dependencies",
-      "status": "open",
-      "closed_by": null
+      "status": "done",
+      "closed_by": "dismissed"
     }
   ]
 }
