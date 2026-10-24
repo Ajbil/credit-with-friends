@@ -10,6 +10,17 @@
       "item": "refresh-dependencies",
       "status": "done",
       "closed_by": "dismissed"
+    },
+    {
+      "key": "bug\t.github/workflows/forge.yml\tGate: Required tests check skips the web suite\trefresh-dependencies",
+      "kind": "bug",
+      "path": ".github/workflows/forge.yml",
+      "line": 68,
+      "text": "Gate: Required tests check skips the web suite",
+      "from": "blocking",
+      "item": "refresh-dependencies",
+      "status": "open",
+      "closed_by": null
     }
   ]
 }
