@@ -9,7 +9,6 @@ export default defineConfig({
           name: 'api-unit',
           include: ['apps/api/src/**/*.spec.ts'],
           environment: 'node',
-          maxWorkers: 1,
         },
       },
       {
