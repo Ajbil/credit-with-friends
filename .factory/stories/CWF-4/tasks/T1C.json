@@ -1,0 +1,76 @@
+{
+  "branch": "task/CWF-4-T1C",
+  "chat": {
+    "approval": "3c9692665316a7c2ece1317a0e8ed2c073d6c3b787706dcd412bae014c3da8ad",
+    "claude": null,
+    "conversation": "01a19123-f90a-7f60-b514-f96d94e79c8f",
+    "head": null,
+    "start": "906d870cc57a53f16d2f21bd19669bebe929747d"
+  },
+  "known": [
+    {
+      "area": "apps/api/openapi.json",
+      "file": "apps/api/openapi.json",
+      "gain": 3,
+      "harm": 3,
+      "line": 1,
+      "outcome": "fixed in round 2",
+      "reason": "",
+      "round": 1,
+      "security": false,
+      "title": "Standard: keep the committed OpenAPI server URL usable",
+      "work": 1
+    },
+    {
+      "area": "apps/api/src/modules/search/contacts.controller.ts",
+      "file": "apps/api/src/modules/search/contacts.controller.ts",
+      "gain": 2,
+      "harm": 2,
+      "line": 21,
+      "outcome": "lived with",
+      "reason": "",
+      "round": 1,
+      "security": false,
+      "title": "Later: T4B WhatsApp controls and refusal states",
+      "work": 5
+    }
+  ],
+  "part_line_limit": 400,
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "1f7fb0cca09738ecad87f7404227de834bc57cae7e7d2e11d2802876b062820c",
+    "changed": "d57fb34c141c5d9f8437f94cc18d04202430a02c006e5286561627ec479b2090",
+    "commit": "ae9bee2006dc5c4283fd7ebafd3f59fa7b20b16c",
+    "dismissals": [],
+    "findings": [],
+    "id": "482d0aff-2f69-4eb0-b8a5-d30e66470850",
+    "status": "clean"
+  },
+  "round": 3,
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-31T08:44:15.819603+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-31T12:33:29.880390+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-31T12:39:04.562251+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-31T17:35:40.773840+00:00",
+      "step": "review"
+    }
+  ],
+  "stuck": {
+    "close": "eb0295ec-867c-4abb-a855-e9181d7c8cd4",
+    "head": "d3024a7258090a9d391e59c0150d7f16c88077e4",
+    "keys": {},
+    "round": 2
+  },
+  "worker": "codex"
+}

@@ -64,8 +64,9 @@ and is repaid by UPI outside the app (decisions 0002 and 0003).
   shows "This card is no longer available." and nothing is opened.
 - Otherwise it opens WhatsApp's chat link for the holder's current WhatsApp
   number, with this message prefilled and editable before sending:
-  "Hi <holder's display name>, do you have a moment? I need your <bank>
-  <credit/debit> card<, variant if stated> for an offer."
+  "Hi <holder's display name>, I saw on CreditWithFriends
+  (creditwithfriends.in) that you have <a or an> <bank> <credit or debit>
+  card<, variant if stated>. Do you have a moment? I need it for an offer."
 - The app sends nothing itself; the member decides whether to send the
   message in WhatsApp. The app cannot tell whether the number is on WhatsApp;
   if it is not, or WhatsApp cannot open, WhatsApp's own screen explains it.

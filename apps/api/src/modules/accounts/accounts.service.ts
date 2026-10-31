@@ -32,6 +32,9 @@ export class AccountsService implements OnModuleInit {
     this.bus.registerRequest('accounts.displayNames', (memberIds) => this.db.member.findMany({
       where: { id: { in: memberIds } }, select: { id: true, displayName: true },
     }));
+    this.bus.registerRequest('accounts.contactDetails', (memberId) => this.db.member.findUnique({
+      where: { id: memberId }, select: { displayName: true, whatsappE164: true },
+    }));
   }
 
   async signIn(identity: GoogleIdentity, userAgent?: string, returnPath = '/') {

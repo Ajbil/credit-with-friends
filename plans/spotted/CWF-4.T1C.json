@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "key": "bug\tapps/api/openapi.json\tStandard: keep the committed OpenAPI server URL usable\tCWF-4/T1C",
+      "kind": "bug",
+      "path": "apps/api/openapi.json",
+      "line": 1,
+      "text": "Standard: keep the committed OpenAPI server URL usable",
+      "from": "blocking",
+      "item": "CWF-4/T1C",
+      "status": "open",
+      "closed_by": null
+    }
+  ]
+}
