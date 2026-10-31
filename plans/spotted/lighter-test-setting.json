@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "key": "bug\tforge.toml\tGate: proof list\tlighter-test-setting",
+      "kind": "bug",
+      "path": "forge.toml",
+      "line": 6,
+      "text": "Gate: proof list",
+      "from": "blocking",
+      "item": "lighter-test-setting",
+      "status": "open",
+      "closed_by": null
+    }
+  ]
+}
