@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "key": "bug\t.forge/hooks.sh\tGit hooks fail when sourcing the generated shell script\tupgrade-forge-to-v1-2-25",
+      "kind": "bug",
+      "path": ".forge/hooks.sh",
+      "line": 2,
+      "text": "Git hooks fail when sourcing the generated shell script",
+      "from": "blocking",
+      "item": "upgrade-forge-to-v1-2-25",
+      "status": "open",
+      "closed_by": null
+    }
+  ]
+}
