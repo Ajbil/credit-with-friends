@@ -40,6 +40,7 @@
     "id": "0c307354-7b15-4508-bef6-0fad246ea3b7",
     "status": "blocked"
   },
+  "round": 1,
   "status": "fixing",
   "steps": [
     {
@@ -60,5 +61,12 @@
     "wait_id": "7557b572-fbe7-4823-a182-03fc40c71835",
     "worker_round": null
   },
-  "why": "The lighter laptop test command reached the workflow but not forge.toml, so close still runs the whole website suite on this laptop"
+  "stuck": {
+    "close": "2f1b6bfe-61d0-4ebb-9bc8-a4c52d04a3c2",
+    "head": "66736186410df57ff78eff84cedbe7e435998387",
+    "keys": {},
+    "round": null
+  },
+  "why": "The lighter laptop test command reached the workflow but not forge.toml, so close still runs the whole website suite on this laptop",
+  "worker": "codex"
 }
