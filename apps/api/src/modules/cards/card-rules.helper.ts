@@ -10,14 +10,15 @@ function fieldRefusal(code: string, field: string, reason: string): never {
   throw new BadRequestException({ code, details: { fieldErrors: [{ field, reason }] } });
 }
 
-// Call under the member-row lock for adds. The unique database key is the final race guard.
-export function applyCardRules(input: CardInput, banks: ReadonlySet<string>, cards: ReadonlyArray<ExistingCard>, editingCardId?: string) {
+function validatedCardCriteria(input: CardInput, banks: ReadonlySet<string>, allowAny: boolean) {
   const { bankId, type } = input;
   if (typeof bankId !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(bankId)) {
     fieldRefusal('VALIDATION_ERROR', 'bankId', 'Choose a bank from the list.');
   }
   if (!banks.has(bankId)) fieldRefusal('CARD_BANK_UNKNOWN', 'bankId', 'Choose a bank from the list.');
-  if (type !== 'credit' && type !== 'debit') fieldRefusal('VALIDATION_ERROR', 'type', 'Choose credit or debit.');
+  if (type !== 'credit' && type !== 'debit' && !(allowAny && type === 'any')) {
+    fieldRefusal('VALIDATION_ERROR', 'type', allowAny ? 'Choose credit, debit or either.' : 'Choose credit or debit.');
+  }
   if (input.variant !== undefined && input.variant !== null && typeof input.variant !== 'string') {
     fieldRefusal('VALIDATION_ERROR', 'variant', 'Enter a card variant or leave it blank.');
   }
@@ -35,7 +36,17 @@ export function applyCardRules(input: CardInput, banks: ReadonlySet<string>, car
     fieldRefusal('CARD_VARIANT_UNSAFE', 'variant', 'This looks like card details. Never enter card numbers, CVVs, expiry dates or OTPs.');
   }
   if (Array.from(variant).length > 40) fieldRefusal('CARD_VARIANT_TOO_LONG', 'variant', 'Use at most 40 characters.');
-  const variantKey = variant.toLowerCase();
+  return { bankId, type, variant: variant || null };
+}
+
+export function validateSearchCardRules(input: CardInput, banks: ReadonlySet<string>) {
+  return validatedCardCriteria(input, banks, true);
+}
+
+// Call under the member-row lock for adds. The unique database key is the final race guard.
+export function applyCardRules(input: CardInput, banks: ReadonlySet<string>, cards: ReadonlyArray<ExistingCard>, editingCardId?: string) {
+  const { bankId, type, variant } = validatedCardCriteria(input, banks, false);
+  const variantKey = variant?.toLowerCase() ?? '';
   if (cards.some((card) => card.id !== editingCardId && card.bankId === bankId && card.type === type && card.variantKey === variantKey)) {
     throw new ConflictException({ code: 'CARD_DUPLICATE' });
   }

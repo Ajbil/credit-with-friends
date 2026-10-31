@@ -1,0 +1,61 @@
+{
+  "branch": "task/CWF-4-T1B",
+  "chat": {
+    "approval": "3c9692665316a7c2ece1317a0e8ed2c073d6c3b787706dcd412bae014c3da8ad",
+    "claude": null,
+    "conversation": "01a169b1-6e62-71f1-86e3-64451e0fc183",
+    "head": null,
+    "start": "bd6ef4bb106b227f42f897228b7765c9132b519d"
+  },
+  "known": [
+    {
+      "area": "apps/api/src/modules/circles/member-circles/lock-co-members.service.ts",
+      "file": "apps/api/src/modules/circles/member-circles/lock-co-members.service.ts",
+      "gain": 5,
+      "harm": 4,
+      "line": 12,
+      "outcome": "fixed in round 2",
+      "reason": "",
+      "round": 1,
+      "security": true,
+      "title": "Search can expose cards after the searcher has left a circle",
+      "work": 2
+    }
+  ],
+  "part_line_limit": 400,
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "2acf1126df729baa2408ab9a57059607f3b3b049229792f3db50d27a84ca2731",
+    "changed": "eb56954b4478b0de3c4a2837fff6eb3fa665b22378aa479bebc65838b81fa5cf",
+    "commit": "5f37cf8693bbd2a4021d93a8257ea23c90770e9f",
+    "dismissals": [],
+    "findings": [],
+    "id": "8afc9bcc-7890-407e-b8f9-cda9d3616466",
+    "status": "clean"
+  },
+  "round": 4,
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-23T16:55:48.873661+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-23T18:15:39.691475+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-23T18:45:39.597156+00:00",
+      "step": "review"
+    }
+  ],
+  "stuck": {
+    "close": "4311f331-32ed-4d98-88c3-2fdde3e189dd",
+    "head": "4dc466ec507d3be5c3c6258fea2cbf8f6da13503",
+    "keys": {
+      "close's tests failing": 2
+    },
+    "round": 3
+  },
+  "worker": "codex"
+}

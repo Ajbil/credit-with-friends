@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { ApiExceptionFilter } from './common/api/api-exception.filter';
 import { ApiResponseInterceptor } from './common/api/api-response.interceptor';
 import { ApiConfig, ApiConfigModule, TEST_AUTH_ROUTES_ENABLED } from './common/config/config.module';
@@ -23,6 +23,7 @@ import { CirclesModule } from './modules/circles/circles.module';
 import { UsageModule } from './modules/usage/usage.module';
 import { CardsModule } from './modules/cards/cards.module';
 import { SearchModule } from './modules/search/search.module';
+import { SearchMemberThrottleGuard } from './modules/search/search-member-throttle.guard';
 
 @Module({
   imports: [
@@ -55,7 +56,7 @@ import { SearchModule } from './modules/search/search.module';
     { provide: APP_GUARD, useClass: RequestForgeryGuard },
     { provide: APP_GUARD, useClass: SessionGuard },
     { provide: APP_GUARD, useExisting: PrivacyNoticeGuard },
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: SearchMemberThrottleGuard },
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
     { provide: APP_INTERCEPTOR, useClass: ApiResponseInterceptor },
   ],

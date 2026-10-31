@@ -7,8 +7,11 @@
   memberships `FOR SHARE` through the card read in one transaction. A leave,
   removal or deletion racing the read finishes first and the read refuses, or
   waits until the read has answered.
-- The general `circles` service-bus query, "member ids sharing a circle with X",
-  remains the basis for search results and the contact action in CWF-4.
+- Search uses `circles.lockCoMembers` in one transaction. It locks the searcher's
+  active circle rows, then all membership rows in those circles `FOR SHARE`.
+  It returns each other member once with every circle they share. A leave,
+  removal or circle deletion finishes before the search or waits for its read.
+  The contact action uses a current shared-circle check in CWF-4.
 - The contact action re-checks the card and the shared circle at press time
   and returns "This card is no longer available." otherwise.
 - Email and Google account ID are never included in any DTO returned for

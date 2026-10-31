@@ -39,7 +39,9 @@ timestamps, `is/has` booleans, UUIDv7 primary keys named `id` (PostgreSQL 18
 
 - Visibility: member B can see member A's name, WhatsApp number and cards iff
   a `CircleMembership` row exists for both in at least one non-deleted circle.
-- Search matching is done on `bankId`, `type` and `variantKey` substring; bank
-  display-name corrections never affect matching.
+- Search matches `bankId` and type first. It removes spacing and punctuation
+  from the entered and listed variants, then matches a substring or a small
+  edit distance. Cards with no variant form the last group. Bank display-name
+  corrections never affect matches.
 - Usage-view periods are computed in Asia/Kolkata and compared against
   `occurredAtUtc` in UTC.

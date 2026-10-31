@@ -21,23 +21,24 @@ and is repaid by UPI outside the app (decisions 0002 and 0003).
 - A member searches by:
   - bank, chosen from the same fixed list as cards (required);
   - type: credit, debit, or "credit or debit" (required);
-  - variant, free text (optional). The entry is trimmed first; an entry that
-    is empty after trimming counts as no variant.
+  - variant, free text (optional). An entry with only spaces or punctuation
+    counts as no variant.
 - Results include only other members who share at least one circle with the
   searcher and hold a qualifying card. The searcher never appears in their own
   results.
 - Without a variant, a card qualifies when its bank is the chosen bank and its
   type fits the chosen type. Results are one list, alphabetical by display
   name.
-- With a variant, a card of the chosen bank and type qualifies when either:
-  - its variant contains the entered text, ignoring case (a "matching
-    variant"); or
-  - it has no variant recorded, because the holder may still have the right
-    card.
-  Cards with a different, stated variant do not qualify. Results come in two
-  labelled groups, each alphabetical by display name:
-  1. "Matching variant": people with at least one matching-variant card;
-  2. "Variant not stated": people whose only qualifying cards have no variant.
+- With a variant, search removes spacing, punctuation and capitals from both
+  the entry and each card's variant. A card qualifies if its variant contains
+  the entry, or if a small typo makes it similar, or if it has no variant.
+  Similar means up to one edit for entries of 4 to 7 characters and two edits
+  for entries of at least 8 characters. Entries shorter than 4 allow no edits.
+  Results have three groups. Each group is in display-name order:
+  1. "Matching variant": a person has a card whose variant contains the entry;
+  2. "Similar variant": the person's best card is a near match;
+  3. "Variant not stated": the person's qualifying cards have no variant.
+  Each person appears in their best group with all qualifying cards.
 - Each result is one person, shown once, with their display name, all their
   qualifying cards (bank, type, variant) and the names of the circles the
   searcher shares with them.
@@ -97,14 +98,14 @@ and is repaid by UPI outside the app (decisions 0002 and 0003).
 
 1. Without a variant, a search returns exactly the other members who share a
    circle with the searcher and hold a card of the chosen bank and type; with a
-   variant, it returns exactly those whose card of that bank and type has a
-   matching variant or no variant. The searcher is never included.
+   variant, it returns people whose card of that bank and type has a matching
+   or similar variant, or no variant. The searcher is never included.
 2. "Credit or debit" returns holders of either type; "credit" or "debit"
    returns only that type.
-3. With a variant entered, people with a card whose variant contains the text
-   (ignoring case) appear under "Matching variant"; people whose only
-   qualifying cards have no variant appear under "Variant not stated"; cards
-   with a different stated variant never appear.
+3. With a variant entered, spacing, punctuation and capitals do not affect
+   matching. A contained entry appears under "Matching variant". A near match
+   appears under "Similar variant". People with only unstated variants appear
+   under "Variant not stated". Other stated variants do not appear.
 4. A variant entry of only spaces behaves exactly like no variant.
 5. Each result shows the person once, with their display name, all their
    qualifying cards and the names of the circles shared with the searcher,
