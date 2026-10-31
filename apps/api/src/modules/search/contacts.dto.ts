@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID } from 'class-validator';
 
 export class ContactCardDto {
-  @IsUUID() @ApiProperty({ type: String, example: '0199e379-4302-7c2a-a332-9a2e80dabefe', description: 'The holder card to contact about.' }) cardId!: string;
+  @ApiProperty({ type: String, example: '0199e379-4302-7c2a-a332-9a2e80dabefe', description: 'The holder card to contact about.' }) cardId!: string;
 }
 
 export class ContactDataDto {

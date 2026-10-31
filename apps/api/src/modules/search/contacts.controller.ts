@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Inject, Post, Req } from '@nestjs/common';
 import { ApiBody, ApiCookieAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { PinoLogger } from 'nestjs-pino';
@@ -8,6 +8,8 @@ import { ServiceBus } from '../../service-bus/service-bus.service';
 import { AuthenticatedRequest } from '../sessions/session.guard';
 import { ContactCardDto, ContactResponseDto } from './contacts.dto';
 import { contactCard } from './contacts.service';
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 @ApiTags('Search')
 @ApiCookieAuth('cwf_session')
@@ -26,6 +28,9 @@ export class ContactsController {
   @ApiResponse({ status: 404, type: ApiErrorResponseDto, description: 'CARD_UNAVAILABLE: the card or a shared circle is no longer available.' })
   @ApiResponse({ status: 429, type: ApiErrorResponseDto, description: 'Contact rate limit exceeded.' })
   contact(@Req() request: AuthenticatedRequest, @Body() body: ContactCardDto) {
+    if (typeof body?.cardId !== 'string' || !UUID.test(body.cardId)) {
+      throw new BadRequestException({ code: 'VALIDATION_ERROR', details: { fieldErrors: [{ field: 'cardId', reason: 'invalid_value' }] } });
+    }
     return contactCard(this.db, this.bus, this.logger, request.caller.memberId!, body.cardId);
   }
 }
