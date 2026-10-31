@@ -20,6 +20,39 @@ successful test or review, demo preparation, or Forge next step does not by itse
 Do not install Mainline or start OAuth sign-in for those requests. An explicit request such as
 "deploy this to staging" or "publish this on Mainline" needs no separate routine deployment approval.
 
+Our deploy platform reads `services.toml` at the repo root: one `[[service]]` per service,
+with `name`, `dockerfile`, `port`, `health`, `expose` (`main`, `subdomain` or `internal`) and,
+when needed, `subdomain` and `command`, and `mcp` with the path of the service's MCP server;
+deploy.md in Forge's conventions has the details.
+Close refuses a list that names a Dockerfile the branch does not have or does not have
+exactly one `main` service. When a client repo has a Dockerfile and no `services.toml`, write
+it before the first deployment the owner asks for: one service per Dockerfile the app runs,
+the port from its `EXPOSE` line and the health path from the code. Show it to the owner and
+ask with options: confirm it, or change a service's exposure. Then merge it in a fix. The
+owner picks the main subdomain on the platform, so the list does not hold it.
+In a starter app, the API service has mcp = "/mcp".
+
+The first deployment that the owner asks for in a client repo is its deploy setup, and that
+request is the explicit request above. Follow the installed Mainline Deploy skill in this
+order, and skip a step that is already done:
+
+1. Have the owner sign in in the browser with Google or GitHub, and wait until the sign-in
+   succeeds.
+2. Connect the client GitHub repository.
+3. Read `services.toml`. When the repo has none, write it as the paragraph above says and get
+   the owner's confirmation.
+4. Set the main subdomain that the owner picks.
+5. Set each variable that `.env.example` names, with the values the owner gives, except the
+   ones that the platform provides, such as `DATABASE_URL`.
+6. Deploy dev, and wait until dev reports healthy. Always deploy dev first.
+
+After the setup, do not deploy. Mainline deploys dev at each merge to the default branch and
+a preview for each pull request. These deploys are Mainline's, not an agent's, and need no
+request. Production changes only when a person presses Promote in Mainline. Never deploy or
+promote production, also when the owner asks: tell them to press Promote in Mainline. When
+the owner asks for another deployment after the setup, tell them that Mainline deploys dev at
+the next merge.
+
 | The human says | Run |
 |---|---|
 | "What now?" | `forge next` |
@@ -53,19 +86,26 @@ Do not install Mainline or start OAuth sign-in for those requests. An explicit r
 | "Record the check-back result" | In a fix: `forge spec measure <slug> --result "<result>"` |
 | "Record a decision" | `forge decision new <slug>` |
 | "The decision is accepted" | `forge decision accept <slug> --by "<name>"` |
+| "What does the client still need to decide?" | `forge decision open` |
+| "Record the client's answers" | In a fix: `forge decision answer --from <file> --by "<name>"` |
 | "Add it to the roadmap" | `forge roadmap add <spec>` |
 | "The new spec replaces this roadmap item" | In a fix: `forge roadmap retire <KEY> --by <spec>` |
 | "Change a finished story's outcome" | On an existing work branch: `forge story done <KEY> "<outcome>"` |
 | "Is my setup healthy?" or "Fix my setup" | `forge doctor`, then `forge doctor --fix` for what it can repair. On the default branch, repairs to Forge's files need a clean checkout at `origin/<default>` and use a dated fix `forge-files-<YYYYMMDD-HHMM>`: `forge close <name>`, then merge it like any other. An existing `fix/forge-files-*` branch with no merged or closed pull request blocks another repair, record or not; follow doctor's finish-or-remove step. Finished-work cleanup skips only the open doctor fix. If a repair already used this minute's name, run `forge doctor --fix` in the next minute. A file it holds back as changed by hand: move that change out of the file, then `forge doctor --fix` again. In AGENTS.md, only hand edits inside the `forge:begin` and `forge:end` lines hold the file; your rules outside them stay as written when doctor refreshes Forge's block |
-| "Set up a new repo" | `forge init`, then propose a `fast_test` as in step 8 of Adopt a live app, below |
+| "Set up a new repo" | Before `forge init`, answer "Does this repo run GitHub Actions?" from the repo's settings: `gh api repos/{owner}/{repo}/actions/permissions` gives `enabled`. Ask the human only if the settings do not answer it. Pass `--actions yes` or `--actions no`; yes uses CI checks, while no selects laptop tests with `checks = []`. Then use `forge init --starter` for a new React app, `forge init --starter python` for a new app whose owner asks for a Python backend, or `forge init` for another stack. Propose a `fast_test` as in step 9 of Adopt a live app, below |
 | "Bring our live app into Forge" | Adopt a live app, below |
 | "Change the test command" | Ask, then in a fix: edit `forge.toml` (never its `merge` setting), `forge close <fix>` |
 | "Run everything in Claude" | Ask, then in a fix: set `tools = "claude"`, `workers = "claude"` in `forge.toml`, then `forge sync`, `forge close <fix>` |
 | "Run everything in Codex" | Ask, then in a fix: set `tools = "codex"`, `workers = "codex"` in `forge.toml`, then `forge sync`, `forge close <fix>` |
 | "Use both" | Ask, then in a fix: set `tools = "both"` in `forge.toml`, `forge close <fix>` |
 | "Change who builds just for me" | Edit `forge.local.toml` beside `forge.toml` in the main checkout (not a worktree): only `tools`, `workers` and `[models.<kind>]` tables. Git ignores it, so no fix; every worktree of that clone uses it. `forge next` and `forge doctor` name what it sets |
-| "Close takes too long running every test" | Ask, then in a fix: set `fast_test` in `forge.toml`, a command close runs instead of `test`, with `{base}` replaced by the merge base with the default branch (for example `npx vitest run --changed {base}` plus lint); the pull request's CI still runs the full `test`, `forge close <fix>` |
+| "Close takes too long running every test" | In a local-test repo, ask, then in a fix: set `fast_test` in `forge.toml`, a command close runs instead of `test`, with `{base}` replaced by the merge base with the default branch (for example `npx vitest run --changed {base}` plus lint). In a CI-test repo, its pull request check runs related tests; the nightly full run covers the rest. Then `forge close <fix>` |
 | "Upgrade Forge" | Ask which release, then `forge upgrade <release>`; Upgrade Forge, below |
+
+`forge doctor` lists started fixes with no work commits after more than seven days.
+Each row gives `forge fix drop <fix> --because "<reason>"`. Only drop a fix after
+the owner agrees. `forge doctor --fix` does not drop these fixes. New and upgraded
+client repos get this check from the installed Forge command.
 
 Send every new idea through `forge start "<their words>"`. Never ask the human whether it is a
 story or a fix. When the answer is a fix, run its `forge land <fix>` in the background and watch it.
@@ -77,6 +117,34 @@ default (`merge = "human"`), or the agent runs `forge merge <item>` for `merge =
 Forge's own repo follows its setting throughout. Never run `gh pr merge`; the agent merges only
 through `forge merge`. Ask one question at a time: a decision gets options with your recommendation
 first, a question of fact gets neutral choices.
+
+## The journey
+
+Every client repo moves through seven steps. `forge next` names the current step in its first line.
+
+1. **Ideas and client notes.** The person gives you the client notes or an idea. Put each note in `docs/context/` and read them all before you ask anything. You can say: "Here are the client notes" or "I have an idea: <idea>".
+2. **Brief.** You write `docs/product/BRIEF.md` from the notes, and ask only about a point that changes a screen, a field or a flow. You can say: "The brief looks right" or "Change this in the brief: <change>".
+3. **Canvas design.** You make the screens on a design canvas, which the client can click through in Play mode, and the owner or FDE approves the canvas. You can say: "Show me the screens" or "Change this screen: <change>".
+4. **Sign-off.** The client's named person approves the canvas and the answers, and the owner chooses Build now or Later. You can say: "The client approved it; build now" or "The client approved it; build it later".
+5. **Build.** You plan stories and fixes, build each one with its tests and a review, and merge it. You can say: "Build this next: <idea>" or "What is ready to merge?".
+6. **Deploy on Mainline.** When the person asks, you set up Mainline and deploy dev. A person presses Promote in Mainline for production. You can say: "Deploy this on Mainline".
+7. **Run and improve.** People use the app, and each new request or problem goes back to step 5. You can say: "Users asked for <request>" or "This is broken: <problem>".
+
+**The cold read loop.** A reader who did not write the plan reads it cold and lists its gaps. You fix the plan, and the reader reads it again. After two rounds that still have open notes, Forge stops and the owner chooses: accept, read again, or split. It exists because a gap found in the plan costs minutes, but the same gap found in the code costs a build round.
+
+**The build and review loop.** A worker builds the part and its tests, then a separate review checks the change. A serious problem goes back to the worker for another round. A task gets two review rounds and a fix gets one. At the limit Forge stops and asks the owner, but a P0 problem keeps the loop going. It exists because a reviewer sees problems that the worker cannot see in its own work.
+
+**The CI checks.** GitHub runs the repo's checks on the pull request. Close waits while they are queued or running, and a red check goes back to the worker. They exist because the checks run the tests on a clean machine, the same way for every change.
+
+`forge next` adds one line under each running item that says what it waits on, why and for how long. Give that line to the person when they ask why something takes time.
+
+After `forge init` in a new repo, tell the person the seven steps in one line each, then ask for the first input: the client notes or the idea.
+
+When a person asks what they can do, or seems unsure, run `forge next`, name the current step from its first line, and show that step's "You can say" phrases. Name no commands.
+
+When a Forge command refuses, tell the person in plain words what Forge stopped, why, and the fix that it names. Then do the fix, or ask the choice. When the refusal looks like a Forge fault (a wrong or confusing message, a refusal of a correct step, a crash, or a success that did nothing), say so and offer to file a Forge bug as Reporting a Forge bug, below, says. File it when the person agrees.
+
+Before sign-off FORGE-SIGNOFF-1 adds Build now and Later; until then, record "build it later" with `forge start "Do this later: <the first story's idea>"`.
 
 ## Save decisions and ideas
 
@@ -92,10 +160,37 @@ recommendation first. Save the answer before moving to the next question.
   and answer findings between rounds, as for a spec. Notes stay beside the numbered decision
   record. Specs take precedence when slugs match; use `forge read <NNNN-slug>` to select the
   decision, or when several decisions share a slug. A cold read does not accept the decision.
-- `forge start` keeps `plans/ideas.md`, a short dated list, only when the owner says later, and carries waiting entries into the next fix or story.
+- In `docs/specs/`, state each rule once, on an `R-<n>:` line under `## Behaviour`.
+  Validation (VAL), UAT and acceptance (AC) lines name the rule that they check by its ID, for
+  example `VAL-11 checks R-13`, and do not say the rule again. A decision that changes a rule
+  names its ID. `forge decision accept` then lists every spec line that names that ID: in the
+  same change, before close, update each line that no longer fits. On upgrade, the first
+  `forge sync` lists the old spec lines that seem to repeat a rule, with a fix to start. Show
+  the list to the owner and ask with options: rewrite those specs now in that fix, or later.
+- `forge start` keeps `plans/ideas.md`, a short dated list, when the owner says later, and
+  carries waiting entries into the next fix or story. When you, a planner or a worker think of
+  something useful that nothing needs, add one line `- <YYYY-MM-DD>: <the idea>` to
+  `plans/ideas.md` in the branch in hand and build nothing for it.
   Remove an entry when the owner says to do it now, as the command table explains.
 
 ## Merges and settings
+
+If the default branch moved after close, `forge merge` compares its new changed files with the item's changed files.
+It merges the default branch locally to check the combined change.
+It runs `fast_test`, or `test` when none is set, in the one test lane with `{base}` as the new
+merge base. It merges the pull request only after the tests pass. A failure names the failed tests
+and gives `forge work <item>` as the next step. This is always on, with no setting. With no
+default-branch move, merge runs no extra tests. New repos get this rule at init; existing repos
+get it on upgrade and sync.
+If the file sets do not overlap, Forge restores the original head and merges without a push or another check wait.
+If the file sets overlap, Forge keeps the local merge, reuses the existing review and commits its coverage of the combined change.
+It pushes that commit, waits for its required checks, then merges.
+The nightly full run on the default branch covers the rest. With no retest, the usual CI wait applies.
+Before the retest, Forge refuses uncommitted changes and names their files. After tests and
+checks, Forge fetches the default branch again. If it moved again, Forge checks the new
+commits against the item's changed files. With no overlap, Forge merges at once. With an
+overlap, Forge repeats the combined tests and required checks. After five further moves,
+Forge stops and gives `forge merge <item>` as the next step.
 
 Forge leaves a pull request that changes its own merge setting to the repo owner. It compares
 the item's merge base with its head, so an older branch can merge after the owner enables agent
@@ -153,6 +248,11 @@ every other item keeps its model review.
 
 Give status updates in one shape: `Ready to merge (n): ... · Needs you (n): ...`.
 
+Write each reply, summary and question for the human in plain English that a non-native speaker
+understands on the first read, as AGENTS.md says: everyday words in place of agent slang, each
+technical term explained once, three plain lines on what changed, what failed and what comes
+next, and status, numbers and uncertainty kept exact.
+
 ## Tools
 
 **Who does what.** The coordinator is the app the developer opens: Claude Code or Codex.
@@ -162,9 +262,9 @@ with its own design model; `workers` is ignored. With both, `workers` keeps its 
 Forge's planning, approval, build, review, CI and merge process stays the same.
 Doctor's SDK, project trust and UI skill checks follow the selected tool too.
 
-When a round's tool is the coordinator's, its route is native: that session's own background subagent,
-even with both tools. The other tool runs through its kit: the Codex app server or the Claude
-Agent SDK. No coordinating session open in a one-tool repo means work waits for the session.
+Claude workers use the Claude Agent SDK kit when installed; otherwise their coordinator uses a background subagent.
+Codex in a Codex coordinator stays native; on the other tool it uses the Codex app server. Plan reads stay native on their coordinator.
+Without a coordinating session, a one-tool repo waits for it.
 Reviews run externally through Autoreview on the named tool; with both, Codex when installed,
 otherwise Claude. Normal, light and sign-off reviews use `[models.review]` or its per-tool entries.
 Unset entries use Autoreview's default model and effort; unset effort uses its default effort.
@@ -259,12 +359,12 @@ tests, reviews and plan reads, waits while the machine's
 one-minute load per core is 1.5 or more, even when no other Forge run is active; where the OS reports no load
 (Windows) the memory and core budgets still apply. Waiting items that other planned work waits on go
 first, first-come within each group; each waiting run says its place and why. The test
-lane has one place per four available cores, at least one: two test runs at once on eight cores,
-one on four. A run of Forge's pytest picker that selects five or fewer test files takes no
-place when the whole command is the picker, optionally run through `uv run`. It still waits for load and memory.
-Compound commands, including the picker's underlying `test` command, keep their place.
-Only a single pytest command with no doctest option, such as `--doctest-modules`, in the command or the repo's pytest config gets the small-run exception. Each test run uses half the machine's cores; a worker's test runs use at most two. `forge doctor` shows both lane sizes
-and the per-test budget, free memory and its floor, test processes in use, and busy runners.
+lane makes all test runs share one process budget: the cores left after the agent share and busy
+local CI jobs, with at least one process. Small selections count too. Each run takes its allocation
+from the remaining budget. A worker's test runs use at most two processes. Nested pytest pickers
+keep the parent run's allocation. Older-release entries without an allocation count as the old
+default share, half the machine's cores. `forge doctor` names these older runs and shows both lane
+budgets, free memory and its floor, test processes in use, and busy runners.
 Every run waits when free memory is below 1.5 GB or ten percent of RAM, whichever is larger.
 An unreadable memory source does not block work. Each busy local `Runner.Worker` reserves one core
 from Forge's half-core budget, with at least one core left for Forge. Waiting runs check memory
@@ -700,8 +800,16 @@ your recommendation first. Add a one-line `Why I ask:` to each question until th
 they know why. Ask at most two questions for a fix and eight for a story, then write what is
 still unanswered as `unknown`.
 
-**A new project.** On a new project, run this discovery
-with the story limit. Before the first meeting, draft a one-page pre-meeting brief in
+**A new project.** On a new app, the FDE puts every client note in docs/context/. Read all of them
+before you ask anything. Fill docs/product/BRIEF.md and the problem cards in
+docs/product/DISCOVERY.md from the notes, and list each contradiction and gap for the FDE.
+Ask the FDE one question at a time, and only about a point that changes a screen, a field or a
+flow. A new app has no fixed number of questions. Give every other open point a default, mark it
+(assumed) where you write it, and list these assumptions in one message for the FDE to change.
+Put each question the FDE cannot answer on the recap's Still to find out list, and build the
+prototype without waiting for the answer.
+
+Before the first meeting, draft a one-page pre-meeting brief in
 `docs/context/` from the prospect's website: their likely jobs, two or three guessed problem cards
 each marked `(guess)`, their terms, and the first five questions to ask. During discovery, keep
 the customer's own words in `## Words they use` in `docs/product/DISCOVERY.md`, one
@@ -730,20 +838,50 @@ choice and one line of why into the story's Why, or the spec's Behaviour when us
 
 ## Prototype
 
+New clients get these steps at init; existing clients get the same guide after upgrade and sync.
+
 In a new client repo, follow the FDE route: start with discovery of the customer's job,
-workaround, cost, people, frequency and evidence; build the smallest working prototype that tests
-the riskiest part of that problem; demo it; review the whole prototype and answers; obtain the
-customer's named sign-off;
-then create stories. Use prototype fixes before sign-off. The salesperson can be the FDE at first;
+workaround, cost, people, frequency and evidence. Start with a canvas, as described below.
+The canvas in Play mode is the default clickable prototype: the customer clicks through it,
+and can sign off on it alone. Build a working prototype only when the FDE
+requests one to prove something the canvas cannot, such as real data or speed. Record that
+request with `forge decision new prototype-build`; the owner accepts it with
+`forge decision accept prototype-build --by "<name>"`. Then build the smallest working demo that proves
+the request, demo it, review the whole prototype and answers, and obtain the customer's named sign-off;
+then write the app's constitution; then create stories. Use prototype fixes before sign-off. The
+salesperson can be the FDE at first;
 the developer takes over with `docs/product/DISCOVERY.md`, `docs/product/BRIEF.md` and the customer
-call script. Push back when a requested feature does not serve the problem card: explain why and
+call script. Build the prototype on the starter app. Rename or remove the `Project` placeholder.
+Push back when a requested feature does not serve the problem card: explain why and
 offer to note it for after sign-off. Keep the same app as it grows into production.
 
-Always build the demo-data loader in the first version, so the customer sees their own kind of
+For a requested working prototype, build the demo-data loader in the first version, so the customer sees their own kind of
 work instead of empty screens (see demo-data.md). Use the customer's words
 from `## Words they use` in `docs/product/DISCOVERY.md` for screen labels. Tell the salesperson
 they can point at the screen: click an element in the demo build, write what's wrong and paste the
 output to the agent.
+
+**Open decisions.** Write each question only the client can answer in this form, in the decision
+record under `## To confirm`, the spec, or the plan's Notes where it belongs:
+
+```text
+- Open question: <question>
+  Touches: <screen or rule>
+  Why we ask: <what the answer changes>
+  Default: <choice>
+  Why this default: <reason>
+  If the default stands: <what happens>
+  Due: <YYYY-MM-DD>
+  Gain <1-5>, Work <1-5>, Harm <1-5>
+```
+
+Pick the default, due date and scores with the review bar before you ask. Copy a cold-read or
+review note that needs the client into this form. `forge decision open` prints the ranked list;
+go through the whole list with the client in one sitting, then record the answers with
+`forge decision answer`. When `forge next` says a due date passed, record the defaults with
+`forge decision answer --defaults` and tell the client each default and that a new decision can
+change it. After an upgrade, rewrite each existing to-confirm list and open question in this form
+once in a mechanical fix.
 
 For each demo round, gather all requests from one conversation into one prototype fix. Build,
 test, review and merge that round before starting another. Tell the salesperson what changed in
@@ -754,7 +892,7 @@ When `forge next` says to connect the repo to our deploy platform, explain what 
 that reminder does not authorize deployment. When the user explicitly requests deployment, use
 Mainline Deploy as above. After the requested deployment is verified, record its address under
 `## Demo` in `docs/product/BRIEF.md` as `- Address: <url>`. Copy that address into the sign-off
-decision.
+decision. A canvas-only prototype needs no demo address.
 
 **The demo.** Every demo follows five steps, in order:
 
@@ -803,15 +941,65 @@ default or agent as its source. Record an open request as
 `- <Topic>: ask the client (<who asked>, <date>)`; replace it with the sourced answer when the
 client replies. Only a may-wait topic can read `- <Topic>: later, when <trigger>`.
 
+**Canvas and app design.** Make each app's design from the whole `docs/product/BRIEF.md`: its
+purpose, users, records, fields, choice-list options and key flows. Use impeccable and
+emil-design-eng. Run impeccable's init when PRODUCT.md is missing. Make the screens in a Claude
+Design artifact with a shadcn design system and named shadcn components. On a Codex-only host
+without an artifact tool, make HTML artboards in the repo. Keep the canvas available for the
+customer and the sign-off review. New clients get this process at init; existing clients can use
+their current brief and design after upgrade and sync. Client sign-off does not require a root
+DESIGN.md, SCREENS.md or CHECKS.md, or a specific `Things it keeps track of` heading.
+When the canvas has a SCREENS.md screen list, add `Build: now` or `Build: later` to each screen.
+Put the whole product on the canvas, every screen, state and flow, later ones too, and mark
+`Build: now` only what the first stories build.
+Before sign-off, use impeccable's critique and polish and the emil-design-eng checklist. The owner
+or FDE can approve the canvas with `forge decision new prototype-design` and
+`forge decision accept prototype-design --by "<name>"`.
+
+For each story that adds a screen or changes a flow, use this design process before its cold read.
+Save the folder under `docs/design/<KEY>/`. End `## What changes for you` with
+`Design: docs/design/<KEY>/ (<tree id>)`, using `git rev-parse HEAD:docs/design/<KEY>`.
+One plan approval covers that exact folder. A changed folder needs a new tree id and approval.
+For small changes to existing screens that add no screen and change no flow, use
+`Design: none (<why>)` instead. Backend-only stories need no canvas. Earlier approved stories keep working.
+The build applies any existing app theme and follows the approved story design, including its
+components and fields. Workers and reviewers receive that design context.
+
 **Sign-off.** Before anyone asks for sign-off, hold one read-back call with the customer that
-goes through every answer on the answers page: our defaults, the agent's guesses and the topics
-marked later. Settle every open must-answer topic in that call: `forge next` lists those still
+goes through every item from `forge decision open` and every answer on the answers page: our
+defaults, the agent's guesses and the topics marked later. Settle every open must-answer topic
+in that call: `forge next` lists those still
 missing, malformed, or marked ask the client or later, and sign-off also refuses one answered by
 our default or the agent, so record each as the client, salesperson or developer answered it. Then
-run the strict sign-off review before anyone asks for sign-off: write `forge decision new
-client-signoff` (customer, demo address, and the answers page copied word for word, leaving
+write `forge decision new
+client-signoff` (customer, demo address for a working build, and the answers page copied word for word, leaving
 approved via and approved on empty), and run `forge decision accept client-signoff --by "<name>"`
-before any reply is recorded; it runs the strict review alone and stops. Autoreview uses the
+before any reply is recorded. Put each demo step and its test under `## Proof` for a working build,
+and settled choices under `## Decisions`.
+Sign-off checks that the copied Answers section matches `docs/product/BRIEF.md` and that the full
+run on main is green. Its completeness review must pass after judging the screens against the whole
+brief, including its purpose, users, records, fields, choices and key flows; it does not require a
+separate screen list. Missing screens, fields, options or flows hold sign-off. When a precondition is
+missing, the refusal lists every gap and the next action for each. Existing clients can complete
+sign-off with the brief and design they have after upgrade and sync; they do not need to add
+prototype design files for this gate.
+The check uses Codex's `gpt-6.1-sol` at high effort, independent of `[models.design]`.
+Codex must be installed because only Codex can review the screen images.
+On Windows, large image folders use separate batches to fit the native command line limit.
+Fix all findings from one sign-off review in one fix, then retry `forge decision accept client-signoff`.
+If the review engine fails, fix the engine problem and run the accept command again.
+A canvas-only sign-off needs no working build. A working build gets a full first product review.
+Each later attempt reviews only product files changed since the previous review and its open findings.
+Every reviewer gets earlier findings and answers. Settled findings stay settled.
+After two rounds, P0 findings still block until fixed. Other open findings need the owner's choice.
+Record that choice with `forge decision accept client-signoff --by "<name>" --resolve accept|more|split --reason "<human's choice>"`.
+Accept keeps the findings in the item's Known issues. Split creates a separate fix. More permits one more review.
+These rules apply to new clients and earlier-adopted clients after upgrade.
+Forge reuses passed results while what they checked stays unchanged.
+The product review uses the green full run as test evidence. It needs no separate `forge test` run.
+If the product or completeness review cannot finish, the refusal names its saved raw report when one exists.
+Before the customer's reply, the command runs these checks and stops without accepting sign-off.
+Autoreview uses the
 repo's tool and `[models.review]` settings, with Autoreview's defaults for unset values. Fix what it finds and run it again. Once it passes, tell the salesperson to ask the
 customer's named person for sign-off their own way. Draft no sign-off email; Forge sends nothing. When they bring the reply back, record
 it in `approved_via` and `approved_on`, then run `forge decision accept client-signoff --by
@@ -826,43 +1014,195 @@ Claude when `tools = "claude"`, Codex when `tools = "codex"`. With `tools = "bot
 it uses Codex when installed and Claude otherwise. Forge passes the selected tool's
 `[models.review]` model and optional effort to Autoreview; without an entry, it uses
 Autoreview's defaults. New and earlier-adopted repos get this behaviour on the current release.
-A prototype fix
-before sign-off gets a light review that blocks only on P0 findings.
+A requested working prototype proves the demo steps and its security and data boundaries.
+Its light review checks demo breakage, security and data loss, using `[models.light_review]`.
+A requested working prototype gets a light review that blocks only on P0 findings.
+A `Not done` against the item's own approved Done-when still blocks at any priority.
+Full proof is due at sign-off.
+
+After sign-off, every new story carries forward the available canvas, Proof and Decisions into
+`## Proven by the prototype`. Treat that evidence as settled. Plan and cold read only new work
+or production risks. Start from the prototype canvas or a newer design approved with the plan.
+Plan the first stories only from screens marked `Build: now`. A `Build: later` screen stays on
+the signed canvas as the source for a later story.
 
 When a later story needs a topic marked later, its cold read reports `Decide first: <topic>`.
 Ask that one question, put the answer in the finding's disposition and the story's Notes as
 `Decided: <topic>: <answer> (<source>, <date>)`, and make the first task update the answers page.
 Until the decision, use a fake provider for an external service.
 
+## App constitution
+
+Ask for the app's currency at setup (default INR) and write its code to DEFAULT_CURRENCY in libs/shared/util/src/format.ts and, in a Python app, apps/api/app/core/config.py.
+
+During both halves of the interview, ask one question at a time in plain words for a person who
+may not be technical.
+
+Before the prototype, take the product answers from the client notes: what the app is for, who
+uses it, the records and fields it needs, the options of each choice list, and the key flows.
+Write them in docs/product/BRIEF.md. Record the options for each choice list with the thing it
+belongs to. The prototype and sign-off review use the whole brief.
+
+At the start, write docs/product/CONSTITUTION.md with every default from Constitution defaults
+filled in, and raise a default with the FDE only when the notes contradict it.
+
+On a new app, check the client notes for five growth topics: the users and records in year
+one and year three, heavy background work, other systems that call in or that the app calls,
+rules on where the data stays, and parts that can become their own product. Ask about a topic
+only when the notes touch it and do not answer it, one question at a time. Write each answer
+under ## Growth notes in the constitution. A later story reads these notes before it plans
+modules, jobs or links.
+
+In an app with libs/mcp or apps/api/app/mcp, check the client notes for tasks that people
+will ask an agent to do again and again. When the notes describe such a task and do not list
+them all, ask one question: "Which tasks will people ask an agent to do again and again?"
+Write each task under `## Agent tasks` in the constitution as
+`- <task>: <feature>; inputs: <the inputs it needs>`. With no task, write `- None`.
+Ask it again only when the person wants to change the list.
+
+In an app whose tests run Nx's module-boundary lint, copy the fixed rules into the
+constitution's ## Fixed rules section, and ask nothing about them.
+In an app that has libs/organisations or apps/api/app/organisations, also copy the built-in lines into ## Fixed rules, and ask nothing about the defaults they answer.
+
+In an app with libs/core/server/src/common/request-log.middleware.ts or set_log_level in apps/api/app/core/logging.py, also copy this line into ## Fixed rules: "- Built in: each API request writes one log line with its method, route, status, time taken and request id, never the query string; LOG_LEVEL picks the lowest level written; password, token, secret, key and authorization values are removed from log details; Mainline sends error alerts from the error lines, so the app has no error-tracking service."
+
+In an app whose .env.example has APP_COMPANIES, ask once: "Is the app for one company, or for many customer companies?" Write the answer under ## Defaults, set APP_COMPANIES to one or many in .env.example and in the host's settings, and ask it again only when the person wants to change it.
+When the answer is one company, also copy this line into ## Fixed rules: "- Built in: APP_COMPANIES=one makes a one-company app: corepack pnpm run setup:company (uv run --no-sync python -m app.setup_company in the Python starter) makes the company and its first admin, and people join only from an admin's invite."
+In an app made from the Python starter, whose tests run import-linter, copy these fixed rules into ## Fixed rules instead, and ask nothing about them:
+
+- One app split into modules: a FastAPI API on uv, with SQLAlchemy and Alembic on Postgres, and a React web app on pnpm.
+- Each module owns its tables, in its own models file.
+- Built in: each module keeps its tables in its own Postgres schema, with core tables in core; links between business modules store an indexed id without a foreign key, and links to core keep their foreign key.
+- A module uses another module only through its public service, never through its tables.
+- The tests run import-linter, so an import of another module's internal files fails them.
+- Built in: the API serves an MCP server at /mcp. An admin adds agent accounts on the Members screen, with a role and a key that shows once; agents use each feature's tools with that role's permissions, and delete and restore tools stay off until an admin turns them on for the feature.
+- Built in: each feature also offers its items, its field guide and its allowed values as MCP resources; agents get a prompt only for a task under `## Agent tasks`; the MCP server never uses elicitation or sampling.
+- Built in: every action goes through its feature's service and permission, from the screens, the API and agents; each feature's create takes a retry key; an agent that a person signs in acts as that person, and the change history records both; reports are named, typed reads in their feature's report service.
+
+In any other app, record the
+stack, package manager and folder layout that the app already uses, and leave out ## Fixed rules.
+
+After the customer's sign-off and before the first story, finish the app's constitution in
+docs/product/CONSTITUTION.md. Use the defaults in
+[Constitution defaults](fde.md#constitution-defaults), except where
+`## Answers` in the brief already gives a settled answer. Skip a defaulted question that `## Answers`
+already answers. Check the brief's `Personal data` answer; ask whether any data is private or
+regulated only when that answer is missing, then record the answer in `## Answers`.
+
+Use this outline, and do not copy product facts from the brief into the constitution:
+
+```markdown
+# <App name> constitution
+
+The product facts are in docs/product/BRIEF.md.
+
+## Principles
+- Is it needed at all? Deleting beats fixing.
+- Add work only when F x H >= 2 x C. F, for the first 1,000 users: 1 rare, 2 weekly, 3 daily. H: 1 cosmetic or the person's own data, 2 wrong information or a broken step, 3 a P0. C: 1 for 20 lines or fewer with no model call or user step, 2 for up to about 150 lines or one model call or user step, 3 for more, or a new table, job, workflow or flag.
+- Choose the simplest option.
+- Rules are stated, not policed.
+
+## Defaults
+- <the question in plain words>: <the default or the person's answer>
+
+## Fixed rules
+- One app on pnpm and Prisma, split into modules.
+- Each module owns its tables, in its own schema file.
+- Built in: each module keeps its tables in its own Postgres schema, with core tables in core; links between business modules store an indexed id without a foreign key, and links to core keep their foreign key.
+- A module uses another module only through its public service, never through its tables.
+- The tests run Nx's module-boundary lint, so an import across modules fails them.
+- Built in: each account belongs to one organisation, as an admin or a member, and every query is scoped to that organisation.
+- Built in: admins invite people by email; members cannot invite people or change roles.
+- Built in: dates and times are stored in UTC and shown in the person's time zone, and money is stored as an exact decimal with its currency code; the helpers in @app/shared-util format them.
+- Built in: each table has a CSV export, admin actions write change history, and records are soft deleted.
+- Built in: the API serves an MCP server at /mcp. An admin adds agent accounts on the Members screen, with a role and a key that shows once; agents use each feature's tools with that role's permissions, and delete and restore tools stay off until an admin turns them on for the feature.
+- Built in: each feature also offers its items, its field guide and its allowed values as MCP resources; agents get a prompt only for a task under `## Agent tasks`; the MCP server never uses elicitation or sampling.
+- Built in: every action goes through its feature's service and permission, from the screens, the API and agents; each feature's create takes a retry key; an agent that a person signs in acts as that person, and the change history records both; reports are named, typed reads in their feature's report service.
+- Built in: each UI or API crash writes one error report to the logs.
+
+## Growth notes
+- <the growth topic>: <the answer from the client notes or the person>
+
+## Agent tasks
+- <the task>: <feature>; inputs: <the inputs it needs>, or None
+
+## Architecture choices
+- <the choice>: <its reason, in one plain line> (docs/decisions/NNNN-<slug>.md)
+```
+
+Copy `## Principles` into every app's constitution word for word, and ask nothing about it. Do not
+add it to an approved constitution: the principles reach that app through its briefs, cold reads
+and reviews.
+
+Make each architecture choice yourself, from the answers and the code, and write it as one plain
+line with its reason and its decision record. Record the stack that the code already uses. For
+parts with no code, use the stack default: an Nx workspace with React (Vite and React Router),
+NestJS and Postgres. Use a FastAPI backend only when the person asks for it. A FastAPI backend starts from
+forge init --starter python.
+Each architecture choice names an accepted record in docs/decisions/NNNN-<slug>.md.
+
+Follow the database skill (.codex/skills/database/SKILL.md) for new tables and extensions.
+Follow the agents skill (.codex/skills/agents/SKILL.md) for any agent, chat, voice or in-app assistant work. When a part adds one, the plan names the skill's sections that apply and the model service it uses.
+An extension outside its allowed list needs the owner's OK for this client. Ask the owner,
+then write `- Postgres extension <name>: the owner allows it on <date> (<why>)` under
+Architecture choices in `docs/product/CONSTITUTION.md`.
+
+A live app answers both halves at adoption: ask only what the code cannot answer. Record the stack
+the code already uses.
+
+Create and accept a decision record for each architecture choice with
+`forge decision new <slug>` and `forge decision accept <slug> --by "<name>"`. Create the
+constitution approval record with `forge decision new app-constitution`. When the brief answers
+what the app is for, who uses it, what it keeps track of and whether its data is private or
+regulated, and the constitution has its defaults and accepted architecture records, run
+`forge decision accept app-constitution --by "<owner>"`. The owner approves the constitution once.
+If it is not ready, fill in the missing answers, defaults or decisions, then run the accept command
+again.
+
+No new story starts until the owner approves the constitution. Existing stories, parts and fixes
+continue, and prototype work is not held. When `forge next` has a worktree cleanup step, finish
+cleanup first. The constitution reminder returns after cleanup. If the constitution is missing, start the constitution
+fix Forge names with `forge fix start "Write the app constitution" --done "The owner approved
+docs/product/CONSTITUTION.md"`, then complete it before starting a story. A review or cold read in an app with an
+approved constitution checks work against its text; a conflict is a P1 finding or note. A change
+to documents only keeps its light review, which holds only P0 findings.
+
 ## Adopt a live app
 
 An app already in production joins Forge through one fix and one pull request the human merges.
 Adopting changes no app code.
 
-1. Write the codebase report in `docs/context/codebase.md`: the stack and how to run it; the tests
+When initializing an existing repo, answer "Does this repo run GitHub Actions?" from the repo's
+settings: `gh api repos/{owner}/{repo}/actions/permissions` gives `enabled`. Ask the human only
+if the settings do not answer it. Pass
+`--actions yes` or `--actions no`; omit `--checks` when the answer is no.
+
+1. Follow [App constitution](#app-constitution) for both interview halves together. Ask only what
+   the code cannot answer, and record the stack the code already uses.
+2. Write the codebase report in `docs/context/codebase.md`: the stack and how to run it; the tests
    and the areas they don't cover; the CI workflows and the checks branch protection requires; what
    a merge triggers; branch rules and reviewers; the hook tools already in use; secret files and
    variables by name only, never their values; where personal data lives; the migration tool; and
    the danger zones.
-2. Mark as danger zones the most-changed, most-reverted and most-hotfixed files in git history. A
+3. Mark as danger zones the most-changed, most-reverted and most-hotfixed files in git history. A
    story that touches one names it under Risks.
-3. List the open pull requests and branches in the report, so a story's plan avoids colliding with
+4. List the open pull requests and branches in the report, so a story's plan avoids colliding with
    a teammate's work.
-4. Link or import the repo's existing decision records and design docs as Forge decisions:
+5. Link or import the repo's existing decision records and design docs as Forge decisions:
    `forge decision new <slug>`, the original linked or copied unchanged under the line
    `Imported from <path>.` Don't rewrite them.
-5. Read the review comments of about the last 100 merged pull requests. Each rule reviewers enforce
+6. Read the review comments of about the last 100 merged pull requests. Each rule reviewers enforce
    repeatedly becomes a House rule citing the pull requests it came from.
-6. Ask the human three questions, one at a time, with options: who approves stories, who merges,
+7. Ask the human three questions, one at a time, with options: who approves stories, who merges,
    and what must never be touched.
-7. Write the answers and the reviewers' rules under `## House rules` in AGENTS.md, outside Forge's
+8. Write the answers and the reviewers' rules under `## House rules` in AGENTS.md, outside Forge's
    block. The repo's own rules win where they differ from Forge's default-stack conventions.
    A rule every review must follow, such as which tests a kind of change needs, goes under
    `## Review rules` in AGENTS.md, outside Forge's block: every review reads that section from the
    default branch and follows it.
    A repo keeps its rules in AGENTS.md only: forge sync moves a CLAUDE.md's own lines into
    AGENTS.md, outside Forge's block, and deletes CLAUDE.md, since Claude Code reads AGENTS.md itself.
-8. Propose a `fast_test` for the repo: its own test command, keeping its configuration and setup,
+9. Propose a `fast_test` for the repo: its own test command, keeping its configuration and setup,
    with the test tool's built-in changed-only option and `{base}` (for example
    `vitest --changed {base}` or `jest --changedSince {base}`). Once the human agrees, set it in
    `forge.toml` through a fix. For pytest repos, propose
@@ -883,10 +1223,14 @@ Adopting changes no app code.
    and Ruby get no suggestion. Check the suggestion against the repo's setup before
    agreeing to it; other shell flows need the agent to adapt the command.
 
+10. When the repo has a Dockerfile, write `services.toml` as the deploy paragraph at the top
+    of this guide says, get the human's confirmation, and add it to the adoption fix.
+
 On a live app, every story and fix also follows these:
 
 - Before changing code no test covers, first add a test that pins today's behaviour.
-- Migrations only add, and work with the previous version of the app still running.
+- Migrations work with the previous release still running: expand, then contract. Add a new table or column before code uses it. Keep the old table or column for two releases, and remove it only when no live release uses it.
+- Close checks only migrations added by the change, and skips the check in a prototype repo with no live release. A migration that drops or renames a table or column, or changes a column's type, needs a `-- Contract: ...` line in Prisma SQL or a `# Contract: ...` line in Alembic Python. The line explains why the live release no longer reads the table or column; close allows it when the line is present, and review reads the explanation.
 - A change users would notice ships behind the team's own feature flags.
 - No production credentials on this machine; never ask for them.
 
@@ -910,12 +1254,15 @@ An open upgrade or local work still refuses and stays in place. Ignored configur
 also stay in place; only recognized cache directories may be discarded.
 
 1. Ask which release to move to, recommending the newest.
-2. Run `forge upgrade <release>` in the main checkout, on the default branch. It installs the
+2. Wait until no Forge runs are in progress anywhere on the machine. Let workers, plan reads,
+   tests and close finish first. An install during a close can mix two releases.
+   `forge upgrade` names the items in the machine's lanes and asks you to wait if any remain.
+3. Run `forge upgrade <release>` in the main checkout, on the default branch. It installs the
    release, has that release refresh Forge's files in the fix, commits them and closes the fix.
    Its commit includes the upgrade's proof list; close reports tests and review results together.
    It changes only the version in `forge.toml`.
-3. When it refuses, follow its `Next:` line. Running it again picks up where it stopped.
-4. Close's last line says who merges: the human, or `forge merge <fix>` when the repo allows it.
+4. When it refuses, follow its `Next:` line. Running it again picks up where it stopped.
+5. Close's last line says who merges: the human, or `forge merge <fix>` when the repo allows it.
 
 Close runs the time-story backfill as part of the upgrade, with nothing extra to type. It
 rebuilds open items and items merged in the last six weeks from git and GitHub, marks them
@@ -932,6 +1279,11 @@ use that release and its rules.
 
 ## Refresh dependencies
 
+Once in each new or existing repo, turn on GitHub's Dependabot security alerts with
+`gh api --method PUT repos/{owner}/{repo}/vulnerability-alerts`.
+Dependabot security updates stay off: add no Dependabot update pull requests and no
+`.github/dependabot.yml`. This is a repository setting, not a generated file.
+
 When the default branch's lockfiles and Dockerfiles are over a week old by git log, `forge next`
 lists a refresh fix with its `forge fix start` command; start it like any ready item. In the
 fix's folder:
@@ -944,9 +1296,12 @@ fix's folder:
    declared ranges; recursive `yarn up -R` starts in Yarn 3.
 2. Pull each Dockerfile's base image at its current tag, or move it to the newest patch of the
    same tag, and rebuild the image.
-3. Run the test command in `forge.toml`, commit, then `forge close <fix>`.
+3. Follow the repo's `test_place`: in local mode, run the related tests through
+   `forge test`; in CI mode, do not run them here. Commit, then `forge close <fix>`.
 
 ## Planning a story
+
+Follow the agents skill (.codex/skills/agents/SKILL.md) for any agent, chat, voice or in-app assistant work. When a part adds one, the plan names the skill's sections that apply and the model service it uses.
 
 A cold read passes when no note is at the bar (blocking): the plan is wrong, contradicts itself,
 or a builder could not act on it. Readers prefix numbered findings with `Blocking:` or
@@ -965,6 +1320,19 @@ Promotion keeps the fix's existing roadmap entry: before using `--from-fix`, put
 on the fix's branch and commit it. Promotion adds no entry or separate roadmap copy.
 Forge refuses promotion while the fix's roadmap has uncommitted changes.
 New repos get this guide at init; existing repos get it after upgrading Forge and running sync.
+
+End each item of a plan's What changes for you with its source in plain words, such as
+`(Source: the client's note on late orders, 12 Oct)`, or with the sourced item that needs it,
+such as `(Needed by: the Customers screen)`. A source is a client note in
+`docs/product/DISCOVERY.md`, an answer in `docs/product/BRIEF.md`, a decision in
+`docs/decisions/`, a screen marked Build now at sign-off, a fixed rule in
+`docs/product/CONSTITUTION.md`, or the human's own request with its date. An item that has a
+source needs what it cannot work without: its validation, an error or empty state, an index for a
+filter that a list shows, or accessibility basics. Name each screen, field, endpoint, tool and
+setting that the plan adds in one of these items. Plan nothing that a source asks for but the
+work does not need: Is it needed at all? Deleting beats fixing. The canvas can show
+later screens; plan only the screens marked Build now. The starter's fixed rules are the base:
+plan nothing beyond them just in case.
 
 Readers should return plain `No findings.` alone when a read finds nothing. `forge read` also
 accepts replies with at least one no-findings line when every numbered or bulleted item says
@@ -1017,6 +1385,61 @@ recording succeeds; if the repo pins a newer release, install that pinned releas
   split it, or record an allowance with a reason by running `forge fix allow-large "<reason>"`
   in the part's folder, the same way fixes work. Stories approved before this limit keep working.
 - Keep each part's builder notes to its goal, files and one test per rule.
+- When a plan adds a new feature to a TypeScript or Python starter app, name its plural,
+  singular and fields in the builder notes, and give the worker's first-step command:
+  `forge task feature <plural> --one <singular> --field '<field>:<kind>'`.
+  Quote every `--field` value with single quotes, including simple fields. For example:
+
+```sh
+forge task feature clients --one client --field 'name:text'
+forge task feature jobs --one job --field 'name:text' --field 'description?:long-text' --field 'status:status(planned|active|done)' --field 'client?:link(clients)' --field 'hoursBudget?:number' --field 'budget?:money' --field 'dueDate?:date' --field 'contactEmail?:email' --field 'billable:yes-no'
+```
+
+  A feature needs a text field for its name. The nine kinds are text, long-text, number, money,
+  date, yes-no, email, status and link; `?` makes a field optional. Add other kinds by hand.
+  The worker runs the command; the human makes no technical choices and never types it.
+  Keep the generated organisation checks, change history and five permissions. If the plan
+  changes the role permissions, name that change for the worker to make in the feature's
+  permission mapping. A non-starter or older starter missing the required parts gets a refusal
+  naming what is missing; build that feature by hand in its existing layout.
+- In a starter app, each feature's agent tools are in its one tools file
+  (`libs/<plural>/server/src/<plural>.tools.ts`, Python `apps/api/app/<plural>/tools.py`),
+  and the feature command writes it. When a story adds a route that agents need, the part
+  names the hand-made tool, its name in the form `<feature>_<verb>`, its permission and its
+  annotations. When the owner wants a default tool hidden, the part says so.
+  Every generated or hand-made tool follows these rules:
+  - Names start with the feature. A description says what the tool does, when to use it and
+    how it relates to the other tools, as for a new user.
+  - Arguments use snake-case names, with `<singular>_id` for an id. Strict input and output
+    schemas come from the feature's own schemas.
+  - Use a search tool, not a list tool: `query`, the feature's filters, `limit` (20 by default,
+    up to 100) and `cursor`. Return `next_cursor`, how many match in all (more than 10,000
+    when capped), and how to narrow the search.
+  - Return useful fields with names beside ids, `response_format` set to `concise` by default
+    and `detailed` on request, `structuredContent` with an `outputSchema`, and a short summary.
+  - Return failures as tool results with `isError`, a plain message with the fix and an example
+    where useful, `kind`, `retryable` and `retry_after_seconds`. Never return HTTP statuses or
+    traces for tool failures; protocol errors are only for an unknown tool or malformed request.
+    A missing or revoked agent key is an HTTP 401 before any tool call.
+  - A create accepts `idempotency_key`; update, delete and restore are safe to run again.
+  - Set all four annotations: `readOnlyHint`, `destructiveHint`, `idempotentHint` and
+    `openWorldHint`, to describe what the tool does.
+  - Limit each call to 10 seconds, then return a retryable `unavailable` error. Limit each key
+    to 120 calls a minute per running API copy. Both errors say how many seconds to wait.
+    Work can still finish after the time limit, so a create's retry uses the same key.
+  - Keep the contract case `every tool has a description, annotations, schemas and the error
+    shape` passing for every tool, including tools added by hand.
+  Only starter apps get the MCP server. Upgrade and sync deliver this guidance without app
+  files or a `services.toml` change. In an older starter without MCP support, the feature
+  command builds the feature without tools and says so.
+- When a part adds a create or a send, pay or notify action, it says that the action takes a
+  retry key. When it adds a report, it names the report, its result fields and their units.
+  When it lets a person sign an agent in, the agent acts as that person, and the part names
+  the agent's `viaAgent` text.
+- Each feature's resources come from its tools file's `defineFeatureTools` and need no code.
+  When a story builds or changes a feature that a task under `## Agent tasks` names, the part
+  names its prompt: the name in the form `<feature>_<verb>`, its inputs and its permission.
+  Write no other prompt. Add no elicitation and never use sampling.
 - Shared seams first: when two tasks share a function, field, file format or command, the first
   task pins it. It commits the shared names and stubs plus one test that crosses both sides, and
   the tasks that use it list it under After.
@@ -1069,6 +1492,9 @@ existing repos, including earlier adopted ones, get it on upgrade and sync.
 
 - `Unproven: item <n>: <case>` or `Trap: <trap>: item <n>`: add the case to that Done-when item
   and its test to the Tests cell of the task that owns it. Never resolve one only in Notes.
+- `Not needed: <what>` on a large addition: name the item's source or the sourced item that
+  needs it, or cut the addition and add one line for it to `plans/ideas.md`. On a small addition it is advice: act on it only when
+  that is cheap.
 - A finding inside the cold read's "What counts" boundary is cut (fix the doc) or deferred, never
   kept as unnecessary. `keep` only a finding outside the boundary or factually wrong, and give
   the reason as the Leave out line it falls under, the Raise line it lacks, the cited fact that
@@ -1120,14 +1546,16 @@ the handoff, so answer a Scope question only when the change isn't needed. If th
 choice the item does not settle, get that choice made before sending the note.
 
 When a round ends with changes left uncommitted, `forge work` continues the same conversation
-once, telling the worker to commit first, run the change's related tests through `forge test`
-in the foreground, wait for them and commit any fixes. Only
+once, telling the worker to commit first. In a local-test repo, the worker runs related tests
+through `forge test` once at the end of the turn, reruns only failures and commits any fixes. In a
+CI-test repo, the worker commits first and leaves the change's related tests, lint and type checks
+to pull request CI; it runs `forge test` only for a test it is writing, to watch it fail. Only
 if changes are still uncommitted after that does it warn, naming them: `forge close` reviews only
 what is committed, so look at them before closing.
 
-Continued worker rounds repeat `forge test` and the commit-first order,
-replacing any earlier full-suite instruction. The synced test-audit skill follows the same rule;
-CI runs the full suite.
+Continued worker rounds repeat the selected test-place instruction and the commit-first order,
+replacing any earlier full-suite instruction. Follow the repo's `test_place` choice when applying
+the test-audit skill. The nightly full run covers the rest.
 
 Forge trusts its own Codex hooks for each turn it starts, so the guard runs even after a hook
 changes. Codex runs no project hook in a project it doesn't trust, so Codex workers and readers
@@ -1143,9 +1571,12 @@ Each kind in `forge.toml`'s `[models]` table may have a codex and a claude entry
 `[models.build.codex]` and `[models.build.claude]`; a single entry counts only for its own model's
 tool (a gpt model is Codex's, any other Claude's). Workers use their selected tool's entry,
 and explorers use their host's entry. Workers and Claude plan readers with no entry use Forge's defaults.
-Codex build, fix and lite default to `gpt-6.1-sol` at medium effort; design uses its design default.
-Claude workers use model and effort
-and ignore the Codex-only subagents and subagent_effort keys.
+Codex build, fix and lite default to `gpt-6.1-sol` at low effort; design uses its design default.
+Claude build, fix and lite accept a `subagents` and `subagent_effort` pair, or use
+`claude-haiku-5-5` at high when neither is set. The SDK's `general-purpose` helper
+gets the same pair. These options affect only the Claude builder's turn, not other
+Claude sessions or settings. Codex helpers keep their configured pair, defaulting
+to `gpt-6-luna` at max. Neither tool's helpers change effort after a failure.
 
 After `forge sync`, Codex sessions opened in the repo can use every shipped role, including
 `fixer`. Sync keeps the team's other registered roles. The default subagent model and effort
@@ -1153,25 +1584,39 @@ come from build's Codex `subagents` and `subagent_effort`, falling back to lite'
 build has none. With neither pair, sync leaves the defaults unset. Hands-on Codex roles use
 that same pair when set, so their worker model does not override the subagent budget.
 
-Claude implementation (build, fix, lite and design, including frontend) defaults to
-`claude-sonnet-5-5` at `xhigh` effort. Claude plan reads (grill) default to
+Claude build, fix and lite default to `claude-sonnet-5-5` at `low` effort.
+Claude design, including frontend, keeps `xhigh` effort. Claude plan reads with no entry use
 `claude-opus-5-5` at `high` effort, including when Claude is the only installed tool.
-`forge init` writes these Claude entries explicitly; omitted entries use the same built-in
-defaults. Claude planner and architect roles use the plan-read entry; debugger, security
-and performance roles use Opus 5.5 at high effort. Autoreview owns every review's model
-and effort, including prototype sign-off.
+`forge init` writes Sonnet at high for Claude plan reads and reviews.
+Existing model and effort entries stay unchanged after upgrade and sync.
+After a red close test, a blocking review finding or a failed required check named
+in `checks`, the next build, fix or lite round uses at least high on Codex and
+xhigh on Claude, keeping a higher configured effort. Optional failed checks and
+owner notes do not raise it. The same worker thread continues with the same model;
+only that turn's effort changes. Design, cold reads, reviews and sign-off keep
+their fixed effort. Forge's defaults and ladder never choose none.
+Claude rounds use the Agent SDK when installed. Native rounds request effort in
+their instructions, and their records and round lines label it requested because
+Forge cannot check that the host applied it. A continued native Codex helper can
+retain its first effort. Each run records its round number and effort. The board
+and story history show `built at <effort>` in the round line, and omit it for old
+records without effort.
+Claude planner and architect roles use the plan-read entry; debugger, security
+and performance roles use Opus 5.5 at high effort. Reviews, including prototype sign-off,
+use the selected tool's `models.review` entry, or Autoreview's defaults when unset.
 
 Existing model entries stay unchanged on upgrade. To opt in, set each of
-`[models.build.claude]`, `[models.fix.claude]`, `[models.lite.claude]`,
-`[models.design.claude]` to Sonnet at xhigh. Set `[models.grill.claude]` to Opus at high.
+`[models.build.claude]`, `[models.fix.claude]`, `[models.lite.claude]` to Sonnet at low.
+Keep `[models.design.claude]` at Sonnet xhigh. Set `[models.grill.claude]` and
+`[models.review.claude]` to Sonnet at high.
 For a missing implementation entry,
 add a top-level line before the first table, replacing `build` with each kind:
-`models.build.claude = { model = "claude-sonnet-5-5", effort = "xhigh" }`.
+`models.build.claude = { model = "claude-sonnet-5-5", effort = "low" }`.
 For plan reads, use this line:
-`models.grill.claude = { model = "claude-opus-5-5", effort = "high" }`.
+`models.grill.claude = { model = "claude-sonnet-5-5", effort = "high" }`.
 If build, fix or lite has a single entry, move it to its family's table before adding the
-Claude entry. Then run `forge sync` to refresh subagent roles. Legacy review entries stay
-in existing settings but no longer override Autoreview's defaults.
+Claude entry. Then run `forge sync` to refresh subagent roles. Existing review entries stay
+unchanged and still set the review model and effort.
 
 With `tools = "both"`, `forge.toml`'s `workers` says who builds each task and fix.
 `forge work` prints the worker,
@@ -1190,8 +1635,9 @@ on the new worker with the whole brief and the latest review findings.
 Each task and fix keeps the same worker chat for each tool until merge. Later rounds resume it
 after model or effort changes, restarts, missing local records or a fresh worktree. Plan reads
 keep their reader chat across rounds too. Forge starts a new chat only when the tool reports
-the old chat gone or archived or the item changes tools, and says why in one line. Other resume
-errors stop the round and keep its chat.
+the old chat gone or archived, another program keeps it held after one retry, or the item changes
+tools, and says why in one line. A work round starts the new chat with the whole brief, as a cold
+read does. Other resume errors stop the round and keep its chat.
 Upgrade's sync commits earlier-release chat bindings in their owning work branches, without
 accepting reader findings. It also recovers turn logs when local JSON is missing, moved spec
 worktrees and workers on `forge/` branches. A landed spec's binding travels in the upgrade fix's existing notes.
@@ -1224,12 +1670,12 @@ The diagnosing and planning roles change no files. Building an item still goes t
 and run `forge sync`; Claude diagnostic roles keep Opus at high effort.
 Codex roles use their host's entry when the kind has per-tool entries. With a single entry, a model
 from the other tool is omitted so the Codex role uses the session's model. Claude building
-roles use their implementation entry or Sonnet xhigh; Claude planning uses grill or Opus high,
+roles use their implementation entry or Sonnet low; Claude planning uses grill or Opus high,
 and Claude diagnosing always uses Opus high.
 
 The explorer role uses the read-only `explore` kind; `lite` keeps a fix's first
 build round. New repos get `[models.explore.claude]` with `claude-haiku-5-5` at high effort and
-`[models.explore.codex]` with the same settings as the initial lite Codex entry. Existing repos
+`[models.explore.codex]` with `gpt-6.1-sol` at medium effort. Existing repos
 without explore keep using lite for read-only work after upgrading and syncing. To choose
 separate read-only settings there, add the explore entries in a fix and run `forge sync`.
 
@@ -1283,8 +1729,9 @@ From the second review round, close checks the previous round's findings and new
 happen in normal use. The reviewer says fixed or not fixed for each previous finding.
 A round-one fix that breaks the main path counts as a P0 (Harm 4 or more). Open findings below
 P0 need the owner's choice at the limit, whether their lines changed or not.
-A `Case: rare` finding never blocks. A security hole or data loss that any user can reach is
-normal use. Reviewers and readers do not raise questions that Review rules or recorded owner
+A `Case: rare` finding does not block unless it names a kind the owner requires.
+A security hole or data loss that any user can reach is normal use. Reviewers and readers do not
+raise questions that Review rules or recorded owner
 decisions (`docs/decisions/`, `Decided:` or `Ruling:`) already settle.
 A worker can decline a finding in a commit body with
 `Declined: <title> (<file>): not worth the code - <reason>`, using its exact title and file.
@@ -1294,6 +1741,15 @@ A P0 stays open. Later rounds receive the decline as settled. Only the human dis
 line). Builder details, Notes and implementation guidance never block as `Not done`.
 New repos get this guide on init; existing repos, including earlier adopted repos, get it on
 upgrade and sync. Close applies the same boundary in every repo.
+
+The owner can set added_work_min_gain to 3, 4 or 5 and always_block to a list of kinds in
+forge.toml. Record the owner's settings in a fix. They apply after it merges, from the default
+branch. `Adds work: <what>` marks a finding that asks for another check, retry, guard or flag.
+An unfloored fix-now finding below the minimum becomes a Known issue with its scores and reason.
+Harm 4 or more, Gain 5 and every score floor still block. `Must: <kind>: <gap>` holds a listed
+kind at any score, even for a rare case or in a light review. The worker cannot decline it.
+Only the owner can accept it. Without these settings, new and existing repos keep today's bar.
+An upgrade adds no setting. Plan reads and prototype sign-off keep today's bar.
 
 Before building a fix, check its brief for the five-code-file limit, interface globs and any
 recorded allowance; test files and files whose content is exactly what `forge sync` writes don't
@@ -1357,14 +1813,22 @@ in the default branch. Land retries close once itself, including a conflict duri
 wait; if the merge needs a person, it stops with close's existing conflict next step.
 If GitHub refuses a pull request body update, close stops after one attempt, including during a
 history retry. Wait for a rate limit to reset, or fix the reported problem, then retry the command.
-Close's tests and review run at the same time. Close waits for both and reports their results
-together; a red test or a P0/P1 finding still stops the round. When the
-test command fails, close keeps the output for the worker: run
+Close reruns failed pytest files once after a local test failure. If they pass, close names
+them as flaky and continues. A second failure still stops close. A failure without named
+test files still stops close.
+
+In local mode, close's tests and review run at the same time. In CI mode, close runs its review
+while the pull request's checks run, then waits for both. A red test or a P0/P1 finding still
+stops the round. When the
+local test command fails, its test report ends with all failed pytest files and test names,
+including setup, teardown and collection errors, and the full test log path.
+Close keeps the output for the worker: run
 `forge work <item>`, whose brief carries it; `forge land` runs that fix round itself.
-When the pull request's `tests` check runs the full suite, close avoids repeating it locally.
-Close runs `fast_test` when set. Otherwise it uses the shipped pytest picker for changed tests
+In CI mode, close leaves test execution to the pull request's `tests` check. In local mode, close
+runs `fast_test` when set. Otherwise it uses the shipped pytest picker for changed tests
 and tests importing changed Python modules, Vitest's `--changed <base>`, or Jest's
-`--changedSince <base>` (including `__tests__` files). CI runs the full suite.
+`--changedSince <base>` (including `__tests__` files). The pull request's CI runs the related
+tests; the nightly full run covers the rest.
 Docs and brand-asset changes get the light review, which blocks only on P0 findings.
 Close and the generated `forge.yml` skip the test command when every changed path is Markdown
 (case-insensitive), or under `docs/`, `plans/`, `.factory/` or `.forge/`. They compare against the
@@ -1374,13 +1838,30 @@ live. Files marked `linguist-generated` and docs or assets referenced by tests k
 review and tests. Forge resolves literal paths from the repository or test file's folder on
 both sides of the change, including literal path joins, `__tests__/` files and shared
 `conftest.py` fixtures.
-CI checks this once before the test groups and skips the group jobs for a docs-only change.
+CI checks this once before the tests job and skips that job for a docs-only change.
 One code file runs tests as usual. New repos get
 this rule at init, and existing repos get it after upgrade and sync. Bare `forge test` still runs.
-For other changes, the generated `forge.yml` runs that suite as test groups behind the one required `tests` check,
-which passes only when every group passes: six groups when `test` calls pytest directly (not through make or tox) and
-the repo lists pytest-split, otherwise one. New repos get it at init, earlier ones after upgrading
-and syncing; branch protection keeps the same `tests` check.
+For other changes, the generated `forge.yml` runs one `tests` job with `forge test --change`.
+Set `groups = 4` in `forge.toml` to run four parallel jobs with any test runner. Each job runs the
+tests related to the pull request. Put `{group}` and `{groups}` in the `test` or `fast_test`
+command where the runner expects its shard number and total, for example
+`vitest run --shard={group}/{groups}`. Forge fills these values for each job and uses `1` for both
+outside CI. Without a shard flag, each job repeats the same related tests; this is correct but
+slower. For a direct pytest command with pytest-split, Forge adds the split options automatically.
+When `groups` exceeds 1 and `test` has no `{group}` placeholder or automatic pytest split,
+`forge doctor` and the generated workflow each show one warning. They do not refuse or change
+the chosen groups. Set `groups` to 1 or add the runner's shard options to `test`.
+Init writes `groups = 1` for new and adopted repos. An upgrade adds no `groups` setting, so an
+existing repo with a direct pytest command and pytest-split keeps its six groups. Each group then
+runs its share of the related tests through `forge test --change`. The required `tests` check passes
+only when every job passes; branch protection keeps the same `tests` check.
+In CI mode, `forge.yml` also runs `forge test --full` once a day on the default branch and supports
+`workflow_dispatch`. To start a full run now, run `gh workflow run forge.yml --ref <default>`.
+Local mode has no scheduled job; when `forge next` says the daily run is due, run `forge test --full`
+in the main checkout when the machine is quiet. A green full run on the latest default-branch
+commit is required before pushing a release tag or accepting `client-signoff`. Everyday merges do
+not wait for it.
+A failed scheduled or manual full run appears in `forge next` with its failed test names.
 The required `forge-pr-check` fails a pull request from a branch Forge did not start.
 Before the first committed review, this check stays pending. A stale or blocked review still
 fails. New repos get this rule at init. Existing repos get it after upgrade and sync.
@@ -1388,13 +1869,14 @@ Redo the change with `forge fix start "<why>" --done "<done when>"` and copy the
 Forge's generated `forge/*` branches and doctor's dated `fix/forge-files-*` branches still use
 the normal check for a Forge record and a current review. New repos get this check at init;
 existing repos get it after upgrading Forge. Sync refreshes these instructions for both.
-When the pytest selection would cover more than a third of the Python test files (shared
-test inputs select them all), close skips the local run, says so in one line, and relies on
-the pull request's required checks. Bare `forge test` runs only the part's Tests column or
-the fix's touched test files, plus `always_test`, and says that CI runs the full suite.
-With no named tests it runs only `always_test`. An explicit `forge test --pytest <base>`
-keeps the full selection. New repos get this bound at init; existing repos get it after upgrade
-and sync.
+Each change runs its related tests, lint and type checks once. Close runs the full related-test
+selection, even when it covers more than a third of the Python test files. Shared test inputs
+select every test.
+Bare `forge test` keeps worker runs bounded: when the pytest selection would cover more than
+a third of the Python test files, it runs only the part's Tests column or the fix's touched test
+files, plus `always_test`, and says "The nightly full run covers the rest." With no named tests
+it runs only `always_test`. An explicit `forge test --pytest <base>` keeps the full selection.
+New repos get this bound at init; existing repos get it after upgrade and sync.
 Setup steps such as `uv sync` and `npm ci` keep their arguments; no filenames are appended.
 Forge's initial optional-package Node command uses the same selection once an app adds
 `package.json`; with no package it still runs nothing.
@@ -1405,24 +1887,28 @@ the item back to the worker.
 To include fast checks or a wider selection, set `fast_test` in `forge.toml` (in a fix), with
 `{base}` standing for the merge base with the default branch.
 Tests that check the whole repo, such as rules over every test file, name no changed file, so
-the pytest picker never picks them and they fail only in CI. List them in `always_test` in
+the pytest picker never picks them by default. List them in `always_test` in
 `forge.toml` (in a fix), as test files or pytest node IDs such as
 `tests/test_rules.py::test_1_rules`; it is empty by default. With the pytest picker, close runs
-them on every change that includes code or settings, beside the tests it picks, even when it
-leaves a large selection to CI. Docs-only changes skip these tests too.
-Close passes each entry to pytest itself, so it runs even outside the paths `test` names; an
-entry that runs no test, for example because `-k` deselects it, fails the run.
+them on every change that includes code or settings, beside the tests it picks. Docs-only changes
+skip these tests too.
+Forge passes each entry to pytest, so it runs even outside the paths `test` names. In a grouped
+run, pytest-split assigns each entry to one group; the other groups do not fail because they did
+not run it. A missing file or node still fails. In a grouped run, a mark or `-k` filter that
+removes an entry is not reported as missing. In a one-group run, an entry that runs no test, for
+example because `-k` deselects it, still fails the run.
 For pytest repos, set `fast_test` to `forge test --pytest {base}`. Forge's own repo uses this
 shipped picker too. It selects only changed test files and tests importing or naming a changed
 Python module by its dotted name or file path, such as `shop.prices` or `src/shop/prices.py`,
 including package-relative imports. Filenames and references to changed non-Python inputs
-do not select tests. After the run it names each changed Python file that no test names; tests
-that run the program from outside miss it locally and GitHub's checks cover it. It supports root packages and the `src/` layout, and pytest's
+do not select tests. After the run it names each changed Python file that no test names. Tests
+that run the program from outside miss it locally; the nightly full run covers it. It supports
+root packages and the `src/` layout, and pytest's
 `test_*.py` and `*_test.py` filenames. It excludes unrelated tests even when the full command names them explicitly. It keeps
 the full `test` command's setup and options, caps pytest-xdist at half the machine's cores even
 when pytest configuration supplies the worker count, and runs the
-full command when `conftest.py`, requirements or lock files change, except for close's
-large-selection skip and bare `forge test`'s bound above.
+full command when `conftest.py`, requirements or lock files change, except for bare `forge test`'s
+worker bound above.
 For `pyproject.toml`, every change triggers the full command unless all changed lines are
 known-harmless: `project.version` and `project.description`, or Hatch's packaged-file
 `include`, `exclude` and `force-include` settings under `tool.hatch.build` and its `wheel`
@@ -1449,13 +1935,16 @@ set (using pytest selection when supported), with `{base}` as the merge base wit
 It prints the report close keeps and always runs, including docs-only and
 uncommitted changes. If the remote default branch is missing it says to fetch it; if forge.toml
 names no test command it says so and exits successfully. Forge sets `PYTEST_XDIST_AUTO_NUM_WORKERS`
-and `FORGE_TEST_CPUS` to half this machine's cores for every test command, and to at most two in
-a worker's session, so a worker's own `pytest -n auto` also stays at two; a fixed `-n` in
+and `FORGE_TEST_CPUS` to the run's allocation from the shared process budget. A worker's session
+requests at most two processes, so its own `pytest -n auto` also stays at two. A fixed `-n` in
 its test command is capped with `--maxprocesses`, also outside a worker session.
 Direct Vitest and Jest commands use the same budget through `--maxWorkers`.
 This includes `npx` (with optional `--no-install`) and `npm exec`, `pnpm exec` or `yarn exec`.
-Commands with `--maxWorkers`, `--runInBand` or `-i` stay as written.
+Forge caps explicit `--maxWorkers` values to the run's allocation, including percentage values.
+Lower caps and Jest's serial options `--runInBand` and `-i` stay as written.
 Forge does not change npm, pnpm or yarn scripts to set their worker budget.
+It keeps existing `NODE_OPTIONS` and adds a Node preload that caps the actual runner's arguments,
+so package scripts keep their lifecycle hooks and share the same process budget.
 Those scripts can read `FORGE_TEST_CPUS`. If the test command runs Vitest through a script
 with Vitest projects, pass `--maxWorkers=${FORGE_TEST_CPUS:-2}` on the command line,
 for example `npm test -- --maxWorkers=${FORGE_TEST_CPUS:-2}`, instead of setting the cap
@@ -1470,8 +1959,9 @@ When `forge close` stops on a finding, open the line it cites, and the code that
 before anything else. The review's "What counts" list is the boundary, and the bar decides
 inside it: every finding at the bar (Proposed "fix now" or "fix this round") gets a fix round with
 `forge work <item>`, whatever its priority, unless close waits for the owner's choice or a decline
-makes it a follow-up. A finding below the bar never holds the work; close
-lists it in the pull request as a follow-up or lived with. Harm 4 or 5, or Gain 5 stops the work.
+makes it a follow-up. A finding below the bar holds only when it names a required `Must:` kind
+or this item's own Done-when. Close lists other findings in the pull request as follow-ups or
+lived with. Harm 4 or 5, or Gain 5 stops the work.
 Otherwise, Gain 4, or Gain 3 with Harm 3, holds the work only with Work 1 or 2. Every other
 Gain 3 or 4 finding becomes a follow-up fix, even at Work 1 or 2 when Gain is 3 and Harm is 1 or 2.
 Gain 1 or 2 is lived with. Never re-score a finding to change its
@@ -1529,8 +2019,9 @@ Each job that uses the step skips only its guarded steps.
 
 When `forge land` stops after its one fix round or on a check it cannot fix, judge
 them the same way: dismiss with evidence, or `forge work <item>`, then `forge land <item>` again.
-A failed check whose log names none of the change's files, after this machine's tests passed, is
-re-run once per pushed head instead of costing a fix round. When GitHub has not started that
+A failed CI job whose log names none of the change's files is re-run once per pushed head
+instead of costing a fix round. Forge's review check follows review recovery, never this retry.
+When GitHub has not started that
 re-run in time, land stops; run `forge land <item>` again, which closes again and runs a fix
 round if the check is still red.
 
@@ -1572,9 +2063,9 @@ alone and the others go on. The run ends with `Merged (n): ... · Ready to merge
 you (n): ...`, then each stopped change with its reason and next step: `forge land <item>` for
 its fix rounds, or, for a stopped change, close's own question and next step, which only the owner
 answers. Close waits for the owner's recorded choice. A failed
-check whose log names none of the change's files runs again once when the tests passed here; a
-second failure stops that change. Where a human merges, the run closes every change, holds none
-and merges none, and lists the ready ones oldest first, with stacked fixes after their bases,
+CI job whose log names none of the change's files runs again once; a second failure stops that
+change. Forge's review check follows review recovery instead. Where a human merges, the run closes
+every change, holds none and merges none, and lists the ready ones oldest first, with stacked fixes after their bases,
 with their pull request links: merge them
 in that order.
 
@@ -1714,8 +2205,9 @@ command as a close stop.
 
 When GitHub reports a clash during the check wait or refuses a merge because the branch is
 behind or conflicting, `forge merge` retries close and merge once. A mergeable pull request
-keeps its current head. When the branch is behind the default branch, `forge merge` and
-`forge land` say so in one line, run close again to merge the default branch and run the tests,
+keeps its current head when the default branch has not moved. When GitHub refuses a branch
+that fell behind during the merge, `forge merge` and `forge land` say so in one line,
+run close again to merge the default branch and run the tests,
 review and checks as close decides, then retry the merge. If that merge selects a different
 Forge release, close finishes under that release before the original command continues.
 A real conflict stops with close's existing resolution steps. Other GitHub refusals keep their

@@ -3,7 +3,7 @@
 name: explorer
 description: "Explores the codebase and traces dependencies without changing files."
 model: "claude-sonnet-5-5"
-effort: "xhigh"
+effort: "low"
 ---
 
 Answer the question you were handed by reading the repo. Change no files: report what you found with exact paths, symbols and evidence, and leave the change to a building role.
