@@ -1,6 +1,13 @@
 {
   "base": "0329ef48b574d5b21088aa22d8550f33b6ba76a0",
   "branch": "fix/lighter-test-setting",
+  "chat": {
+    "approval": null,
+    "claude": null,
+    "conversation": "01a190dc-e71d-7113-b649-258351569b1f",
+    "head": null,
+    "start": "84fcf1d717551f5e67cdf6cebf48ff19b84e2416"
+  },
   "done_when": "forge.toml's test command matches the tests job in .github/workflows/forge.yml: enable pnpm, install, lint, typecheck, the API unit tests and the build",
   "fix_kind": "mechanical",
   "kind": "fix",
