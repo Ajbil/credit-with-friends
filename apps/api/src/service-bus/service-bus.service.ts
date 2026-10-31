@@ -7,11 +7,15 @@ export type BusEvent = { id: string; version: number; timestampUtc: Date; initia
 type Requests = {
   'accounts.circleCreator': { input: string; output: CircleCreator };
   'accounts.displayNames': { input: string[]; output: MemberDisplayName[] };
+  'accounts.contactDetails': { input: string; output: { displayName: string; whatsappE164: string } | null };
   'circles.lockMemberCircles': { input: { memberId: string; tx: Prisma.TransactionClient }; output: { circleIds: string[] } };
   'circles.lockSharedMembership': { input: { circleId: string; viewerId: string; memberId: string; tx: Prisma.TransactionClient }; output: { shared: boolean; memberName?: string } };
   'circles.lockCoMembers': { input: { memberId: string; tx: Prisma.TransactionClient }; output: { circleIds: string[]; coMembers: Array<{ memberId: string; circles: Array<{ id: string; name: string }> }> } };
+  'circles.lockSharedCircles': { input: { memberId: string; otherMemberId: string; tx: Prisma.TransactionClient }; output: { circleIds: string[] } };
   'cards.memberCards': { input: { memberId: string; tx: Prisma.TransactionClient }; output: Array<{ id: string; bankId: string; bankName: string; type: string; variant: string | null }> };
   'cards.findHolders': { input: { memberIds: string[]; bankId: unknown; type: unknown; variant?: unknown; tx: Prisma.TransactionClient }; output: Array<{ memberId: string; id: string; bankId: string; bankName: string; type: string; variant: string | null; matchKind: 'matching' | 'similar' | 'unstated' | 'all' }> };
+  'cards.cardHolder': { input: { cardId: string; tx: Prisma.TransactionClient }; output: { memberId: string } | null };
+  'cards.lockCard': { input: { cardId: string; tx: Prisma.TransactionClient }; output: { memberId: string; bankName: string; type: string; variant: string | null } | null };
 };
 
 @Injectable()

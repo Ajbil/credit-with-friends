@@ -21,6 +21,7 @@ const INVITE_ERRORS: Record<string, { status: number; message: string }> = {
 };
 
 const CARD_ERRORS: Record<string, { status: number; message: string }> = {
+  CARD_UNAVAILABLE: { status: 404, message: 'This card is no longer available.' },
   CARD_BANK_UNKNOWN: { status: 400, message: 'Choose a bank from the list.' },
   CARD_VARIANT_TOO_LONG: { status: 400, message: 'Use at most 40 characters.' },
   CARD_VARIANT_UNSAFE: { status: 400, message: 'This looks like card details. Never enter card numbers, CVVs, expiry dates or OTPs.' },
