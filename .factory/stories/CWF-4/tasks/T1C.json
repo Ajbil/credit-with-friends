@@ -1,11 +1,19 @@
 {
   "branch": "task/CWF-4-T1C",
   "part_line_limit": 400,
-  "status": "started",
+  "round": 1,
+  "status": "working",
   "steps": [
     {
       "at": "2026-10-31T08:44:15.819603+00:00",
       "step": "start"
     }
-  ]
+  ],
+  "stuck": {
+    "close": null,
+    "head": "5f2e5ec49cf64ba1796a6923bf4beda1a42c4306",
+    "keys": {},
+    "round": null
+  },
+  "worker": "codex"
 }
