@@ -4,12 +4,57 @@
   "done_when": "forge.toml's test command matches the tests job in .github/workflows/forge.yml: enable pnpm, install, lint, typecheck, the API unit tests and the build",
   "fix_kind": "mechanical",
   "kind": "fix",
-  "status": "started",
+  "known": [
+    {
+      "area": "forge.toml",
+      "file": "forge.toml",
+      "gain": 4,
+      "harm": 2,
+      "line": 6,
+      "outcome": "open",
+      "reason": "",
+      "round": 1,
+      "security": false,
+      "title": "Gate: proof list",
+      "work": 1
+    }
+  ],
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "4295bf556b32c85b75d6f0b115044f6dca6a0ef2716c03e341337787d8e4a688",
+    "changed": "fc9d1c88a0bedacd0c56af7ee2eb5c0ab6c166ce181c4669104d7cb355d2de2b",
+    "commit": "61fa2ec9400bd073b023661208c8bfb58f71a31b",
+    "dismissals": [],
+    "findings": [
+      {
+        "body": "Gain 4, Work 1, Harm 2\nRaise: Gate. Case: normal use - close reviews the changed test command without a mapped proof for the Done-when item. The supplied proof list is `missing`, so it identifies no check that verifies the forge.toml command against the tests job.",
+        "file": "forge.toml",
+        "gain": 4,
+        "harm": 2,
+        "line": 6,
+        "priority": "P1",
+        "title": "Gate: proof list",
+        "work": 1
+      }
+    ],
+    "id": "0c307354-7b15-4508-bef6-0fad246ea3b7",
+    "status": "blocked"
+  },
+  "status": "hotspot",
   "steps": [
     {
       "at": "2026-10-31T06:54:47.369930+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-10-31T06:59:29.041002+00:00",
+      "step": "review"
     }
   ],
+  "stop": {
+    "at": "2026-10-31T06:59:29.192580+00:00",
+    "file": "forge.toml",
+    "wait_id": "7557b572-fbe7-4823-a182-03fc40c71835"
+  },
   "why": "The lighter laptop test command reached the workflow but not forge.toml, so close still runs the whole website suite on this laptop"
 }
