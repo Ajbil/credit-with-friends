@@ -1,5 +1,12 @@
 {
   "branch": "task/CWF-4-T4A",
+  "chat": {
+    "approval": "3c9692665316a7c2ece1317a0e8ed2c073d6c3b787706dcd412bae014c3da8ad",
+    "claude": null,
+    "conversation": "01a19350-4f5d-7f82-9423-ac1596d8dcbe",
+    "head": null,
+    "start": "42833f30b10a366712480e5ff60849f87bad5651"
+  },
   "part_line_limit": 400,
   "round": 1,
   "status": "working",
