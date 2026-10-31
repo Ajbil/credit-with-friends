@@ -17,7 +17,10 @@
   },
   "pnpm": {
     "overrides": {
-      "deepmerge-ts": "^8.0.0"
+      "deepmerge-ts": "^8.0.0",
+      "express>body-parser": "^2.4.0",
+      "@nestjs/swagger>js-yaml": "^5.4.1",
+      "@nestjs/platform-express>multer": "^2.5.0"
     }
   },
   "devDependencies": {

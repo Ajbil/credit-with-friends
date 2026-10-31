@@ -102,6 +102,7 @@ Do not install Mainline or start OAuth sign-in for those requests. An explicit r
 
 ## Known traps
 
+- Before a part is ready, this laptop runs only lint, typecheck, API unit tests and the build; GitHub's checks job proves the website, browser and database suites, so builders run changed test files individually.
 - A new API refusal code needs one entry in the code map in
   `apps/api/src/common/api/api-exception.filter.ts`, or the client gets the generic "This request
   is not allowed." Any part that adds a refusal lists that file in its Scope. (CWF-7: removals and
