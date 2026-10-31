@@ -40,7 +40,7 @@
     "id": "0c307354-7b15-4508-bef6-0fad246ea3b7",
     "status": "blocked"
   },
-  "status": "hotspot",
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-31T06:54:47.369930+00:00",
@@ -53,8 +53,12 @@
   ],
   "stop": {
     "at": "2026-10-31T06:59:29.192580+00:00",
+    "by": "owner",
+    "choice": "more",
     "file": "forge.toml",
-    "wait_id": "7557b572-fbe7-4823-a182-03fc40c71835"
+    "reason": "Owner chose the lighter laptop test command; one more round now that the proof list is recorded",
+    "wait_id": "7557b572-fbe7-4823-a182-03fc40c71835",
+    "worker_round": null
   },
   "why": "The lighter laptop test command reached the workflow but not forge.toml, so close still runs the whole website suite on this laptop"
 }
