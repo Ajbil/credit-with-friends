@@ -8,8 +8,8 @@
       "text": "Git hooks fail when sourcing the generated shell script",
       "from": "blocking",
       "item": "upgrade-forge-to-v1-2-25",
-      "status": "open",
-      "closed_by": null
+      "status": "done",
+      "closed_by": "dismissed"
     }
   ]
 }
