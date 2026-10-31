@@ -14,7 +14,7 @@
       "gain": 3,
       "harm": 3,
       "line": 1,
-      "outcome": "open",
+      "outcome": "fixed in round 2",
       "reason": "",
       "round": 1,
       "security": false,
@@ -38,37 +38,16 @@
   "part_line_limit": 400,
   "review": {
     "blocking_level": "P1",
-    "branch_diff": "9a5f7f02166dc9622798040e819636290760989da8f5f828c8b1938b2ea07af9",
-    "changed": "ef1bca3bae8eec025a54ab304938f8d2e455ff0a385c78dba3354fc5f96f2bb4",
-    "commit": "b05a4d4d44c84a6da8c8c8d9ada530e847edb42f",
+    "branch_diff": "b4084ccf8c7ef43c6817b7ffa6e803238bee3cad11ee5b5a4e9adf75d2baca73",
+    "changed": "932ac9c66e661db1058fe6e0cc424d8b975d54f6abe3e97a86c5f29e317cd7e7",
+    "commit": "e2b33df94cc3d5f689213003f6af10f70a77541e",
     "dismissals": [],
-    "findings": [
-      {
-        "body": "Gain 3, Work 1, Harm 3\nRaise: Gate\nCase: normal use - a developer generates a client from the committed OpenAPI file and runs the API locally. The changed `servers[0].url` points to `http://localhost:43017`, while the integration setup configures the API origin as `http://localhost:3000` and starts its test server on an ephemeral port. The generated client targets a port that will ordinarily be closed. The standards require API documentation to stay true to the running API.",
-        "file": "apps/api/openapi.json",
-        "gain": 3,
-        "harm": 3,
-        "line": 1,
-        "priority": "P1",
-        "title": "Standard: keep the committed OpenAPI server URL usable",
-        "work": 1
-      },
-      {
-        "body": "Gain 2, Work 5, Harm 2\nThis change adds the contact API but no browser controls. The search result and member card buttons, safety reminder, same-tab navigation, unavailable-card alert, failed-press retry, and browser proof remain for T4B, which the supplied task guidance assigns to the web work.",
-        "file": "apps/api/src/modules/search/contacts.controller.ts",
-        "gain": 2,
-        "harm": 2,
-        "line": 21,
-        "priority": "P2",
-        "title": "Later: T4B WhatsApp controls and refusal states",
-        "work": 5
-      }
-    ],
-    "id": "79d04d84-1b73-4b73-ad07-5f776ff7dd2d",
-    "status": "blocked"
+    "findings": [],
+    "id": "4fa4b576-1dbd-4490-bd0e-e02a784d87cd",
+    "status": "clean"
   },
   "round": 2,
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-31T08:44:15.819603+00:00",
@@ -76,6 +55,10 @@
     },
     {
       "at": "2026-10-31T12:33:29.880390+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-10-31T12:39:04.562251+00:00",
       "step": "review"
     }
   ],
