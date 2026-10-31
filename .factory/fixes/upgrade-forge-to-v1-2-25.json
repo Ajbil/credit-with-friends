@@ -1,0 +1,66 @@
+{
+  "base": "0b4d93bc697e8830323ea3e34cf780ae90fd9b1e",
+  "branch": "fix/upgrade-forge-to-v1-2-25",
+  "done_when": "This repo pins and runs Forge v1.2.25.",
+  "kind": "fix",
+  "known": [
+    {
+      "area": ".forge/hooks.sh",
+      "file": ".forge/hooks.sh",
+      "gain": null,
+      "harm": null,
+      "line": 2,
+      "outcome": "follow-up",
+      "reason": "Human accepted the remaining finding: \ufeffThe owner accepts: .forge/hooks.sh is committed with LF line endings (git ls-files --eol shows i/lf); the CRLF came from a Windows working copy, and GitHub's Linux checks pass.",
+      "round": 1,
+      "security": false,
+      "title": "Git hooks fail when sourcing the generated shell script",
+      "work": null
+    }
+  ],
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "43ab78b50759b7d87cf4f33562953a2cd564f2785082fef37e5c58e549487736",
+    "changed": "35267287a70e3db24d9de86b41f4edde28bc6de09ea1c28e57e4688acccf5957",
+    "commit": "55ae26ef406e47c04513de6485b51417863d880f",
+    "dismissals": [
+      {
+        "accepted": true,
+        "because": "Human accepted the remaining finding: \ufeffThe owner accepts: .forge/hooks.sh is committed with LF line endings (git ls-files --eol shows i/lf); the CRLF came from a Windows working copy, and GitHub's Linux checks pass.",
+        "finding": 1
+      }
+    ],
+    "findings": [
+      {
+        "body": "chunk 3/3:\n\nThe replacement `.forge/hooks.sh` has CRLF line endings. On Unix, the carriage return becomes part of shell keywords such as `do`, so sourcing the file fails with a syntax error. The normal commit hook path cannot run until this script uses LF line endings.",
+        "file": ".forge/hooks.sh",
+        "line": 2,
+        "priority": "P1",
+        "title": "Git hooks fail when sourcing the generated shell script"
+      }
+    ],
+    "id": "57f8dd3f-d792-4eb1-83d4-3f91a0220de1",
+    "status": "clean"
+  },
+  "status": "waiting for checks",
+  "steps": [
+    {
+      "at": "2026-10-31T09:59:29.102929+00:00",
+      "step": "start"
+    },
+    {
+      "at": "2026-10-31T12:08:55.318630+00:00",
+      "step": "review"
+    }
+  ],
+  "stop": {
+    "at": "2026-10-31T12:08:55.567352+00:00",
+    "by": "owner",
+    "choice": "accept",
+    "file": ".forge/hooks.sh",
+    "reason": "\ufeffThe owner accepts: .forge/hooks.sh is committed with LF line endings (git ls-files --eol shows i/lf); the CRLF came from a Windows working copy, and GitHub's Linux checks pass.",
+    "wait_id": "90d511dd-fe19-4275-bad8-db3acb6ea00b",
+    "worker_round": null
+  },
+  "why": "Upgrade Forge to v1.2.25."
+}
