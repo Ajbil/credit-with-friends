@@ -1,0 +1,15 @@
+{
+  "base": "0329ef48b574d5b21088aa22d8550f33b6ba76a0",
+  "branch": "fix/lighter-test-setting",
+  "done_when": "forge.toml's test command matches the tests job in .github/workflows/forge.yml: enable pnpm, install, lint, typecheck, the API unit tests and the build",
+  "fix_kind": "mechanical",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-10-31T06:54:47.369930+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "The lighter laptop test command reached the workflow but not forge.toml, so close still runs the whole website suite on this laptop"
+}
