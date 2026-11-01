@@ -9,7 +9,7 @@
   },
   "part_line_limit": 400,
   "round": 2,
-  "status": "hotspot",
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-10-31T18:51:02.331480+00:00",
@@ -17,10 +17,14 @@
     }
   ],
   "stop": {
+    "by": "owner",
+    "choice": "split",
     "question": "Find a card holder and message them on WhatsApp: Web: find a card is stuck. It should deliver: The regenerated client; the \"Find a card\" button on home; the search screen with the picker, type, variant, results, groups, \"Show more\", no one yet, refusals and the failed state; returning from WhatsApp to the same results\nIt changes 491 lines outside tests, over its limit of 400.\nThe worker tried: Add card search from home.\nChoose one: switch this item to Claude; keep Codex for one more round; or narrow or split it.",
+    "reason": "\ufeffThe owner chose split: the regenerated API client (apps/web/src/api/generated.ts, 277 generated lines) goes first as its own small part, so the hand-written search screen fits under the size limit.",
     "size": true,
     "tool": "codex",
-    "wait_id": "29a3daab-52e0-47b2-930b-b33891eca408"
+    "wait_id": "29a3daab-52e0-47b2-930b-b33891eca408",
+    "worker_round": 2
   },
   "stuck": {
     "close": null,
