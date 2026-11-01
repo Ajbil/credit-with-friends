@@ -89,7 +89,6 @@ The approved message names the app so the person knows where it came from; T1C u
 spec's template line to match it.
 
 ### Done-when details
-
 1. **Search.**
    - `POST /api/v1/searches?page=&limit=` with body `{ bankId, type, variant? }`, where `type` is
      `credit`, `debit` or `any`. A POST keeps the variant out of addresses, proxy logs and browser
@@ -126,6 +125,7 @@ spec's template line to match it.
      is either from before the change committed or excludes the person. Web tests (T4A) for the
      form, both brand-card and bank picks, the result list, "Show more", the failed state with a
      retry, and returning from WhatsApp to the same results without a new search request.
+   Owner's split choice for T4A: ﻿The owner chose split: the regenerated API client (apps/web/src/api/generated.ts, 277 generated lines) goes first as its own small part, so the hand-written search screen fits under the size limit.
 2. **Variant groups, no one yet, refusals.**
    - **The variant-match helper, one pure function in the cards module with unit tests:**
      normalise both the entry and each card's variant to lower case with every character that is
@@ -162,6 +162,7 @@ spec's template line to match it.
      unstated cards in `matching` only with all three cards shown, and each refusal through the
      API. Web tests (T4A): the three group headings, the no-one-yet state with nothing else, each
      refusal beside its field.
+   Owner's split choice for T4A: ﻿The owner chose split: the regenerated API client (apps/web/src/api/generated.ts, 277 generated lines) goes first as its own small part, so the hand-written search screen fits under the size limit.
 3. **Message on WhatsApp.**
    - `POST /api/v1/contacts` with body `{ cardId }` returns `{ whatsappUrl }`:
      `https://wa.me/<digits of the holder's current E.164 number>?text=<encoded message>`, the
@@ -245,6 +246,7 @@ spec's template line to match it.
 | T1B | Search API | The searches endpoint with the forgiving variant match and its matching, similar and not-stated groups, paging and refusals; the circles module's co-members lock and the cards module's holder lookup through the bus; the search event | 1, 2 | `apps/api/src/modules/search/`, `apps/api/src/modules/circles/member-circles/`, `apps/api/src/modules/circles/circles.module.ts`, `apps/api/src/modules/cards/`, `apps/api/src/service-bus/service-bus.service.ts`, `apps/api/openapi.json`, `docs/architecture/13-privacy-deletion-jobs.md`, `docs/specs/find-and-contact.md`, `docs/architecture/11-data-model.md`, `apps/api/test/search.integration.spec.ts` | `apps/api/src/modules/search/**/*.spec.ts`, `apps/api/src/modules/circles/member-circles/**/*.spec.ts`, `apps/api/src/modules/cards/**/*.spec.ts`, `apps/api/test/search.integration.spec.ts` | T1A | no | |
 | T1C | Contact API | The contacts endpoint with the WhatsApp link, the no-longer-available refusal, the shared-circles lock, the card lock and the contact details request through the bus, the tap event, and the spec's message line | 3, 4 | `apps/api/src/modules/search/`, `apps/api/src/modules/circles/member-circles/`, `apps/api/src/modules/circles/circles.module.ts`, `apps/api/src/modules/cards/`, `apps/api/src/modules/accounts/`, `apps/api/src/service-bus/service-bus.service.ts`, `apps/api/src/common/api/api-exception.filter.ts`, `apps/api/openapi.json`, `docs/specs/find-and-contact.md`, `apps/api/test/contact.integration.spec.ts` | `apps/api/src/modules/search/**/*.spec.ts`, `apps/api/src/modules/accounts/**/*.spec.ts`, `apps/api/test/contact.integration.spec.ts` | T1B | no | |
 | T4A | Web: find a card | The regenerated client; the "Find a card" button on home; the search screen with the picker, type, variant, results, groups, "Show more", no one yet, refusals and the failed state; returning from WhatsApp to the same results | 1, 2 | `apps/web/src/api/generated.ts`, `apps/web/src/main.tsx`, `apps/web/src/routes/circles/home/`, `apps/web/src/routes/search/`, `apps/web/src/routes/cards/add/card-form.tsx`, `apps/web/e2e/search.spec.ts` | `apps/web/src/routes/search/**/*.test.tsx`, `apps/web/src/routes/circles/home/**/*.test.tsx`, `apps/web/e2e/search.spec.ts` | T1C | yes | |
+| T4A-FOLLOWUP | Follow-up for Web: find a card | ﻿The owner chose split: the regenerated API client (apps/web/src/api/generated.ts, 277 generated lines) goes first as its own small part, so the hand-written search screen fits under the size limit. | 1, 2 | `apps/web/src/api/generated.ts`, `apps/web/src/main.tsx`, `apps/web/src/routes/circles/home/`, `apps/web/src/routes/search/`, `apps/web/src/routes/cards/add/card-form.tsx`, `apps/web/e2e/search.spec.ts` | `apps/web/src/routes/search/**/*.test.tsx`, `apps/web/src/routes/circles/home/**/*.test.tsx`, `apps/web/e2e/search.spec.ts` | T4A | yes |  |
 | T4B | Web: message on WhatsApp | The button with its busy state on search results and on the member cards screen, the reminder above the buttons, and the no-longer-available message | 3, 4 | `apps/web/src/routes/search/`, `apps/web/src/routes/circles/member/`, `apps/web/src/components/`, `apps/web/e2e/contact.spec.ts` | `apps/web/src/routes/search/**/*.test.tsx`, `apps/web/src/routes/circles/member/**/*.test.tsx`, `apps/web/e2e/contact.spec.ts` | T4A | yes | |
 | T7 | Live check | A CWF-4 production check section in the runbook, filled in from your live walk-through, with the timed run | 6 | `docs/architecture/deployment.md` | `docs/architecture/deployment.md` (the recorded production check) | T4B | yes | |
 
