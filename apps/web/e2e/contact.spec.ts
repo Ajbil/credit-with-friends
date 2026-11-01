@@ -81,7 +81,7 @@ async function expectReminderAboveButton(page: Page, button: ReturnType<Page['ge
 }
 
 // The real API returns every successful contact link. Only failed requests and the external navigation are intercepted.
-async function exercisePress(page: Page, button: ReturnType<Page['getByRole']>, expectedUrl: string) {
+async function exercisePress(page: Page, button: ReturnType<Page['getByRole']>, keyboardStart: ReturnType<Page['getByRole']>, expectedUrl: string) {
   const navigations: string[] = [];
   const pageCount = page.context().pages().length;
   await page.context().route('https://wa.me/**', (route) => {
@@ -110,10 +110,12 @@ async function exercisePress(page: Page, button: ReturnType<Page['getByRole']>, 
     await expect(button).toBeEnabled();
     await expect(page.getByRole('alert')).toHaveText(RETRY);
     expect(navigations).toEqual([]);
-    // A real keyboard move sets :focus-visible after the preceding pointer taps.
+    // Start before the action so Tab enters it, independent of pointer focus history.
+    await keyboardStart.focus();
+    await expect(keyboardStart).toBeFocused();
     await page.keyboard.press('Tab');
-    await page.keyboard.press('Shift+Tab');
     await expect(button).toBeFocused();
+    expect(await button.evaluate((element) => element.matches(':focus-visible'))).toBe(true);
     expect(await button.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe('none');
     await page.keyboard.press('Enter');
     await requested;
@@ -142,7 +144,7 @@ test('done-when-3: a search result checks its card, retries failed presses and o
     await expectReminderAboveButton(page, button);
     await captureWidths(page, 'contact-search-results');
     const message = 'Hi Meera Shah, I saw on CreditWithFriends (creditwithfriends.in) that you have an HDFC Bank credit card, Regalia Gold. Do you have a moment? I need it for an offer.';
-    await exercisePress(page, button, `https://wa.me/919876543210?text=${encodeURIComponent(message)}`);
+    await exercisePress(page, button, results.getByRole('button', { name: 'Change search', exact: true }), `https://wa.me/919876543210?text=${encodeURIComponent(message)}`);
   } finally { await holder.close(); }
 });
 
@@ -160,7 +162,7 @@ test('done-when-3: a circle member card checks its card and opens WhatsApp witho
     await expectReminderAboveButton(page, button);
     await captureWidths(page, 'contact-member-cards');
     const message = 'Hi Meera Shah, I saw on CreditWithFriends (creditwithfriends.in) that you have an HDFC Bank credit card. Do you have a moment? I need it for an offer.';
-    await exercisePress(page, button, `https://wa.me/919876543210?text=${encodeURIComponent(message)}`);
+    await exercisePress(page, button, page.getByRole('link', { name: 'Back to circle', exact: true }), `https://wa.me/919876543210?text=${encodeURIComponent(message)}`);
   } finally { await holder.close(); }
 });
 
