@@ -1,8 +1,9 @@
 .circles-home{--circle-surface:#fffdf7;--circle-line:#b9cebd;--circle-input-border:#547064;--circle-muted:#3b594c;--circle-accent:#175d47;--circle-ease-out:cubic-bezier(0.23,1,0.32,1);width:min(900px,calc(100% - 40px));margin:56px auto 90px}
-.circles-header{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:38px}
+.circles-header{display:flex;align-items:flex-start;flex-direction:column;gap:24px;margin-bottom:38px}
 .circles-header h1{font-size:clamp(2.8rem,7vw,4.4rem);margin-bottom:12px;text-wrap:balance}
 .circles-header p{color:var(--circle-muted);margin-bottom:0}
 .circles-nav{display:flex;flex-wrap:wrap;gap:12px;flex:none}
+@media(max-width:740px){.circles-nav{width:100%}.circles-nav>.button--primary{width:100%}}
 .circles-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
 .circles-empty{padding:24px 0;border-top:1px solid var(--circle-line)}
 .circles-empty p,.circles-list-region p{color:var(--circle-muted)}

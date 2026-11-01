@@ -16,6 +16,7 @@ import { AddCardPage } from './routes/cards/add/add-card-page';
 import { CardsWelcomePage } from './routes/cards/welcome/cards-welcome-page';
 import { EditCardPage } from './routes/cards/edit/edit-card-page';
 import { MemberCardsPage } from './routes/circles/member/member-cards-page';
+import { SearchPage } from './routes/search/search-page';
 import './style.css';
 
 const rootRoute = createRootRoute({ component: () => <Outlet /> });
@@ -30,11 +31,12 @@ const circleRoute = createRoute({ getParentRoute: () => rootRoute, path: '/circl
 const memberCardsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/circles/$circleId/members/$memberId/cards', component: MemberCardsPage });
 const joinRoute = createRoute({ getParentRoute: () => rootRoute, path: '/circles/join/$code', component: JoinPage });
 const cardsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/cards', component: CardsPage });
+const searchRoute = createRoute({ getParentRoute: () => rootRoute, path: '/search', component: SearchPage });
 const addCardRoute = createRoute({ getParentRoute: () => rootRoute, path: '/cards/add', component: AddCardPage });
 const cardsWelcomeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/cards/welcome', component: CardsWelcomePage });
 const editCardRoute = createRoute({ getParentRoute: () => rootRoute, path: '/cards/$cardId/edit', component: EditCardPage });
 const futureRoute = createRoute({ getParentRoute: () => rootRoute, path: '$', component: SignInPage });
-const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute, onboardingRoute, notOpenRoute, profileRoute, noticeRoute, privacyRoute, sessionRoute, circleRoute, memberCardsRoute, joinRoute, cardsRoute, addCardRoute, cardsWelcomeRoute, editCardRoute, futureRoute]) });
+const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute, onboardingRoute, notOpenRoute, profileRoute, noticeRoute, privacyRoute, sessionRoute, circleRoute, memberCardsRoute, joinRoute, cardsRoute, searchRoute, addCardRoute, cardsWelcomeRoute, editCardRoute, futureRoute]) });
 declare module '@tanstack/react-router' { interface Register { router: typeof router } }
 
 createRoot(document.getElementById('root')!).render(

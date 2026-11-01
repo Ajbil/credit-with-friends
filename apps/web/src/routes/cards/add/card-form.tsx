@@ -13,6 +13,34 @@ export function CardReminder() {
   return <p className="card-reminder">Never enter card numbers, CVV, expiry dates or OTPs.</p>;
 }
 
+type BankSelection = { pickerValue: string; bankId: string; type?: AddCardDto['type']; variant?: string };
+
+// The add and search forms share the same native picker and release-pinned shortcuts.
+export function BankCardPicker({ banks, value, onChange, id, label, disabled, error }: {
+  banks: BanksDataDto;
+  value: string;
+  onChange: (selection: BankSelection) => void;
+  id: string;
+  label: string;
+  disabled: boolean;
+  error?: string;
+}) {
+  const bankNames = new Map(banks.items.map((bank) => [bank.id, bank.displayName]));
+  return <div className="card-add-field">
+    <label htmlFor={id}>{label}</label>
+    <select id={id} value={value} disabled={disabled} required aria-invalid={!!error} aria-describedby={error ? `${id}-error` : undefined} onChange={(event) => {
+      const pickerValue = event.target.value;
+      const shortcut = CARD_SHORTCUTS.find((card) => `${card.brand}:${card.bankId}` === pickerValue);
+      onChange({ pickerValue, bankId: shortcut?.bankId ?? pickerValue, ...(shortcut ? { type: shortcut.type, variant: shortcut.variant } : {}) });
+    }}>
+      <option value="">Choose a bank or brand card</option>
+      <optgroup label="Popular brand cards">{CARD_SHORTCUTS.filter((card) => bankNames.has(card.bankId)).map((card) => <option key={`${card.brand}:${card.bankId}`} value={`${card.brand}:${card.bankId}`}>{card.brand} ({bankNames.get(card.bankId)})</option>)}</optgroup>
+      <optgroup label="Banks">{banks.items.map((bank) => <option key={bank.id} value={bank.id}>{bank.displayName}</option>)}</optgroup>
+    </select>
+    {error && <p id={`${id}-error`} className="field-error" role="alert">{error}</p>}
+  </div>;
+}
+
 export function CardForm({ banks, values, onChange, onSubmit, saving, error, label, disabled = false }: {
   banks: UseQueryResult<BanksDataDto>;
   values: CardValues;
@@ -29,7 +57,6 @@ export function CardForm({ banks, values, onChange, onSubmit, saving, error, lab
     ? Object.fromEntries((error.failure.details?.fieldErrors ?? []).filter(({ field }) => ['bankId', 'type', 'variant'].includes(field)).map(({ field, reason }) => [field, reason]))
     : {};
   const hasFieldErrors = Object.keys(fieldErrors).length > 0;
-  const bankNames = new Map(banks.data?.items.map((bank) => [bank.id, bank.displayName]));
 
   useEffect(() => {
     if (ready && focusBankAfterRetry.current) {
@@ -49,19 +76,7 @@ export function CardForm({ banks, values, onChange, onSubmit, saving, error, lab
         <h2>We couldn’t load the banks</h2><p>Check your connection and try again.</p>
         <Button type="button" variant="quiet" disabled={banks.isFetching} onClick={() => { focusBankAfterRetry.current = true; banks.refetch(); }}>{banks.isFetching ? 'Trying again…' : 'Try again'}</Button>
       </div> : <>
-        <div className="card-add-field">
-          <label htmlFor="card-bank">Bank</label>
-          <select id="card-bank" value={values.pickerValue} disabled={saving || disabled} required aria-invalid={!!fieldErrors.bankId} aria-describedby={fieldErrors.bankId ? 'card-bank-error' : undefined} onChange={(event) => {
-            const pickerValue = event.target.value;
-            const shortcut = CARD_SHORTCUTS.find((card) => `${card.brand}:${card.bankId}` === pickerValue);
-            onChange({ ...values, pickerValue, bankId: shortcut?.bankId ?? pickerValue, ...(shortcut ? { type: shortcut.type, variant: shortcut.variant } : {}) });
-          }}>
-            <option value="">Choose a bank or brand card</option>
-            <optgroup label="Popular brand cards">{CARD_SHORTCUTS.filter((card) => bankNames.has(card.bankId)).map((card) => <option key={`${card.brand}:${card.bankId}`} value={`${card.brand}:${card.bankId}`}>{card.brand} ({bankNames.get(card.bankId)})</option>)}</optgroup>
-            <optgroup label="Banks">{banks.data.items.map((bank) => <option key={bank.id} value={bank.id}>{bank.displayName}</option>)}</optgroup>
-          </select>
-          {fieldErrors.bankId && <p id="card-bank-error" className="field-error" role="alert">{fieldErrors.bankId}</p>}
-        </div>
+        <BankCardPicker banks={banks.data} value={values.pickerValue} onChange={(selection) => onChange({ ...values, ...selection })} id="card-bank" label="Bank" disabled={saving || disabled} error={fieldErrors.bankId} />
         <div className="card-add-field">
           <label htmlFor="card-type">Card type</label>
           <select id="card-type" value={values.type} disabled={saving || disabled} aria-invalid={!!fieldErrors.type} aria-describedby={fieldErrors.type ? 'card-type-error' : undefined} onChange={(event) => onChange({ ...values, type: event.target.value === 'debit' ? 'debit' : 'credit' })}>

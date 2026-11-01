@@ -54,6 +54,7 @@ export function CirclesHomePage() {
     <header className="circles-header">
       <div><h1>Your circles</h1><p>The groups of people you trust.</p></div>
       <nav className="circles-nav" aria-label="Your account">
+        <Link className="button button--primary" to="/search">Find a card</Link>
         <Link className="button button--quiet" to="/cards">Your cards</Link>
         <Link className="button button--quiet" to="/profile">Your profile</Link>
       </nav>
