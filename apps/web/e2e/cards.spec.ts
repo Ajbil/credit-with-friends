@@ -20,6 +20,8 @@ test('done-when-1: your cards works without a circle, explains an empty list and
   const cardsLink = page.getByRole('link', { name: 'Your cards', exact: true });
   await page.getByRole('link', { name: 'CreditWithFriends home' }).focus();
   await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Find a card', exact: true })).toBeFocused();
+  await page.keyboard.press('Tab');
   await expect(cardsLink).toBeFocused();
   await page.screenshot({ path: test.info().outputPath('cards-home-mobile.png'), fullPage: true });
   const mobileViewport = page.viewportSize()!;

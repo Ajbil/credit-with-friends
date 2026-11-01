@@ -734,6 +734,121 @@ export interface MemberCardsResponseDto {
   error: MemberCardsResponseDtoError;
 }
 
+export type SearchCriteriaDtoType =
+  (typeof SearchCriteriaDtoType)[keyof typeof SearchCriteriaDtoType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SearchCriteriaDtoType = {
+  credit: 'credit',
+  debit: 'debit',
+  any: 'any',
+} as const;
+
+export interface SearchCriteriaDto {
+  /** Bank id from the bank list. */
+  bankId: string;
+  type: SearchCriteriaDtoType;
+  /** @maxLength 40 */
+  variant?: string;
+}
+
+export interface SearchCircleDto {
+  id: string;
+  name: string;
+}
+
+export type SearchCardDtoType =
+  (typeof SearchCardDtoType)[keyof typeof SearchCardDtoType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SearchCardDtoType = {
+  credit: 'credit',
+  debit: 'debit',
+} as const;
+
+export interface SearchCardDto {
+  id: string;
+  bankId: string;
+  bankName: string;
+  type: SearchCardDtoType;
+  /** @nullable */
+  variant: string | null;
+}
+
+export type SearchPersonDtoGroup =
+  (typeof SearchPersonDtoGroup)[keyof typeof SearchPersonDtoGroup];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SearchPersonDtoGroup = {
+  matching: 'matching',
+  similar: 'similar',
+  unstated: 'unstated',
+  all: 'all',
+} as const;
+
+export interface SearchPersonDto {
+  memberId: string;
+  displayName: string;
+  group: SearchPersonDtoGroup;
+  circles: SearchCircleDto[];
+  cards: SearchCardDto[];
+}
+
+export interface SearchesPaginationDto {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface SearchesDataDto {
+  items: SearchPersonDto[];
+  pagination: SearchesPaginationDto;
+}
+
+/**
+ * @nullable
+ */
+export type SearchesResponseDtoError =
+  | (typeof SearchesResponseDtoError)[keyof typeof SearchesResponseDtoError]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SearchesResponseDtoError = {} as const;
+
+export interface SearchesResponseDto {
+  success: boolean;
+  data: SearchesDataDto;
+  /** @nullable */
+  error: SearchesResponseDtoError;
+}
+
+export interface ContactCardDto {
+  /** The holder card to contact about. */
+  cardId: string;
+}
+
+export interface ContactDataDto {
+  /** WhatsApp chat link with an editable prefilled message. */
+  whatsappUrl: string;
+}
+
+/**
+ * @nullable
+ */
+export type ContactResponseDtoError =
+  (typeof ContactResponseDtoError)[keyof typeof ContactResponseDtoError] | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ContactResponseDtoError = {} as const;
+
+export interface ContactResponseDto {
+  success: boolean;
+  data: ContactDataDto;
+  /** @nullable */
+  error: ContactResponseDtoError;
+}
+
 export interface HealthDataDto {
   /** Indicates that the API process is ready. */
   status: string;
@@ -773,6 +888,17 @@ export type ListCirclesControllerListParams = {
 export type BanksControllerListParams = {
   /**
    * Items per page, at most 100.
+   */
+  limit?: number;
+  /**
+   * Page number, starting at 1.
+   */
+  page?: number;
+};
+
+export type SearchesControllerSearchParams = {
+  /**
+   * People per page, at most 100.
    */
   limit?: number;
   /**
@@ -2430,6 +2556,157 @@ export const memberCardsControllerView = async (
     {
       ...options,
       method: 'GET',
+    },
+  );
+};
+
+/**
+ * Searches current shared circles. The variant is accepted only in the request body and is never recorded.
+ * @summary Find card holders in your circles
+ */
+export type searchesControllerSearchResponse200 = {
+  data: SearchesResponseDto;
+  status: 200;
+};
+
+export type searchesControllerSearchResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type searchesControllerSearchResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type searchesControllerSearchResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type searchesControllerSearchResponse429 = {
+  data: ApiErrorResponseDto;
+  status: 429;
+};
+
+export type searchesControllerSearchResponseSuccess =
+  searchesControllerSearchResponse200 & {
+    headers: Headers;
+  };
+export type searchesControllerSearchResponseError = (
+  | searchesControllerSearchResponse400
+  | searchesControllerSearchResponse401
+  | searchesControllerSearchResponse403
+  | searchesControllerSearchResponse429
+) & {
+  headers: Headers;
+};
+
+export type searchesControllerSearchResponse =
+  | searchesControllerSearchResponseSuccess
+  | searchesControllerSearchResponseError;
+
+export const getSearchesControllerSearchUrl = (
+  params?: SearchesControllerSearchParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/searches?${stringifiedParams}`
+    : `/api/v1/searches`;
+};
+
+export const searchesControllerSearch = async (
+  searchCriteriaDto: SearchCriteriaDto,
+  params?: SearchesControllerSearchParams,
+  options?: RequestInit,
+): Promise<searchesControllerSearchResponse> => {
+  return apiFetch<searchesControllerSearchResponse>(
+    getSearchesControllerSearchUrl(params),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(searchCriteriaDto),
+    },
+  );
+};
+
+/**
+ * Checks that the card and a shared circle are still available, then returns a chat link. The app sends no message.
+ * @summary Open WhatsApp for a current card holder
+ */
+export type contactsControllerContactResponse201 = {
+  data: ContactResponseDto;
+  status: 201;
+};
+
+export type contactsControllerContactResponse400 = {
+  data: ApiErrorResponseDto;
+  status: 400;
+};
+
+export type contactsControllerContactResponse401 = {
+  data: ApiErrorResponseDto;
+  status: 401;
+};
+
+export type contactsControllerContactResponse403 = {
+  data: ApiErrorResponseDto;
+  status: 403;
+};
+
+export type contactsControllerContactResponse404 = {
+  data: ApiErrorResponseDto;
+  status: 404;
+};
+
+export type contactsControllerContactResponse429 = {
+  data: ApiErrorResponseDto;
+  status: 429;
+};
+
+export type contactsControllerContactResponseSuccess =
+  contactsControllerContactResponse201 & {
+    headers: Headers;
+  };
+export type contactsControllerContactResponseError = (
+  | contactsControllerContactResponse400
+  | contactsControllerContactResponse401
+  | contactsControllerContactResponse403
+  | contactsControllerContactResponse404
+  | contactsControllerContactResponse429
+) & {
+  headers: Headers;
+};
+
+export type contactsControllerContactResponse =
+  | contactsControllerContactResponseSuccess
+  | contactsControllerContactResponseError;
+
+export const getContactsControllerContactUrl = () => {
+  return `/api/v1/contacts`;
+};
+
+export const contactsControllerContact = async (
+  contactCardDto: ContactCardDto,
+  options?: RequestInit,
+): Promise<contactsControllerContactResponse> => {
+  return apiFetch<contactsControllerContactResponse>(
+    getContactsControllerContactUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(contactCardDto),
     },
   );
 };
