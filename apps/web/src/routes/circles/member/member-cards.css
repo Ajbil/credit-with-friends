@@ -1,3 +1,6 @@
 .member-cards-link{display:inline-flex;align-items:center;min-height:44px;touch-action:manipulation}
 .member-cards-page h1{font-size:clamp(2.8rem,7vw,4.4rem);overflow-wrap:anywhere;text-wrap:balance}
 .member-cards-page .member-cards-home{margin-top:32px;margin-bottom:0}
+.member-card-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px 12px}
+.member-card-row .contact-whatsapp svg{display:none}
+@media(max-width:359px){.member-card-row{grid-template-columns:minmax(0,1fr)}}

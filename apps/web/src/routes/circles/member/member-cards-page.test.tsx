@@ -47,6 +47,8 @@ test.each(['success', 'not-found', 'connection failure'] as const)('done-when-4:
   vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((resolve, reject) => { finish = resolve; fail = reject; })));
   await showMember(client);
   expect(screen.queryAllByText(/HDFC Bank|Earlier visit/)).toHaveLength(0);
+  // Contact must obey the same visit check as the private card details.
+  expect(screen.queryByRole('button', { name: 'Message on WhatsApp' })).toBeNull();
   expect(screen.getByRole('status').textContent).toBe('Loading this member’s cards…');
   expect(document.title).toBe('Member cards | CreditWithFriends');
   await act(async () => {
@@ -58,10 +60,14 @@ test.each(['success', 'not-found', 'connection failure'] as const)('done-when-4:
     }, { status: 404 }));
     else fail(new TypeError('Failed to fetch'));
   });
-  if (outcome === 'success') expect((await screen.findByRole('list', { name: 'Member cards' })).textContent).toContain('This visit');
+  if (outcome === 'success') {
+    expect((await screen.findByRole('list', { name: 'Member cards' })).textContent).toContain('This visit');
+    expect(screen.getByRole('button', { name: 'Message on WhatsApp' })).toBeDefined();
+  }
   else {
     expect(await screen.findByRole('heading', { name: outcome === 'not-found' ? 'Member cards unavailable' : 'We couldn’t load this member’s cards' })).toBeDefined();
     expect(screen.queryByRole('list', { name: 'Member cards' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Message on WhatsApp' })).toBeNull();
   }
   expect(screen.queryAllByText(/HDFC Bank|Earlier visit/)).toHaveLength(0);
 });

@@ -1,0 +1,9 @@
+.contact-reminder{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:12px;background:#dfe9d9;margin:14px 0}
+.cards-page .contact-reminder p{color:#183d32;font-size:.92rem;margin:0;line-height:1.5}
+.contact-reminder strong{font-weight:750}
+.contact-reminder svg{width:16px;height:16px;flex-shrink:0;margin-top:3px}
+.cards-page .contact-whatsapp{min-height:44px;padding:9px 16px;gap:8px;font-size:.95rem;white-space:nowrap}
+.contact-whatsapp svg{width:18px;height:18px;flex-shrink:0}
+.cards-page .contact-error{grid-column:1/-1;border:1px solid #a83737;border-radius:12px;padding:12px 14px;background:#fbefec;color:#8d2525;font-size:.95rem;font-weight:650;margin:0;line-height:1.5}
+@media(hover:none){.cards-page .contact-whatsapp:hover:not(:disabled){background:#175d47}}
+@media(max-width:359px){.cards-page .contact-whatsapp{width:100%}}

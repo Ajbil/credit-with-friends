@@ -5,6 +5,7 @@ import { banksControllerList, searchesControllerSearch, type SearchCriteriaDto, 
 import { ApiError } from '../../api/fetcher';
 import { PageFrame } from '../../components/page-frame';
 import { Button } from '../../components/ui/button';
+import { ContactReminder, WhatsAppContact } from '../../components/whatsapp-contact';
 import { BankCardPicker } from '../cards/add/card-form';
 import './search.css';
 
@@ -18,9 +19,9 @@ function SearchPeople({ people }: { people: SearchPersonDto[] }) {
   return <ul className="search-people">{people.map((person) => <li key={person.memberId}>
     <h3>{person.displayName}</h3>
     <p className="search-circles">In {person.circles.map((circle, index) => <span key={circle.id}>{index > 0 && ', '}<span>{circle.name}</span></span>)}</p>
-    {person.cards.map((card) => <div className="search-card" key={card.id}>
-      <div><strong>{card.bankName} {card.type} card</strong><p>{card.variant || 'No variant'}</p></div>
-      {/* T4B adds the checked WhatsApp action here, beside this card's details. */}
+    {person.cards.map((card) => <div className="search-card" key={card.id} role="group" aria-label={`${card.bankName} ${card.type} card, ${card.variant || 'No variant'}`}>
+      <div><strong><span className="search-card-bank">{card.bankName} </span><span className="search-card-type">{card.type} card</span></strong><p>{card.variant || 'No variant'}</p></div>
+      <WhatsAppContact cardId={card.id} returnTo="/search" />
     </div>)}
   </li>)}</ul>;
 }
@@ -115,7 +116,7 @@ export function SearchPage() {
         {snapshot && (snapshot.data.items.length === 0 ? <p className="search-state" role="status">No one in your circles has this card yet.</p> : <>
           <Button className="search-change" variant="quiet" disabled={!ready || search.isPending} onClick={() => document.getElementById('search-bank')?.focus()}>Change search</Button>
           <div className="search-results-head" role="status"><h2>{new Intl.NumberFormat('en-IN').format(snapshot.data.pagination.totalItems)} {snapshot.data.pagination.totalItems === 1 ? 'person' : 'people'}</h2><p>{snapshot.data.items[0].cards[0].bankName} · {TYPE_LABELS[snapshot.criteria.type]}</p></div>
-          {/* T4B adds the holder and card-details reminder above the contact actions. */}
+          <ContactReminder />
           {snapshot.data.items.some((person) => person.group === 'all') ? <SearchPeople people={snapshot.data.items} /> : (['matching', 'similar', 'unstated'] as const).map((group) => {
             const people = snapshot.data.items.filter((person) => person.group === group);
             return people.length > 0 && <section className="search-group" key={group}><h2>{GROUP_LABELS[group]}</h2><SearchPeople people={people} /></section>;
