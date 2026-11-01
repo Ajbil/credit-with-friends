@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "key": "bug\tapps/web/e2e/search.spec.ts\tGate: brand-card search browser proof\tCWF-4/T4A",
+      "kind": "bug",
+      "path": "apps/web/e2e/search.spec.ts",
+      "line": 169,
+      "text": "Gate: brand-card search browser proof",
+      "from": "blocking",
+      "item": "CWF-4/T4A",
+      "status": "open",
+      "closed_by": null
+    },
+    {
+      "key": "bug\tapps/web/src/main.tsx\tGate: functional check\tCWF-4/T4A",
+      "kind": "bug",
+      "path": "apps/web/src/main.tsx",
+      "line": 34,
+      "text": "Gate: functional check",
+      "from": "blocking",
+      "item": "CWF-4/T4A",
+      "status": "open",
+      "closed_by": null
+    },
+    {
+      "key": "bug\tapps/web/src/routes/search/search.css\tGate: UI check\tCWF-4/T4A",
+      "kind": "bug",
+      "path": "apps/web/src/routes/search/search.css",
+      "line": 33,
+      "text": "Gate: UI check",
+      "from": "blocking",
+      "item": "CWF-4/T4A",
+      "status": "open",
+      "closed_by": null
+    }
+  ]
+}
