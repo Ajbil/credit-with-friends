@@ -15,7 +15,7 @@
       "gain": 4,
       "harm": 3,
       "line": 34,
-      "outcome": "open",
+      "outcome": "fixed in round 2",
       "reason": "",
       "round": 1,
       "security": false,
@@ -28,7 +28,7 @@
       "gain": 3,
       "harm": 3,
       "line": 169,
-      "outcome": "open",
+      "outcome": "fixed in round 2",
       "reason": "",
       "round": 1,
       "security": false,
@@ -41,7 +41,7 @@
       "gain": 3,
       "harm": 3,
       "line": 33,
-      "outcome": "open",
+      "outcome": "fixed in round 2",
       "reason": "",
       "round": 1,
       "security": false,
@@ -52,47 +52,16 @@
   "part_line_limit": 400,
   "review": {
     "blocking_level": "P1",
-    "branch_diff": "d7abaffcc8a8d4d0bc0363036f83c74de5a567fcec7e29a4458af7e6cc2ea836",
-    "changed": "8461303ce94a158d5a3fbe51858697e93a265c35d2003f2d08b643b30a45323a",
-    "commit": "9f15cd4489c25c7546b761fcbd863332ca1ea948",
+    "branch_diff": "7c92bd36a13c4c26b475134364910614eef36d26ab61ed9309449557b99b86a2",
+    "changed": "4a9d15e7fb77e18d2c81c564c759d1eaaa5797883b8e78e3f3f0981906d05835",
+    "commit": "e2b6c0a0280d0d3794215c75cf366886473510d2",
     "dismissals": [],
-    "findings": [
-      {
-        "body": "Gain 4, Work 2, Harm 3\nRaise: Gate. Case: normal use - the new search flow reaches users without the required exercised check. The supplied commit record says the last commit has no `Functional check:` paragraph. The recorded check exercised only a pending unit-test path and explicitly did not walk a real search, refusal, retry, keyboard path, or rendered widths. Those are the user-facing paths this route adds.",
-        "file": "apps/web/src/main.tsx",
-        "gain": 4,
-        "harm": 3,
-        "line": 34,
-        "priority": "P1",
-        "title": "Gate: functional check",
-        "work": 2
-      },
-      {
-        "body": "Gain 3, Work 1, Harm 3\nRaise: Test. Case: normal use - a member picks a brand card and searches for its holders. The browser test selects Swiggy and checks that the form fills `Swiggy`, but then replaces that variant with `Regalia` before submitting. It never checks results from the brand-card shortcut as selected, so the named proof can pass while that search behavior is broken.",
-        "file": "apps/web/e2e/search.spec.ts",
-        "gain": 3,
-        "harm": 3,
-        "line": 169,
-        "priority": "P1",
-        "title": "Gate: brand-card search browser proof",
-        "work": 1
-      },
-      {
-        "body": "Gain 3, Work 2, Harm 3\nRaise: Gate. Case: normal use - members use the new form and results at phone, tablet, and desktop widths. The supplied proof records only a static design and interaction review and explicitly says rendered proof at those widths is missing. This change adds responsive search layout rules, but there is no completed rendered impeccable audit and polish pass for the changed screen.",
-        "file": "apps/web/src/routes/search/search.css",
-        "gain": 3,
-        "harm": 3,
-        "line": 33,
-        "priority": "P1",
-        "title": "Gate: UI check",
-        "work": 2
-      }
-    ],
-    "id": "5ec910d5-ce1b-48ec-974b-57ddaa6ef8be",
-    "status": "blocked"
+    "findings": [],
+    "id": "b49a7518-18e5-4a82-9e93-5a41f7e6c7c5",
+    "status": "clean"
   },
   "round": 3,
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-10-31T18:51:02.331480+00:00",
@@ -100,6 +69,10 @@
     },
     {
       "at": "2026-11-01T08:11:27.044777+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-11-01T08:33:19.870737+00:00",
       "step": "review"
     }
   ],
