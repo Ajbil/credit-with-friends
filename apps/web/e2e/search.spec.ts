@@ -49,12 +49,12 @@ async function openSearch(page: Page) {
 }
 
 async function captureWidths(page: Page, state: string) {
-  for (const [name, width, height] of [['phone', 390, 844], ['tablet', 768, 1024], ['desktop', 1280, 900]] as const) {
+  for (const [name, width, height] of [['phone', 375, 844], ['tablet', 768, 1024], ['desktop', 1280, 900]] as const) {
     await page.setViewportSize({ width, height });
     await page.screenshot({ path: test.info().outputPath(`${state}-${name}.png`), fullPage: true, scale: 'css' });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 375, height: 844 });
 }
 
 test('done-when-1: home search finds ordered circle members, pages, retries and restores results', async ({ page, browser }) => {
@@ -75,6 +75,7 @@ test('done-when-1: home search finds ordered circle members, pages, retries and 
     await circle(page.context(), 'Family', [asha, meera]);
     await circle(page.context(), 'Office friends', [meera, rohan]);
     await card(asha, 'hdfc-bank', 'credit', 'Millennia');
+    await card(asha, 'hdfc-bank', 'credit', 'Swiggy');
     await card(meera, 'hdfc-bank', 'credit', 'Regalia Gold');
     await card(meera, 'hdfc-bank', 'debit');
     await card(rohan, 'hdfc-bank', 'debit');
@@ -108,6 +109,7 @@ test('done-when-1: home search finds ordered circle members, pages, retries and 
     await expect(page.getByLabel('Variant (optional)')).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(page.getByRole('button', { name: 'Search', exact: true })).toBeFocused();
+    await captureWidths(page, 'search-form');
     await page.getByRole('radio', { name: 'Credit or debit', exact: true }).check();
     await page.getByRole('button', { name: 'Search', exact: true }).click();
     const results = page.getByRole('region', { name: 'Search results' });
@@ -152,6 +154,14 @@ test('done-when-1: home search finds ordered circle members, pages, retries and 
     await bank.selectOption({ label: 'Swiggy (HDFC Bank)' });
     await expect(page.getByRole('radio', { name: 'Credit', exact: true })).toBeChecked();
     await expect(page.getByLabel('Variant (optional)')).toHaveValue('Swiggy');
+    // The shortcut itself must find its holder before any filled field is edited.
+    await page.getByRole('button', { name: 'Search', exact: true }).click();
+    await expect(results.getByRole('heading', { name: 'Matching variant', exact: true })).toBeVisible();
+    await expect(results.locator('h3')).toHaveText(['Asha']);
+    await expect(results.getByText('Swiggy', { exact: true })).toBeVisible();
+    await expect(results.getByRole('heading', { name: 'Similar variant', exact: true })).toHaveCount(0);
+    await expect(results.getByRole('heading', { name: 'Variant not stated', exact: true })).toHaveCount(0);
+    expect(searches.at(-1)?.body).toEqual({ bankId: 'hdfc-bank', type: 'credit', variant: 'Swiggy' });
     await page.getByLabel('Variant (optional)').fill('Regalia');
     await page.getByRole('button', { name: 'Search', exact: true }).click();
     await expect(results.getByRole('heading', { name: 'Meera' })).toBeVisible();

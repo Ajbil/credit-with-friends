@@ -1,8 +1,12 @@
-.search-page{--card-field:#fffdf7;--card-field-line:#6d8878;--card-error:#8d2525}
-.search-page .cards-header{margin-bottom:28px}
+.search-page{--card-field:#fffdf7;--card-field-line:#6d8878;--card-error:#8d2525;margin-top:16px}
+.search-page>.button{min-height:42px;padding:8px 16px;margin-bottom:16px}
+.search-page .cards-header{margin-bottom:22px}
+.search-page .cards-header h1{margin-bottom:8px}
 .search-page h1{font-size:clamp(2.4rem,6vw,3.3rem)}
 .search-layout{display:grid;gap:28px;align-items:start}
-.search-form{gap:18px}
+.search-form{gap:14px}
+.search-form .field-error{font-weight:650}
+.search-optional{font-weight:400;font-size:.85rem;color:var(--cards-muted)}
 .search-form>.button{width:100%;align-self:stretch}
 .search-help{font-size:.9rem;margin:-6px 0 0}
 .search-type{border:0;padding:0;margin:0;min-width:0}
@@ -10,7 +14,7 @@
 .search-type>div{display:grid;grid-template-columns:1fr 1fr 1.4fr}
 .search-type label{position:relative;min-width:0;cursor:pointer}
 .search-type input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:inherit}
-.search-type span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px;height:100%;padding:10px 6px;border:1px solid var(--card-field-line);border-right:0;font-weight:650;font-size:.9rem}
+.search-type span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px;height:100%;padding:10px 6px;border:1px solid var(--card-field-line);border-right:0;font-weight:650;font-size:.95rem}
 .search-type label:first-child span{border-radius:9px 0 0 9px}
 .search-type label:last-child span{border-radius:0 9px 9px 0;border-right:1px solid var(--card-field-line)}
 .search-type input:checked+span{background:#175d47;color:#fff}
@@ -32,4 +36,5 @@
 .search-state{border-top:1px solid var(--cards-line);padding-top:20px;margin:0}
 .search-state h2{font-size:1.4rem;margin-bottom:8px}
 .search-state p{margin-bottom:18px}
-@media(min-width:900px){.search-layout{grid-template-columns:330px minmax(0,1fr);gap:36px}.search-form{padding:20px;border:1px solid var(--cards-line);border-radius:16px;background:var(--card-field)}.search-change{display:none}}
+@media(min-width:600px) and (max-width:899px){.search-page{max-width:600px}}
+@media(min-width:900px){.search-layout{grid-template-columns:330px minmax(0,1fr);gap:36px}.search-form{padding:20px;border:1px solid var(--cards-line);border-radius:16px;background:var(--card-field)}.search-page .search-change{display:none}}

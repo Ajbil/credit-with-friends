@@ -98,7 +98,7 @@ export function SearchPage() {
             {fieldErrors.type && <p id="search-type-error" className="field-error" role="alert">{fieldErrors.type}</p>}
           </fieldset>
           <div className="card-add-field">
-            <label htmlFor="search-variant">Variant (optional)</label>
+            <label htmlFor="search-variant">Variant <span className="search-optional">(optional)</span></label>
             <input id="search-variant" value={values.variant} placeholder="For example, Millennia" autoComplete="off" readOnly={search.isPending} aria-invalid={!!fieldErrors.variant} aria-describedby={fieldErrors.variant ? 'search-variant-error' : undefined} onChange={(event) => change({ ...values, variant: event.target.value })} />
             {fieldErrors.variant && <p id="search-variant-error" className="field-error" role="alert">{fieldErrors.variant}</p>}
           </div>
