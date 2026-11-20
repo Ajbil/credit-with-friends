@@ -4,11 +4,26 @@
   "done_when": "plans/CWF-4.md no longer lists the follow-up part, and forge next offers only the live check for CWF-4",
   "fix_kind": "mechanical",
   "kind": "fix",
-  "status": "started",
+  "known": [],
+  "review": {
+    "branch_diff": "f3c6324b79cee5ed8ded40b9fa6a0410041f385538f753d487859b0aff71a231",
+    "changed": "5e78083566ad72827ac3b05be9f9defb016be4a9f1b87eacc8347a7e7d094fb9",
+    "commit": "c98c9d67e67e66ef2ddabcee5cae1acbc2a20280",
+    "dismissals": [],
+    "findings": [],
+    "id": "ebb0e742-7b18-4a40-af27-7462adefd142",
+    "mechanical": true,
+    "status": "clean"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-11-20T17:35:01.094330+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-11-20T17:37:33.329644+00:00",
+      "step": "review"
     }
   ],
   "why": "The CWF-4 plan still lists a follow-up part for the search screen that was recorded when the owner first chose to split it, but the owner then allowed the part as one and everything it names shipped in the web search part"
