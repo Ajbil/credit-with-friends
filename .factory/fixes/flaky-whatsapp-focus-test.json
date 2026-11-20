@@ -48,8 +48,8 @@
     "id": "2521c1f5-9e5f-4b56-8234-1d081f26a722",
     "status": "clean"
   },
-  "round": 1,
-  "status": "waiting for checks",
+  "round": 2,
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-11-20T10:48:09.156276+00:00",
@@ -61,10 +61,10 @@
     }
   ],
   "stuck": {
-    "close": null,
-    "head": "c6d677b740462e1322b0d2bb6ee5625271726284",
+    "close": "67cabcbd-7cd3-4761-b4bf-ef39d73d7085",
+    "head": "b0aa9906e23e1296a7a14c5ed51193bc54479f47",
     "keys": {},
-    "round": null
+    "round": 1
   },
   "why": "The WhatsApp button's browser test fails on main at random because headless Chromium does not always mark the button as keyboard-focused after earlier mouse clicks",
   "worker": "codex"
