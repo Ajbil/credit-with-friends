@@ -1,0 +1,15 @@
+{
+  "base": "d96f70c68540d8b19d747e698a12fab22733934b",
+  "branch": "fix/refresh-dependencies-nov",
+  "done_when": "pnpm audit --prod --audit-level=high passes, lockfiles and base images are updated within their allowed ranges, and the test command passes",
+  "fix_kind": "mechanical",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-11-20T12:35:21.695516+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "A new high-severity advisory in effect (through Prisma) fails the security audit on every pull request, and dependencies and base images are over a week old"
+}
