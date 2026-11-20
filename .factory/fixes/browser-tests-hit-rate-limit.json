@@ -11,12 +11,27 @@
   "done_when": "The browser test run's API uses a higher per-route request limit while production keeps 100 per minute, the rate-limit integration test still proves the 429 response, and the full browser suite passes on GitHub's checks",
   "fix_kind": "mechanical",
   "kind": "fix",
+  "known": [],
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "2bb70cd925fa20998dcd59a27f561d6a02e5036c28ec4df14c4e2885f4644b20",
+    "changed": "4446a7154ec42eabcc30a228813f1326feb4d04a4ae0db95f89ee03e42841101",
+    "commit": "172596109e670764238d48738861c6e341a65374",
+    "dismissals": [],
+    "findings": [],
+    "id": "30c56d18-8498-459e-ba80-5fa6be3ca68b",
+    "status": "clean"
+  },
   "round": 1,
-  "status": "working",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-11-20T15:56:05.812459+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-11-20T16:37:40.346190+00:00",
+      "step": "review"
     }
   ],
   "stuck": {
