@@ -5,6 +5,7 @@ import { memberCardsControllerView } from '../../../api/generated';
 import { ApiError } from '../../../api/fetcher';
 import { PageFrame } from '../../../components/page-frame';
 import { Button } from '../../../components/ui/button';
+import { ContactReminder, WhatsAppContact } from '../../../components/whatsapp-contact';
 import '../../cards/list/cards.css';
 import './member-cards.css';
 
@@ -51,9 +52,12 @@ function MemberCardsVisit({ circleId, memberId }: { circleId: string; memberId: 
       </div>}
       {cards.data.cards.length === 0 ? <div className="cards-state">
         <h2>No cards listed yet</h2><p>{cards.data.displayName} hasn’t listed any bank cards yet.</p>
-      </div> : <ul className="cards-list" aria-label="Member cards">{cards.data.cards.map((card) => <li key={card.id}>
-        <h2>{card.bankName}</h2><p>{card.type === 'credit' ? 'Credit card' : 'Debit card'}{card.variant && <> · {card.variant}</>}</p>
-      </li>)}</ul>}
+      </div> : <><ContactReminder /><ul className="cards-list" aria-label="Member cards">{cards.data.cards.map((card) => <li key={card.id}>
+        <h2>{card.bankName}</h2><div className="member-card-row">
+          <p>{card.type === 'credit' ? 'Credit card' : 'Debit card'}{card.variant && <> · {card.variant}</>}</p>
+          <WhatsAppContact cardId={card.id} returnTo={`/circles/${encodeURIComponent(circleId)}/members/${encodeURIComponent(memberId)}/cards`} />
+        </div>
+      </li>)}</ul></>}
     </>}
     <Link className="button button--quiet member-cards-home" to="/">Back to your circles</Link>
   </section></PageFrame>;

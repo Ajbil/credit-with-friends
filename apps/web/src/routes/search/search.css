@@ -29,7 +29,9 @@
 .search-people>li{padding:18px 0;border-bottom:1px solid var(--cards-line)}
 .search-people h3{margin:0 0 4px;font-size:1.12rem;line-height:1.4;font-weight:750}
 .search-circles{font-size:.9rem;margin:0 0 12px}
-.search-card{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.search-card{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px 12px;margin-top:10px}
+.search-card-type{display:inline-block}
+.search-card-type::first-letter{text-transform:uppercase}
 .search-card strong{font-size:.95rem}
 .search-card p{margin:3px 0 0;font-size:.9rem}
 .search-group>h2{font-family:inherit;font-size:.82rem;line-height:1.5;letter-spacing:.05em;text-transform:uppercase;color:var(--cards-muted);margin:22px 0 6px}
@@ -37,4 +39,6 @@
 .search-state h2{font-size:1.4rem;margin-bottom:8px}
 .search-state p{margin-bottom:18px}
 @media(min-width:600px) and (max-width:899px){.search-page{max-width:600px}}
+@media(max-width:899px){.search-card-bank{display:none}}
+@media(max-width:359px){.search-card{grid-template-columns:minmax(0,1fr)}}
 @media(min-width:900px){.search-layout{grid-template-columns:330px minmax(0,1fr);gap:36px}.search-form{padding:20px;border:1px solid var(--cards-line);border-radius:16px;background:var(--card-field)}.search-page .search-change{display:none}}

@@ -35,3 +35,41 @@ test('a pending search keeps its submitted fields and prevents a second request'
   await act(async () => { finishSearch(new Response(JSON.stringify({ success: true, data: { items: [], pagination: { page: 1, limit: 100, totalItems: 0, totalPages: 0 } }, error: null }))); });
   expect(await screen.findByText('No one in your circles has this card yet.')).toBeDefined();
 });
+
+// Audit: a timed-out contact must let the member retry without losing results.
+// Browser tests own aborted/server failures; a transport that only rejects when
+// its signal expires covers the bounded wait without a slow browser sleep.
+// It uses fetch and the real AbortSignal, with no new production test seam.
+test('a contact timeout keeps search results and enables another press', async () => {
+  vi.stubGlobal('scrollTo', vi.fn());
+  history.replaceState({ cwfCardSearch: {
+    values: { pickerValue: 'axis-bank', bankId: 'axis-bank', type: 'any', variant: '' },
+    criteria: { bankId: 'axis-bank', type: 'any' },
+    data: { items: [{ memberId: 'holder', displayName: 'Meera', group: 'all', circles: [{ id: 'family', name: 'Family' }], cards: [
+      { id: 'listed-card', bankId: 'axis-bank', bankName: 'Axis Bank', type: 'credit', variant: 'Flipkart' },
+    ] }], pagination: { page: 1, limit: 100, totalItems: 1, totalPages: 1 } },
+  } }, '', '/');
+  let signal: AbortSignal | null | undefined;
+  vi.stubGlobal('fetch', vi.fn((url: URL, options?: RequestInit) => {
+    if (url.pathname === '/api/v1/contacts') {
+      signal = options?.signal;
+      return new Promise<Response>((_resolve, reject) => signal?.addEventListener('abort', () => reject(signal?.reason), { once: true }));
+    }
+    return Promise.resolve(Response.json({ success: true, data: { items: [{ id: 'axis-bank', displayName: 'Axis Bank' }], contactEmail: 'owner@example.in' }, error: null }));
+  }));
+  // Only the timer's clock is shortened; the native signal still aborts fetch.
+  const timeout = AbortSignal.timeout.bind(AbortSignal);
+  const timeoutSpy = vi.spyOn(AbortSignal, 'timeout').mockImplementation(() => timeout(20));
+  try {
+    const root = createRootRoute();
+    const route = createRoute({ getParentRoute: () => root, path: '/search', component: SearchPage });
+    const router = createRouter({ routeTree: root.addChildren([route]), history: createMemoryHistory({ initialEntries: ['/search'] }) });
+    await act(async () => { render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><RouterProvider router={router} /></QueryClientProvider>); });
+    fireEvent.click(await screen.findByRole('button', { name: 'Message on WhatsApp' }));
+    expect((await screen.findByRole('alert')).textContent).toBe("We couldn't open WhatsApp. Check your connection and try again.");
+    expect(signal?.aborted).toBe(true);
+    expect(screen.getByRole('button', { name: 'Message on WhatsApp' }).hasAttribute('disabled')).toBe(false);
+    expect(screen.getByRole('heading', { name: 'Meera' })).toBeDefined();
+    expect(screen.getByText('Flipkart')).toBeDefined();
+  } finally { timeoutSpy.mockRestore(); }
+});

@@ -69,7 +69,8 @@ test('done-when-4: open another member from the circle, see current read-only ca
     await expect(cards).toContainText('HDFC Bank');
     await expect(cards).toContainText('Credit card');
     await expect(cards).toContainText('Millennia');
-    await expect(page.getByRole('button')).toHaveCount(0);
+    // Contact is now allowed; adding, editing and removing remain private to the holder.
+    await expect(cards.getByRole('button', { name: 'Message on WhatsApp' })).toHaveCount(1);
     await expect(page.getByRole('link', { name: /\b(edit|remove|add a card|whatsapp)\b/i })).toHaveCount(0);
     await expect(page.getByRole('searchbox')).toHaveCount(0);
     await capture(page, 'member-cards');
