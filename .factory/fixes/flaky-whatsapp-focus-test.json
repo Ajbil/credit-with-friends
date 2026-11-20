@@ -4,12 +4,20 @@
   "done_when": "apps/web/e2e/contact.spec.ts proves the keyboard path to the WhatsApp button without depending on the browser's focus-visible guess, and passes ten runs in a row",
   "fix_kind": "mechanical",
   "kind": "fix",
-  "status": "started",
+  "round": 1,
+  "status": "working",
   "steps": [
     {
       "at": "2026-11-20T10:48:09.156276+00:00",
       "step": "start"
     }
   ],
-  "why": "The WhatsApp button's browser test fails on main at random because headless Chromium does not always mark the button as keyboard-focused after earlier mouse clicks"
+  "stuck": {
+    "close": null,
+    "head": "c6d677b740462e1322b0d2bb6ee5625271726284",
+    "keys": {},
+    "round": null
+  },
+  "why": "The WhatsApp button's browser test fails on main at random because headless Chromium does not always mark the button as keyboard-focused after earlier mouse clicks",
+  "worker": "codex"
 }
