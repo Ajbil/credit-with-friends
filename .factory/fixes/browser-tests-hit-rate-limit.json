@@ -1,6 +1,13 @@
 {
   "base": "29b3d5fb00e61a81fc4324d9aa7b52f70a20d8fa",
   "branch": "fix/browser-tests-hit-rate-limit",
+  "chat": {
+    "approval": null,
+    "claude": null,
+    "conversation": "01a1f9ad-5b01-75f0-8538-57547a5fb3bc",
+    "head": null,
+    "start": "251c478e64371afab782cea62a199135e2f628fc"
+  },
   "done_when": "The browser test run's API uses a higher per-route request limit while production keeps 100 per minute, the rate-limit integration test still proves the 429 response, and the full browser suite passes on GitHub's checks",
   "fix_kind": "mechanical",
   "kind": "fix",
