@@ -1,0 +1,15 @@
+{
+  "base": "5a077798d8e7df0795c5c3ab36f76b6c3e483f6f",
+  "branch": "fix/drop-search-followup-part",
+  "done_when": "plans/CWF-4.md no longer lists the follow-up part, and forge next offers only the live check for CWF-4",
+  "fix_kind": "mechanical",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-11-20T17:35:01.094330+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "The CWF-4 plan still lists a follow-up part for the search screen that was recorded when the owner first chose to split it, but the owner then allowed the part as one and everything it names shipped in the web search part"
+}
