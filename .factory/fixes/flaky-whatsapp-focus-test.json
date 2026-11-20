@@ -1,6 +1,13 @@
 {
   "base": "d96f70c68540d8b19d747e698a12fab22733934b",
   "branch": "fix/flaky-whatsapp-focus-test",
+  "chat": {
+    "approval": null,
+    "claude": null,
+    "conversation": "01a1f893-12f5-7a73-bc0c-85e650120c68",
+    "head": null,
+    "start": "218dd21c27a799670b8a16d6adf2ce2d87a45979"
+  },
   "done_when": "apps/web/e2e/contact.spec.ts proves the keyboard path to the WhatsApp button without depending on the browser's focus-visible guess, and passes ten runs in a row",
   "fix_kind": "mechanical",
   "kind": "fix",
