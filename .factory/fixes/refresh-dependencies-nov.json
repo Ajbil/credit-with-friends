@@ -4,12 +4,20 @@
   "done_when": "pnpm audit --prod --audit-level=high passes, lockfiles and base images are updated within their allowed ranges, and the test command passes",
   "fix_kind": "mechanical",
   "kind": "fix",
-  "status": "started",
+  "round": 1,
+  "status": "working",
   "steps": [
     {
       "at": "2026-11-20T12:35:21.695516+00:00",
       "step": "start"
     }
   ],
-  "why": "A new high-severity advisory in effect (through Prisma) fails the security audit on every pull request, and dependencies and base images are over a week old"
+  "stuck": {
+    "close": null,
+    "head": "86a0f035443fc49233e3df0c886b4ed25361ac86",
+    "keys": {},
+    "round": null
+  },
+  "why": "A new high-severity advisory in effect (through Prisma) fails the security audit on every pull request, and dependencies and base images are over a week old",
+  "worker": "codex"
 }
