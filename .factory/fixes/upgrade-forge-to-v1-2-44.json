@@ -3,11 +3,26 @@
   "branch": "fix/upgrade-forge-to-v1-2-44",
   "done_when": "This repo pins and runs Forge v1.2.44.",
   "kind": "fix",
-  "status": "started",
+  "known": [],
+  "review": {
+    "branch_diff": "4458d9e054ab16dd9aa1b094edeb803a9d91de48e835ba2f88b7975eeb4477e0",
+    "changed": "49d071c1a925452d39ac5d4ccd5c1e0963d365ea60918e8ea2030fac1bef51a1",
+    "commit": "3e922fca64c9ce15b11060e1e0d862abede2b0e1",
+    "dismissals": [],
+    "findings": [],
+    "id": "978c7744-6c6d-4ac9-a39d-e580237a6aaf",
+    "mechanical": true,
+    "status": "clean"
+  },
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-11-20T17:01:10.552446+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-11-20T17:10:20.187362+00:00",
+      "step": "review"
     }
   ],
   "why": "Upgrade Forge to v1.2.44."
