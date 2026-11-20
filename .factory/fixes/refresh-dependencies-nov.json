@@ -1,4 +1,5 @@
 {
+  "allow_large": "The owner allows it: five of the six files are version updates (three package.json files, pnpm-lock.yaml, docker-compose.yml) and the sixth, apps/web/src/routes/notice/notice-page.tsx, is the one-line expired-session fix that the newer TanStack Query requires.",
   "base": "d96f70c68540d8b19d747e698a12fab22733934b",
   "branch": "fix/refresh-dependencies-nov",
   "chat": {
