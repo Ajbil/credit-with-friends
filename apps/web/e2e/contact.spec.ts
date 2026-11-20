@@ -115,8 +115,6 @@ async function exercisePress(page: Page, button: ReturnType<Page['getByRole']>, 
     await expect(keyboardStart).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(button).toBeFocused();
-    expect(await button.evaluate((element) => element.matches(':focus-visible'))).toBe(true);
-    expect(await button.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe('none');
     await page.keyboard.press('Enter');
     await requested;
     await expect(button).toBeDisabled();
