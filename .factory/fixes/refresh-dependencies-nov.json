@@ -11,12 +11,27 @@
   "done_when": "pnpm audit --prod --audit-level=high passes, lockfiles and base images are updated within their allowed ranges, and the test command passes",
   "fix_kind": "mechanical",
   "kind": "fix",
+  "known": [],
+  "review": {
+    "blocking_level": "P1",
+    "branch_diff": "e51ec1968e3a4ff41d037686532fb86f3ac9d585ec5558c86fc3929d75811754",
+    "changed": "8593898926104faab6069da33e19a0357fa279b7ded104f42f7431a5afc0e3b7",
+    "commit": "599a8c3e6d5ab3bcf4ea7ddd93caac1af71ae14b",
+    "dismissals": [],
+    "findings": [],
+    "id": "6c50637b-9aaf-40b4-bc5a-4e7cd7ff7422",
+    "status": "clean"
+  },
   "round": 1,
-  "status": "working",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-11-20T12:35:21.695516+00:00",
       "step": "start"
+    },
+    {
+      "at": "2026-11-20T13:14:03.555460+00:00",
+      "step": "review"
     }
   ],
   "stuck": {
