@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "key": "edge\tapps/web/e2e/contact.spec.ts\tNot done: apps/web/e2e/contact.spec.ts proves the keyboard path to the WhatsApp button without depending on the browser's focus-visible core",
+      "kind": "edge",
+      "path": "apps/web/e2e/contact.spec.ts",
+      "line": 117,
+      "text": "Not done: apps/web/e2e/contact.spec.ts proves the keyboard path to the WhatsApp button without depending on the browser's focus-visible core",
+      "from": "review",
+      "item": "flaky-whatsapp-focus-test",
+      "status": "open",
+      "closed_by": null
+    }
+  ]
+}
