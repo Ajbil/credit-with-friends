@@ -16,29 +16,29 @@
     "openapi:check": "vitest run --root ../.. --project api-integration -t openapi-file-matches-running-api"
   },
   "dependencies": {
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/platform-express": "^11.0.1",
-    "@nestjs/schedule": "^12.0.2",
-    "@nestjs/swagger": "^11.2.0",
-    "@nestjs/throttler": "^6.4.0",
-    "@prisma/client": "^6.19.0",
+    "@nestjs/common": "^11.2.11",
+    "@nestjs/config": "^4.0.4",
+    "@nestjs/core": "^11.2.11",
+    "@nestjs/platform-express": "^11.2.11",
+    "@nestjs/schedule": "^12.0.4",
+    "@nestjs/swagger": "^11.4.8",
+    "@nestjs/throttler": "^6.8.0",
+    "@prisma/client": "^6.19.3",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.2",
-    "helmet": "^8.1.0",
-    "libphonenumber-js": "^1.13.14",
-    "nestjs-pino": "^4.4.0",
+    "class-validator": "^0.14.4",
+    "helmet": "^8.3.0",
+    "libphonenumber-js": "^1.13.17",
+    "nestjs-pino": "^4.6.1",
     "openid-client": "^5.7.1",
-    "pino": "^9.7.0",
+    "pino": "^9.14.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.7",
-    "@nestjs/testing": "^11.0.1",
-    "@types/express": "^5.0.3",
-    "@types/node": "^22.18.10",
-    "prisma": "^6.19.0"
+    "@nestjs/cli": "^11.0.24",
+    "@nestjs/testing": "^11.2.11",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.5",
+    "prisma": "^6.19.3"
   }
 }
