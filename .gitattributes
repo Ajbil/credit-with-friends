@@ -21,3 +21,5 @@ forge text eol=lf
 .codex/hooks.json text eol=lf
 plans/roadmap.json merge=forge-roadmap
 plans/spotted.json merge=forge-roadmap
+.claude/skills/impeccable/scripts/impeccable.cmd -text
+.codex/skills/impeccable/scripts/impeccable.cmd -text
