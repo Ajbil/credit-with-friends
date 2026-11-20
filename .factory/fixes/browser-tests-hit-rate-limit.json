@@ -1,0 +1,15 @@
+{
+  "base": "29b3d5fb00e61a81fc4324d9aa7b52f70a20d8fa",
+  "branch": "fix/browser-tests-hit-rate-limit",
+  "done_when": "The browser test run's API uses a higher per-route request limit while production keeps 100 per minute, the rate-limit integration test still proves the 429 response, and the full browser suite passes on GitHub's checks",
+  "fix_kind": "mechanical",
+  "kind": "fix",
+  "status": "started",
+  "steps": [
+    {
+      "at": "2026-11-20T15:56:05.812459+00:00",
+      "step": "start"
+    }
+  ],
+  "why": "Browser tests on main fail at random because every test shares the API's 100-requests-per-minute limit for each route from one machine, so late tests get too-many-requests and the home screen never loads"
+}
