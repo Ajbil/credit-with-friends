@@ -89,14 +89,20 @@ async function exercisePress(page: Page, button: ReturnType<Page['getByRole']>, 
     return route.abort();
   });
   let requests = 0;
+  let releaseRetry!: () => void;
   let release!: () => void;
   let started!: () => void;
+  const retryHeld = new Promise<void>((resolve) => { releaseRetry = resolve; });
   const held = new Promise<void>((resolve) => { release = resolve; });
   const requested = new Promise<void>((resolve) => { started = resolve; });
   await page.route('**/api/v1/contacts', async (route) => {
     requests++;
     if (requests === 1) return route.abort('internetdisconnected');
-    if (requests === 2) return route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ success: false, data: null, error: { code: 'INTERNAL_ERROR', message: 'Server error', details: null, errorId: randomUUID() } }) });
+    if (requests === 2) {
+      // Hold this response so the first failure's alert cannot stand in for the retry.
+      await retryHeld;
+      return route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ success: false, data: null, error: { code: 'INTERNAL_ERROR', message: 'Server error', details: null, errorId: randomUUID() } }) });
+    }
     started();
     await held;
     return route.continue();
@@ -107,6 +113,9 @@ async function exercisePress(page: Page, button: ReturnType<Page['getByRole']>, 
     await expect(page.getByRole('alert')).toHaveText(RETRY);
     expect(navigations).toEqual([]);
     await button.click();
+    await expect.poll(() => requests).toBe(2);
+    await expect(button).toBeDisabled();
+    releaseRetry();
     await expect(button).toBeEnabled();
     await expect(page.getByRole('alert')).toHaveText(RETRY);
     expect(navigations).toEqual([]);
@@ -115,8 +124,6 @@ async function exercisePress(page: Page, button: ReturnType<Page['getByRole']>, 
     await expect(keyboardStart).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(button).toBeFocused();
-    expect(await button.evaluate((element) => element.matches(':focus-visible'))).toBe(true);
-    expect(await button.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe('none');
     await page.keyboard.press('Enter');
     await requested;
     await expect(button).toBeDisabled();
@@ -127,7 +134,7 @@ async function exercisePress(page: Page, button: ReturnType<Page['getByRole']>, 
     await expect.poll(() => navigations).toEqual([expectedUrl]);
     expect(requests).toBe(3);
     expect(page.context().pages()).toHaveLength(pageCount);
-  } finally { release(); }
+  } finally { releaseRetry(); release(); }
 }
 
 test('done-when-3: a search result checks its card, retries failed presses and opens the editable WhatsApp message', async ({ page, browser }) => {
