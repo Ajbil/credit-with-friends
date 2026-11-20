@@ -28,13 +28,19 @@
   ],
   "review": {
     "blocking_level": "P1",
-    "branch_diff": "649ac8cff8abc0a72e3fdf9e90dbdc3e3eebd5d37f3ae14489677c9728efc8f8",
-    "changed": "0e9e716187458babdec95961c2755a479cc7952af70822c3ed1e8f7dd04dd13f",
-    "commit": "bd1fbf2eb271ba1debe08e2c87edaa70b56e27b2",
-    "dismissals": [],
+    "branch_diff": "d36c139d110a5742cab7b74576787f402d57523ba1e45894c36a23df39c79c0e",
+    "changed": "46ad6db70bed575e4c6e35d3428d7264f4c4704c20b199a647e5fef8bf08da71",
+    "commit": "0c351f2cc701862cfcd9b02281032d02922e95d3",
+    "dismissals": [
+      {
+        "because": "known: Not done names no owner-approved Done-when item; builder details are guidance.",
+        "carried": true,
+        "finding": 1
+      }
+    ],
     "findings": [
       {
-        "body": "Gain 4, Work 1, Harm 2\nRaise: Not done\nCase: normal use - the fix is accepted without the required stability proof. The changed test keeps the Tab, focus, and Enter checks, but the proof list explicitly says the ten consecutive browser runs were not completed because PostgreSQL was unreachable. No ten-repeat pull-request check is identified in the supplied evidence, so the Done-when requirement to pass ten runs in a row remains unmet.",
+        "body": "Gain 4, Work 1, Harm 2\nRaise: Not done\nCase: normal use - the fix is accepted without the required stability proof. The changed test still checks Tab, focus, and Enter, but the previous review found that ten consecutive browser runs had not completed. This repair adds synchronization for the second failed request; the supplied evidence contains no ten-run result or identified pull-request check that performs ten runs. The Done-when requirement to pass ten runs in a row remains unverified.",
         "file": "apps/web/e2e/contact.spec.ts",
         "follow_up": "Not done names no owner-approved Done-when item; builder details are guidance.",
         "gain": 4,
@@ -45,11 +51,11 @@
         "work": 1
       }
     ],
-    "id": "2521c1f5-9e5f-4b56-8234-1d081f26a722",
+    "id": "e75a537b-692f-48f2-af87-0c272e48aa63",
     "status": "clean"
   },
   "round": 2,
-  "status": "fixing",
+  "status": "waiting for checks",
   "steps": [
     {
       "at": "2026-11-20T10:48:09.156276+00:00",
@@ -57,6 +63,10 @@
     },
     {
       "at": "2026-11-20T10:52:08.189697+00:00",
+      "step": "review"
+    },
+    {
+      "at": "2026-11-20T12:23:51.332785+00:00",
       "step": "review"
     }
   ],
