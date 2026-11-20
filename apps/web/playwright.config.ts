@@ -17,7 +17,7 @@ export default defineConfig({
   use: { ...devices['iPhone 13'], browserName: 'chromium', baseURL: 'http://localhost:5173' },
   webServer: [
     { command: `${startDatabase ? 'docker compose -p cwf-web-tests -f docker-compose.yml up -d --wait && ' : ''}pnpm --filter @symphony/api db:migrate:deploy && pnpm --filter @symphony/api dev`, cwd: '../..', url: 'http://localhost:3104/api/v1/health', reuseExistingServer: false, timeout: 120_000,
-      env: { DATABASE_URL: databaseUrl.toString(), API_ORIGIN: 'http://localhost:3104', WEB_ORIGIN: 'http://localhost:5173', PORT: '3104', OWNER_CONTACT_EMAIL: 'owner@example.in', SESSION_SECRET: 'web-test-session-secret-at-least-32-characters', PRELAUNCH_ALLOWED_EMAILS: 'listed@example.in', TEST_AUTH_ENABLED: 'true', NODE_ENV: 'test' } },
+      env: { DATABASE_URL: databaseUrl.toString(), API_ORIGIN: 'http://localhost:3104', WEB_ORIGIN: 'http://localhost:5173', PORT: '3104', OWNER_CONTACT_EMAIL: 'owner@example.in', SESSION_SECRET: 'web-test-session-secret-at-least-32-characters', PRELAUNCH_ALLOWED_EMAILS: 'listed@example.in', TEST_AUTH_ENABLED: 'true', GLOBAL_RATE_LIMIT_PER_MINUTE: '1000', NODE_ENV: 'test' } },
     { command: 'pnpm --filter @symphony/web dev', cwd: '../..', url: 'http://localhost:5173', reuseExistingServer: !process.env.CI, timeout: 120_000, env: { VITE_API_ORIGIN: 'http://localhost:3104' } },
   ],
 });

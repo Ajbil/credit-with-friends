@@ -39,7 +39,14 @@ import { SearchMemberThrottleGuard } from './modules/search/search-member-thrott
         },
       }),
     }),
-    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
+    ThrottlerModule.forRootAsync({
+      imports: [ApiConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<ApiConfig, true>) => [{
+        ttl: 60_000,
+        limit: config.getOrThrow('globalRateLimitPerMinute'),
+      }],
+    }),
     ScheduleModule.forRoot(),
     SessionsModule,
     AccountsModule,

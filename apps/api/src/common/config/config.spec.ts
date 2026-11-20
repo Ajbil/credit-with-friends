@@ -33,6 +33,10 @@ describe('validateConfig', () => {
       ['TRUST_PROXY', '-1'],
       ['TRUST_PROXY', '1.5'],
       ['TRUST_PROXY', 'invalid'],
+      ['GLOBAL_RATE_LIMIT_PER_MINUTE', '0'],
+      ['GLOBAL_RATE_LIMIT_PER_MINUTE', '1.5'],
+      ['GLOBAL_RATE_LIMIT_PER_MINUTE', '-1'],
+      ['GLOBAL_RATE_LIMIT_PER_MINUTE', '9007199254740992'],
     ]) {
       expect(() => validateConfig({ ...validEnvironment, [name]: value })).toThrow(name);
     }
@@ -43,5 +47,10 @@ describe('validateConfig', () => {
     expect(config.ownerGoogleAccountId).toBeUndefined();
     expect(config.trustProxy).toBe(0);
     expect(validateConfig({ ...validEnvironment, TRUST_PROXY: '1' }).trustProxy).toBe(1);
+  });
+
+  it('uses 100 requests per minute by default and accepts a higher configured limit', () => {
+    expect(validateConfig(validEnvironment).globalRateLimitPerMinute).toBe(100);
+    expect(validateConfig({ ...validEnvironment, GLOBAL_RATE_LIMIT_PER_MINUTE: '1000' }).globalRateLimitPerMinute).toBe(1000);
   });
 });

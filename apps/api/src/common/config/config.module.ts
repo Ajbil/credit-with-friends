@@ -5,6 +5,7 @@ export interface ApiConfig {
   apiOrigin: string;
   databaseUrl: string;
   environment: 'Local' | 'Production';
+  globalRateLimitPerMinute: number;
   googleClientId?: string;
   googleClientSecret?: string;
   launchOpen: boolean;
@@ -68,6 +69,11 @@ export function validateConfig(env: Record<string, unknown>): ApiConfig {
   const rawTrustProxy = env.TRUST_PROXY ?? '0';
   const trustProxy = typeof rawTrustProxy === 'string' && /^\d+$/.test(rawTrustProxy) ? Number(rawTrustProxy) : NaN;
   if (!Number.isSafeInteger(trustProxy) || trustProxy < 0) throw new Error('TRUST_PROXY must be a non-negative integer');
+  const rawGlobalRateLimit = env.GLOBAL_RATE_LIMIT_PER_MINUTE ?? '100';
+  const globalRateLimitPerMinute = typeof rawGlobalRateLimit === 'string' && /^\d+$/.test(rawGlobalRateLimit) ? Number(rawGlobalRateLimit) : NaN;
+  if (!Number.isSafeInteger(globalRateLimitPerMinute) || globalRateLimitPerMinute < 1) {
+    throw new Error('GLOBAL_RATE_LIMIT_PER_MINUTE must be a positive integer');
+  }
 
   const ownerContactEmail = required(env, 'OWNER_CONTACT_EMAIL');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerContactEmail)) {
@@ -82,6 +88,7 @@ export function validateConfig(env: Record<string, unknown>): ApiConfig {
     apiOrigin: origin(env, 'API_ORIGIN'),
     databaseUrl: databaseUrl(env),
     environment: env.NODE_ENV === 'production' ? 'Production' : 'Local',
+    globalRateLimitPerMinute,
     googleClientId: typeof env.GOOGLE_CLIENT_ID === 'string' ? env.GOOGLE_CLIENT_ID : undefined,
     googleClientSecret: typeof env.GOOGLE_CLIENT_SECRET === 'string' ? env.GOOGLE_CLIENT_SECRET : undefined,
     launchOpen: boolean(env, 'LAUNCH_OPEN', false),
