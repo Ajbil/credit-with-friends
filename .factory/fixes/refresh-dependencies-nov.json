@@ -22,8 +22,8 @@
     "id": "6c50637b-9aaf-40b4-bc5a-4e7cd7ff7422",
     "status": "clean"
   },
-  "round": 1,
-  "status": "waiting for checks",
+  "round": 2,
+  "status": "fixing",
   "steps": [
     {
       "at": "2026-11-20T12:35:21.695516+00:00",
@@ -35,10 +35,10 @@
     }
   ],
   "stuck": {
-    "close": null,
-    "head": "86a0f035443fc49233e3df0c886b4ed25361ac86",
+    "close": "a9ecdb0a-8e86-4ede-bc7d-35d08045dee3",
+    "head": "0f3c488930bbcc304ea63b3d38b2f82840bfe6fc",
     "keys": {},
-    "round": null
+    "round": 1
   },
   "why": "A new high-severity advisory in effect (through Prisma) fails the security audit on every pull request, and dependencies and base images are over a week old",
   "worker": "codex"
