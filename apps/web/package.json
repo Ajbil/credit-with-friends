@@ -12,7 +12,7 @@
     "generate:api": "orval --config orval.config.ts && prettier --write src/api/generated.ts"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.108.1",
+    "@tanstack/react-query": "5.104.2",
     "@tanstack/react-router": "^1.170.46",
     "libphonenumber-js": "^1.13.17",
     "react": "^19.3.1",
